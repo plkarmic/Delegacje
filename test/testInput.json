@@ -1,0 +1,9 @@
+{
+    "transportType" : "car",
+    "roundTrip": 
+    [
+        {"country":"Polska", "destinationC":"Czechy", "startTime":"09/10/2018 10:00", "endTime":"09/10/2018 17:00", "borderTime":"09/10/2018 15:00"},
+        {"country":"Czechy", "destinationC":"Austria", "startTime":"09/11/2018 10:00", "endTime":"09/11/2018 20:00", "borderTime":"09/11/2018 16:00"},
+        {"country":"Austria", "destinationC":"Polska", "startTime":"09/12/2018 10:00", "endTime":"09/12/2018 23:00", "borderTime":"09/12/2018 20:00"}
+    ]
+}

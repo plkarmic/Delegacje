@@ -26,7 +26,7 @@ const TripRowInput = (props) => {
           />
           <label htmlFor={startTimeID}>Czas wyjazdu</label>
           <input
-            type="text"
+            type="datetime-local"
             name={startTimeID}
             data-id={idx}
             id={startTimeID}
@@ -35,7 +35,7 @@ const TripRowInput = (props) => {
           />
           <label htmlFor={endTimeID}>Czas przyjazdyu</label>
           <input
-            type="text"
+            type="datetime-local"
             name={endTimeID}
             data-id={idx}
             id={endTimeID}
@@ -44,7 +44,7 @@ const TripRowInput = (props) => {
           />
            <label htmlFor={endTimeID}>Czas przekroczenia granicy</label>
           <input
-            type="text"
+            type="datetime-local"
             name={borderTimeID}
             data-id={idx}
             id={borderTimeID}

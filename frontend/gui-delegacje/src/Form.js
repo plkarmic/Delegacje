@@ -31,7 +31,19 @@ handleSubmit = (e) => {
         transportType: this.state.transportType,
         roundTrip: this.state.tripDetails
     }
-    console.log((JSON.stringify(response)))   
+    console.log((JSON.stringify(response)))
+
+    //send POST request to backend server
+    fetch('http://localhost:8080/', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',                  
+      },
+      body: JSON.stringify(response)
+    });
 
 }
 render() {

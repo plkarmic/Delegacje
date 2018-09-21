@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/tidwall/gjson"
 )
@@ -81,23 +82,27 @@ func getTripDetails(rawData string) Trip {
 	var rowDetail RowTrip
 	var roundTripNbr string     //used to get number of rows in roundTrip
 	var tempQueryEndTime string //used to get query string for last row in roundTrip
+	var dataLayout string
 
 	roundTripNbr = gjson.Get(rawData, "roundTrip.#").String()
 	strTmp, _ := strconv.Atoi(roundTripNbr) //convert string to Int, then remove 1 as the first row is 0
 	tempQueryEndTime = "roundTrip." + strconv.Itoa(strTmp-1) + ".endTime"
 
+	//dataLayout = "01/02/2006 15:04"
+	dataLayout = "2006-01-02T15:04"
+
 	trip.transportType = gjson.Get(rawData, "transportType").String()
-	trip.startTime, _ = time.Parse("01/02/2006 15:04", gjson.Get(rawData, "roundTrip.0.startTime").String())
-	trip.endTime, _ = time.Parse("01/02/2006 15:04", gjson.Get(rawData, tempQueryEndTime).String())
+	trip.startTime, _ = time.Parse(dataLayout, gjson.Get(rawData, "roundTrip.0.startTime").String())
+	trip.endTime, _ = time.Parse(dataLayout, gjson.Get(rawData, tempQueryEndTime).String())
 
 	tripDetail := gjson.Get(rawData, "roundTrip")
 	tripDetail.ForEach(func(key, value gjson.Result) bool { //populate trip details in trip struct
 		println(value.String())
 		//trip.details = make(RowTrip, 0)
 
-		rowDetail.StartTime, _ = time.Parse("01/02/2006 15:04", gjson.Get(value.String(), "startTime").String())
-		rowDetail.ArrivalTime, _ = time.Parse("01/02/2006 15:04", gjson.Get(value.String(), "endTime").String())
-		rowDetail.BorderTime, _ = time.Parse("01/02/2006 15:04", gjson.Get(value.String(), "borderTime").String())
+		rowDetail.StartTime, _ = time.Parse(dataLayout, gjson.Get(value.String(), "startTime").String())
+		rowDetail.ArrivalTime, _ = time.Parse(dataLayout, gjson.Get(value.String(), "endTime").String())
+		rowDetail.BorderTime, _ = time.Parse(dataLayout, gjson.Get(value.String(), "borderTime").String())
 		rowDetail.CountryTo = gjson.Get(value.String(), "destinationC").String()
 		rowDetail.CountryFrom = gjson.Get(value.String(), "country").String()
 		trip.details = append(trip.details, rowDetail)
@@ -114,7 +119,7 @@ func calculate(trip Trip) time.Duration { //MAGIC :)
 	var dieta time.Duration
 	var prevBorderDate time.Time //use to track borderDate from previous row
 	var j int
-	var zeroDay, _ = time.Parse("01/02/2006 15:04", "01/01/0001 00:00")
+	var zeroDay, _ = time.Parse("2006-01-02T15:04", "0001/01/01T00:00")
 
 	prevBorderDate = zeroDay
 
@@ -142,6 +147,8 @@ func main() {
 
 	router.HandleFunc("/", readBody).Methods("POST")
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	corsObj := handlers.AllowedOrigins([]string{"*"})
+
+	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(corsObj)(router)))
 
 }
