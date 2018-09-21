@@ -1,5 +1,8 @@
 import React from "react"
 import TripRowInput from "./TripRowInput"
+import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
+import './Form.css'
+
 class Form extends React.Component {
   state = {
     transportType: "",
@@ -7,7 +10,7 @@ class Form extends React.Component {
   }
 handleChange = (e) => {
     //if (["name", "age"].includes(e.target.className) ) {
-    if (["country", "destinationC", "startTime", "endTime", "borderTime"].includes(e.target.className) ) {
+    if (["q","country", "city", "destinationC", "cityD", "startTime", "endTime", "borderTime"].indexOf(e.target.className) ) {
       let tripDetails = [...this.state.tripDetails]
       tripDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
       this.setState({ tripDetails }, () => console.log(this.state.transportType))
@@ -50,11 +53,60 @@ render() {
     let {transportType, tripDetails} = this.state
     return (
       <form onSubmit={this.handleSubmit} onChange={this.handleChange} >
-        <label htmlFor="transportType">Środek lokomocji</label> 
-        <input type="text" name="transportType" id="transportType" value={transportType} />
-        <button onClick={this.addTrip}>Dodaj nowy wiersz</button>
-        <TripRowInput tripDetails={tripDetails} />
-        <input type="submit" value="Submit" /> 
+        <table class="table">
+          <tbody>
+            <tr>
+              <div className="row">
+                <div className="col-lg-2">
+                  <td><h4><label htmlFor="transportType">Środek lokomocji</label></h4> </td>
+                </div>
+                <div className="col-lg-2">
+                  <td> <input type="text" className="transportType" name="transportType" id="transportType" value={transportType}/></td>
+                </div>
+                <div className="col-lg-8"/>
+              </div>
+            </tr>
+          </tbody>
+        </table>  
+       
+         
+        <table name="formTable" id="formTable" className="table table-bordered table-condensed">
+          {/* <tr>
+            <td><label htmlFor="transportType">Środek lokomocji</label> </td>
+            <td> <input type="text" name="transportType" id="transportType" value={transportType} /></td>
+          </tr> */}
+          <thead>
+            <tr>
+              <td colSpan='3' className="text-center"><h4><label>Wyjazd</label></h4></td>
+              <td colSpan='3' className="text-center"><h4><label>Przyjazd</label></h4></td>
+              <td className="text-center"><h4><label>Przekroczenie granicy</label></h4></td>
+            </tr>
+            <tr>
+              <th className="text-center"><label>Kraj</label></th>
+              <th className="text-center"><label>Miejscowość</label></th>
+              <th className="text-center"><label>Data i godzina</label></th>
+              <th className="text-center"><label>Kraj</label></th>
+              <th className="text-center"><label>Miejscowość</label></th>
+              <th className="text-center"><label>Data i godz.</label></th>
+              <th className="text-center"><label>Data i godz.</label></th>
+            </tr>
+          </thead>
+          <tbody>
+            <TripRowInput tripDetails={tripDetails} />
+          </tbody>
+        </table>
+        <div className="row">
+          <div className="col-lg-2">
+            
+            <input type="submit" value="Oblicz" className="btn btn-success"/> 
+          </div>
+          <div className="col-lg-8">
+            {/* <button onClick={this.addTrip} className="btn btn-info">Dodaj nowy wiersz</button> */}
+          </div>
+          <div className="col-lg-2">
+          <span class="pull-right"><button onClick={this.addTrip} className="btn btn-info">Dodaj przejazd</button></span>
+        </div>
+        </div>
       </form>
     )
   }

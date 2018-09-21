@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { Grid, Navbar, Jumbotron, Button } from 'react-bootstrap';
 
 class App extends Component {
 
