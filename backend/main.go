@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"github.com/tidwall/gjson"
 )
 
@@ -110,6 +110,7 @@ func getTripDetails(rawData string) Trip {
 	})
 
 	trip.durtion = calculate(trip).Hours()
+	fmt.Println(trip.durtion)
 	return trip
 
 }
@@ -146,9 +147,20 @@ func main() {
 	//router.HandleFunc("/", insert).Methods("POST")
 
 	router.HandleFunc("/", readBody).Methods("POST")
+	router.HandleFunc("/", readBody).Methods("OPTIONS")
 
-	corsObj := handlers.AllowedOrigins([]string{"*"})
+	// corsObj := handlers.AllowedOrigins([]string{"*"})
+	// headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	// originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
+	// methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
-	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(corsObj)(router)))
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowCredentials: true,
+	})
+
+	handler := c.Handler(router)
+
+	log.Fatal(http.ListenAndServe(":8080", handler))
 
 }

@@ -8,7 +8,8 @@ class Form extends React.Component {
   state = {
     transportType: "",
     tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:""}],
-    expansesDetails: [{remark:"", costV:"",costPLN:""}]
+    expansesDetails: [{remark:"", costV:"",costPLN:""}],
+    total: 0
   }
 handleChange = (e) => {
     //if (["name", "age"].includes(e.target.className) ) {
@@ -50,14 +51,24 @@ handleSubmit = (e) => {
     //send POST request to backend server
     fetch('http://localhost:8080/', {
       method: 'POST',
-      mode: 'no-cors',
+      // mode: 'no-cors',
       headers: {
-          'Access-Control-Allow-Origin': '*',
+          // 'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
           'Accept': 'application/json',                  
       },
       body: JSON.stringify(response)
+    })
+    .then(res => res.text())
+    .then(res => {
+      console.log(res)
+      this.state.total = res
+      return ({
+        type: "GET_CALL",
+        res: res,
+      });
     });
+
 
 }
 render() {
@@ -150,6 +161,19 @@ render() {
             </div>
             <div className="col-lg-2">
               <span className="pull-right"><button onClick={this.addExpanses} className="btn btn-info">Dodaj wydatek</button> </span>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-lg-2">
+            </div>
+            <div className="col-lg-4">
+              {/* <button onClick={this.addTrip} className="btn btn-info">Dodaj nowy wiersz</button> */}
+            </div>
+            <div className="col-lg-6">
+              <div className="row">
+                  <div className="col-lg-6"><span className="pull-right"><label><h3>Razem</h3></label></span></div>
+                  <div className="col-lg-4"><label><h3><input className="result" value={this.state.total}></input></h3></label></div>
+              </div>
             </div>
           </div>
         </div>
