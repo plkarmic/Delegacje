@@ -1,19 +1,25 @@
 import React from "react"
 import TripRowInput from "./TripRowInput"
+import AdditionalExpansesRowInput from "./AdditionalExpansesRowInput"
 import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
 import './Form.css'
 
 class Form extends React.Component {
   state = {
     transportType: "",
-    tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:""}]
+    tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:""}],
+    expansesDetails: [{remark:"", costV:"",costPLN:""}]
   }
 handleChange = (e) => {
     //if (["name", "age"].includes(e.target.className) ) {
-    if (["q","country", "city", "destinationC", "cityD", "startTime", "endTime", "borderTime"].indexOf(e.target.className) ) {
+    if (["country", "city", "destinationC", "cityD", "startTime", "endTime", "borderTime"].includes(e.target.className) ) {
       let tripDetails = [...this.state.tripDetails]
       tripDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
       this.setState({ tripDetails }, () => console.log(this.state.transportType))
+    }else if (["remark", "costV", "costPLN"].includes(e.target.className)){
+      let expansesDetails = [...this.state.expansesDetails]
+      expansesDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
+      this.setState({expansesDetails}, () => console.log(this.state.expansesDetails))
     } else {
       this.setState({ [e.target.name]: e.target.value.toUpperCase() })
     }
@@ -23,7 +29,11 @@ addTrip = (e) => {
       tripDetails: [...prevState.tripDetails, {country:"", destinationC:"", startTime:"", endTime:"", borderTime:""}],
     }));
   }
-
+addExpanses = (e) => {
+  this.setState((prevState) => ({
+    expansesDetails: [...prevState.expansesDetails, {remark:"", costV:"", costPLN:""}],
+  }));
+  }
 
 handleSubmit = (e) => { 
     // console.log(
@@ -32,7 +42,8 @@ handleSubmit = (e) => {
     e.preventDefault()
     let response = {
         transportType: this.state.transportType,
-        roundTrip: this.state.tripDetails
+        roundTrip: this.state.tripDetails,
+        expansesDetails: this.state.expansesDetails
     }
     console.log((JSON.stringify(response)))
 
@@ -50,7 +61,7 @@ handleSubmit = (e) => {
 
 }
 render() {
-    let {transportType, tripDetails} = this.state
+    let {transportType, tripDetails, expansesDetails} = this.state
     return (
       <form onSubmit={this.handleSubmit} onChange={this.handleChange} >
         <table class="table">
@@ -104,9 +115,45 @@ render() {
             {/* <button onClick={this.addTrip} className="btn btn-info">Dodaj nowy wiersz</button> */}
           </div>
           <div className="col-lg-2">
-          <span class="pull-right"><button onClick={this.addTrip} className="btn btn-info">Dodaj przejazd</button></span>
+            <span class="pull-right"><button onClick={this.addTrip} className="btn btn-info">Dodaj przejazd</button></span>
+          </div>
         </div>
+
+        
+        <div>
+          <br/>  
         </div>
+
+        <div>
+        <table name="formTable" id="formTable" className="table table-bordered table-condensed">
+            <thead>
+              <tr>
+                <th colSpan="3" className="text-center"><label>Dodatkowe wydatki</label></th>
+              </tr>
+              <tr className="table table-bordered table-condensed">
+                <th className="text-center" width="60%"><label>Opis/typ</label></th>
+                <th className="text-center" width="20%"><label>Kwota Waluta</label></th>
+                <th className="text-center" width="20%"><label>Kwota PLN</label></th>
+              </tr>
+            </thead>
+       
+            <tbody>
+              <AdditionalExpansesRowInput expansesDetails={expansesDetails} />
+            </tbody>
+            
+          </table>
+          <div className="row">
+            <div className="col-lg-2">
+            </div>
+            <div className="col-lg-8">
+              {/* <button onClick={this.addTrip} className="btn btn-info">Dodaj nowy wiersz</button> */}
+            </div>
+            <div className="col-lg-2">
+              <span className="pull-right"><button onClick={this.addExpanses} className="btn btn-info">Dodaj wydatek</button> </span>
+            </div>
+          </div>
+        </div>
+        
       </form>
     )
   }
