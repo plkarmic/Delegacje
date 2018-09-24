@@ -38,14 +38,21 @@ type RowTrip struct {
 	ArrivalTime time.Time
 	BorderTime  time.Time
 }
+type Expanses struct {
+	Remark  string
+	CostV   float64
+	CostPLN float64
+}
 
 type Trip struct {
-	startTime     time.Time
-	endTime       time.Time
-	transportType string    //car, plain, train, etc
-	destination   string    //destination country
-	details       []RowTrip //array of strings with information for each trip details (time of departure, time of arrival,  boarder cross date, etc.)
-	durtion       float64
+	startTime       time.Time
+	endTime         time.Time
+	transportType   string    //car, plain, train, etc
+	destination     string    //destination country
+	details         []RowTrip //array of strings with information for each trip details (time of departure, time of arrival,  boarder cross date, etc.)
+	expansesDetails []Expanses
+	durtion         float64
+	totalCost       float64
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
@@ -70,8 +77,7 @@ func readBody(w http.ResponseWriter, r *http.Request) {
 
 	tripData = getTripDetails(bodyString)
 
-	//ECHO for test purposes ONLY
-	fmt.Fprint(w, tripData)
+	fmt.Fprint(w, tripData.totalCost)
 
 	defer r.Body.Close()
 
@@ -80,6 +86,7 @@ func readBody(w http.ResponseWriter, r *http.Request) {
 func getTripDetails(rawData string) Trip {
 	var trip Trip
 	var rowDetail RowTrip
+	var expanseDetail Expanses
 	var roundTripNbr string     //used to get number of rows in roundTrip
 	var tempQueryEndTime string //used to get query string for last row in roundTrip
 	var dataLayout string
@@ -109,8 +116,19 @@ func getTripDetails(rawData string) Trip {
 		return true
 	})
 
+	expansesDetail := gjson.Get(rawData, "expansesDetails")
+	expansesDetail.ForEach(func(key, value gjson.Result) bool {
+		expanseDetail.Remark = gjson.Get(value.String(), "remark").String()
+		expanseDetail.CostV = gjson.Get(value.String(), "costV").Float()
+		expanseDetail.CostPLN = gjson.Get(value.String(), "costPLN").Float()
+
+		trip.expansesDetails = append(trip.expansesDetails, expanseDetail)
+		return true
+	})
+
 	trip.durtion = calculate(trip).Hours()
-	fmt.Println(trip.durtion)
+	trip.totalCost = calculateTotalCost(trip)
+	fmt.Println(trip)
 	return trip
 
 }
@@ -139,6 +157,13 @@ func calculate(trip Trip) time.Duration { //MAGIC :)
 	dieta += trip.details[j].ArrivalTime.Sub(trip.details[j].BorderTime)
 
 	return dieta
+}
+
+func calculateTotalCost(trip Trip) float64 { //calculte total cost -> dieta + otherExpanses
+	for i := range trip.expansesDetails {
+		trip.totalCost += trip.expansesDetails[i].CostPLN
+	}
+	return trip.totalCost
 }
 
 func main() {

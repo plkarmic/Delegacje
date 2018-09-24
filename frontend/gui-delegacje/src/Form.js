@@ -9,7 +9,11 @@ class Form extends React.Component {
     transportType: "",
     tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:""}],
     expansesDetails: [{remark:"", costV:"",costPLN:""}],
-    total: 0
+    total: "",
+    waluta: "EUR",
+    tabelaNBP: "",
+    kurs: ""
+
   }
 handleChange = (e) => {
     //if (["name", "age"].includes(e.target.className) ) {
@@ -37,19 +41,20 @@ addExpanses = (e) => {
   }
 
 handleSubmit = (e) => { 
-    // console.log(
-    //     this.state.transportType,
-    //     this.state.tripDetails)
+    console.log(
+        this.state.transportType,
+        this.state.tripDetails)
     e.preventDefault()
     let response = {
         transportType: this.state.transportType,
         roundTrip: this.state.tripDetails,
-        expansesDetails: this.state.expansesDetails
+        expansesDetails: this.state.expansesDetails,
+        duration: this.state.total
     }
     console.log((JSON.stringify(response)))
 
     //send POST request to backend server
-    fetch('http://localhost:8080/', {
+    let out = fetch('http://localhost:8080/', {
       method: 'POST',
       // mode: 'no-cors',
       headers: {
@@ -62,13 +67,44 @@ handleSubmit = (e) => {
     .then(res => res.text())
     .then(res => {
       console.log(res)
-      this.state.total = res
+      this.state.total = "aa"
       return ({
         type: "GET_CALL",
         res: res,
       });
+    })
+    .then(out => {
+      console.log(out.res)
+      this.setState({total: out.res});
     });
 
+    console.log(this.state.total)
+
+    //GET NBP DATA
+    let outNBP = fetch('http://api.nbp.pl/api/exchangerates/rates/A/EUR/', {
+      method: 'GET',
+      headers: {
+        // 'Access-Control-Allow-Origin': '*',
+        //'Content-Type': 'application/json',
+        //'Accept': 'application/json',                  
+      }
+    })
+    .then(res => res.json())
+    .then(res => {
+      console.log(res)
+      return ({
+        type: "GET_CALL",
+        res: res,
+      });
+    })
+    .then(out => {
+      console.log(out.res.code)
+      this.setState({
+        kurs: out.res.rates[0].mid,
+        tabelaNBP: out.res.rates[0].no
+      })
+    })
+    
 
 }
 render() {
@@ -166,13 +202,26 @@ render() {
           <div className="row">
             <div className="col-lg-2">
             </div>
-            <div className="col-lg-4">
+            <div className="col-lg-2">
+              {/* <button onClick={this.addTrip} className="btn btn-info">Dodaj nowy wiersz</button> */}
+            </div>
+            <div className="col-lg-8">
+              <div className="row">
+                  <div className="col-lg-8"><span className="pull-right"><label><h3>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP}: </h3></label></span></div>
+                  <div className="col-lg-4"><label><h3><input className="result" value={this.state.kurs} onChange={"aaa"}></input></h3></label></div>
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-lg-2">
+            </div>
+            <div className="col-lg-2">
               {/* <button onClick={this.addTrip} className="btn btn-info">Dodaj nowy wiersz</button> */}
             </div>
             <div className="col-lg-6">
               <div className="row">
                   <div className="col-lg-6"><span className="pull-right"><label><h3>Razem</h3></label></span></div>
-                  <div className="col-lg-4"><label><h3><input className="result" value={this.state.total}></input></h3></label></div>
+                  <div className="col-lg-4"><label><h3><input className="result" value={this.state.total} onChange={"aaa"}></input></h3></label></div>
               </div>
             </div>
           </div>

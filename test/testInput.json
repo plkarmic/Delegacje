@@ -7,3 +7,10 @@
         {"country":"Austria", "destinationC":"Polska", "startTime":"09/12/2018 10:00", "endTime":"09/12/2018 23:00", "borderTime":"09/12/2018 20:00"}
     ]
 }
+
+{
+	"Polska":
+	[ {"kwota":10, "waluta":"PLN"}],
+	"Austria":
+	[{"kwota":50,"waluta":"EUR"}]
+}
