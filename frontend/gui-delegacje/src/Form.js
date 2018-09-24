@@ -1,10 +1,11 @@
 import React from "react"
 import TripRowInput from "./TripRowInput"
 import AdditionalExpansesRowInput from "./AdditionalExpansesRowInput"
-import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
+// import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
 import './Form.css'
 
 class Form extends React.Component {
+  
   state = {
     transportType: "",
     tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:""}],
@@ -12,8 +13,60 @@ class Form extends React.Component {
     total: "",
     waluta: "EUR",
     tabelaNBP: "",
-    kurs: ""
+    kurs: "",
 
+    outNBP: fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + 'EUR', {
+      method: 'GET',
+      headers: {
+        // 'Access-Control-Allow-Origin': '*',
+        //'Content-Type': 'application/json',
+        //'Accept': 'application/json',                  
+      }
+    })
+    .then(res => res.json())
+    .then(res => {
+      console.log(res)
+      return ({
+        type: "GET_CALL",
+        res: res,
+      });
+    })
+    .then(out => {
+      console.log(out.res.code)
+      this.setState({
+        kurs: out.res.rates[0].mid,
+        tabelaNBP: out.res.rates[0].no
+      })
+    }),
+
+    values: fetch('http://api.nbp.pl/api/exchangerates/tables/A', {
+      method: 'GET',
+      headers: {
+        // 'Access-Control-Allow-Origin': '*',
+        //'Content-Type': 'application/json',
+        //'Accept': 'application/json',                  
+      }
+    })
+    .then(res => res.json())
+    .then(res => {
+      //console.log(res)
+      return ({
+        type: "GET_CALL",
+        res: res,
+      });
+    })
+    .then(out => {
+      //console.log(out.res[0].rates.code)
+      for (var i in out.res[0].rates)
+      {
+        console.log(out.res[0].rates[i].code)
+      }
+      // this.setState({
+      //   kurs: out.res.rates[0].mid,
+      //   tabelaNBP: out.res.rates[0].no
+     // })
+    })
+  
   }
 handleChange = (e) => {
     //if (["name", "age"].includes(e.target.className) ) {
@@ -24,10 +77,44 @@ handleChange = (e) => {
     }else if (["remark", "costV", "costPLN"].includes(e.target.className)){
       let expansesDetails = [...this.state.expansesDetails]
       expansesDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
+      if(expansesDetails[e.target.dataset.id]["costV"] !== ''){
+        expansesDetails[e.target.dataset.id]["costPLN"] = expansesDetails[e.target.dataset.id][e.target.className] * this.state.kurs
+      }
+      
       this.setState({expansesDetails}, () => console.log(this.state.expansesDetails))
-    } else {
+    }else {
       this.setState({ [e.target.name]: e.target.value.toUpperCase() })
     }
+    
+  
+  
+    //GET NBP DATA
+    let outNBP = fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + this.state.waluta, {
+      method: 'GET',
+      headers: {
+        // 'Access-Control-Allow-Origin': '*',
+        //'Content-Type': 'application/json',
+        //'Accept': 'application/json',                  
+      }
+    })
+    .then(res => res.json())
+    .then(res => {
+      console.log(res)
+      return ({
+        type: "GET_CALL",
+        res: res,
+      });
+    })
+    .then(out => {
+      console.log(out.res.code)
+      this.setState({
+        kurs: out.res.rates[0].mid,
+        tabelaNBP: out.res.rates[0].no
+      })
+    })
+  
+  
+  
   }
 addTrip = (e) => {
     this.setState((prevState) => ({
@@ -80,35 +167,9 @@ handleSubmit = (e) => {
 
     console.log(this.state.total)
 
-    //GET NBP DATA
-    let outNBP = fetch('http://api.nbp.pl/api/exchangerates/rates/A/EUR/', {
-      method: 'GET',
-      headers: {
-        // 'Access-Control-Allow-Origin': '*',
-        //'Content-Type': 'application/json',
-        //'Accept': 'application/json',                  
-      }
-    })
-    .then(res => res.json())
-    .then(res => {
-      console.log(res)
-      return ({
-        type: "GET_CALL",
-        res: res,
-      });
-    })
-    .then(out => {
-      console.log(out.res.code)
-      this.setState({
-        kurs: out.res.rates[0].mid,
-        tabelaNBP: out.res.rates[0].no
-      })
-    })
-    
-
 }
 render() {
-    let {transportType, tripDetails, expansesDetails} = this.state
+    let {transportType, tripDetails, expansesDetails, waluta} = this.state
     return (
       <form onSubmit={this.handleSubmit} onChange={this.handleChange} >
         <table class="table">
@@ -120,6 +181,17 @@ render() {
                 </div>
                 <div className="col-lg-2">
                   <td> <input type="text" className="transportType" name="transportType" id="transportType" value={transportType}/></td>
+                </div>
+                <div className="col-lg-8"/>
+              </div>
+            </tr>
+            <tr>
+              <div className="row">
+                <div className="col-lg-2">
+                  <td><h4><label htmlFor="waluta">Waluta</label></h4> </td>
+                </div>
+                <div className="col-lg-2">
+                  <td> <input type="text" className="waluta" name="waluta" id="waluta" value={waluta}/></td>
                 </div>
                 <div className="col-lg-8"/>
               </div>
