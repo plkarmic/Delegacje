@@ -28,12 +28,12 @@
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
-  .transportType {
+  .transportType, .userNameForm {
     display: block;
     width: 100%;
     height: 34px;
     padding: 6px 12px;
-    font-size: 14px;
+    font-size: 10px;
     line-height: 1.42857143;
     color: #555;
     background-color: #fff;
@@ -46,7 +46,7 @@
          -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
             transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   }
-.transportType:focus {
+.transportType:focus, userNameForm:focus {
     border-color: #66afe9;
     outline: 0;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
@@ -55,15 +55,48 @@
 
 
 @media print {
-  .transportType {
+  .transportType, .userNameForm {
     display: block;
-    width: 50%;
-    height: 16px;
-    padding: 3px 6px;
-    font-size: 8px;
-
+    width: 100%;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 10px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+         -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  
   }
   .btn{
     display: none
+  }
 }
+@media print {
+  .hidden-print {
+    display: none !important;
+  }
+}
+
+@media print {
+  .hidden-print {
+    display: none !important;
+  }
+}
+
+
+@media all {
+  .page-break	{ display: none; }
+  
+  .hidden { display: none;}
+}
+
+@media print {
+  .page-break	{ display: block; page-break-before: always; }
 }

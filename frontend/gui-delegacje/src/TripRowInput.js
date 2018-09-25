@@ -18,6 +18,9 @@ const TripRowInput = (props) => {
               value={props.tripDetails[idx].country} 
               className="country"
             />
+            <label className="country-printOnly">
+              {props.tripDetails[idx].country} 
+            </label>
           </td>
           <td htmlFor={cityId}>
             <input
@@ -28,6 +31,9 @@ const TripRowInput = (props) => {
               value={props.tripDetails[idx].city} 
               className="city"
             />
+            <label className="city-printOnly">
+              {props.tripDetails[idx].city} 
+            </label>
           </td>
           <td htmlFor={startTimeID}>
             <input
@@ -38,6 +44,9 @@ const TripRowInput = (props) => {
               value={props.tripDetails[idx].startTime} 
               className="startTime"
             />
+            <label className="startTime-printOnly">
+              {props.tripDetails[idx].startTime} 
+            </label>
           </td>
           <td htmlFor={destinationCId}>
             <input
@@ -48,6 +57,9 @@ const TripRowInput = (props) => {
               value={props.tripDetails[idx].destinationC} 
               className="destinationC"
             />
+            <label className="destinationC-printOnly">
+              {props.tripDetails[idx].destinationC} 
+            </label>
           </td>
           <td htmlFor={cityDId}>
             <input
@@ -58,6 +70,9 @@ const TripRowInput = (props) => {
               value={props.tripDetails[idx].cityD} 
               className="cityD"
             />
+             <label className="cityD-printOnly">
+              {props.tripDetails[idx].cityD} 
+            </label>
           </td>
           <td htmlFor={endTimeID}>
             <input
@@ -68,8 +83,11 @@ const TripRowInput = (props) => {
               value={props.tripDetails[idx].endTime} 
               className="endTime"
             />
+            <label className="endTime-printOnly">
+              {props.tripDetails[idx].endTime} 
+            </label>
           </td>
-          <td htmlFor={endTimeID}>
+          <td htmlFor={borderTimeID}>
             <input
               type="datetime-local"
               name={borderTimeID}
@@ -78,6 +96,9 @@ const TripRowInput = (props) => {
               value={props.tripDetails[idx].borderTime} 
               className="borderTime"
             />
+            <label className="borderTime-printOnly">
+              {props.tripDetails[idx].borderTime} 
+            </label>
           </td>
         </tr>
       )

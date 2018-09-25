@@ -1,7 +1,8 @@
 import React from "react"
 import TripRowInput from "./TripRowInput"
 import AdditionalExpansesRowInput from "./AdditionalExpansesRowInput"
-// import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
+import FirstPage from "./firstPage.js"
+import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
 import './Form.css'
 
 class Form extends React.Component {
@@ -14,6 +15,7 @@ class Form extends React.Component {
     waluta: "EUR",
     tabelaNBP: "",
     kurs: "",
+    zaliczka: [{data:"", nrDow:"", waluta:"", slownie:"", pieczec:""}],
 
     outNBP: fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + 'EUR', {
       method: 'GET',
@@ -169,56 +171,58 @@ handleSubmit = (e) => {
 
 }
 render() {
-    let {transportType, tripDetails, expansesDetails, waluta} = this.state
+    let {transportType, tripDetails, expansesDetails, waluta, zaliczka} = this.state
     return (
       <form onSubmit={this.handleSubmit} onChange={this.handleChange} >
+
+        <FirstPage zaliczka={zaliczka}/>
         <table class="table">
           <tbody>
             <tr>
               <div className="row">
-                <div className="col-lg-2">
+                <div className="col-xs-3 col-md-3">
                   <td><h4><label htmlFor="transportType">Środek lokomocji</label></h4> </td>
                 </div>
-                <div className="col-lg-2">
+                <div className="col-xs-3 col-md-3">
                   <td> <input type="text" className="transportType" name="transportType" id="transportType" value={transportType}/></td>
                 </div>
-                <div className="col-lg-8"/>
+                <div className="col-xs-6 col-md-6"/>
               </div>
             </tr>
             <tr>
               <div className="row">
-                <div className="col-lg-2">
+                <div className="col-xs-3 col-md-3">
                   <td><h4><label htmlFor="waluta">Waluta</label></h4> </td>
                 </div>
-                <div className="col-lg-2">
+                <div className="col-xs-3 col-md-3">
                   <td> <input type="text" className="waluta" name="waluta" id="waluta" value={waluta}/></td>
                 </div>
-                <div className="col-lg-8"/>
+                <div className="col-xs-6 col-md-6"/>
               </div>
             </tr>
           </tbody>
         </table>  
        
          
-        <table name="formTable" id="formTable" className="table table-bordered table-condensed">
+       <table name="formTable" id="formTable" className="table table-bordered table-condensed">
           {/* <tr>
             <td><label htmlFor="transportType">Środek lokomocji</label> </td>
             <td> <input type="text" name="transportType" id="transportType" value={transportType} /></td>
           </tr> */}
           <thead>
             <tr>
-              <td colSpan='3' className="text-center"><h4><label>Wyjazd</label></h4></td>
-              <td colSpan='3' className="text-center"><h4><label>Przyjazd</label></h4></td>
-              <td className="text-center"><h4><label>Przekroczenie granicy</label></h4></td>
+              <td colSpan='3' className="col-xs-5 col-md-5 text-center"><h5><label>Wyjazd</label></h5></td>
+              <td colSpan='3' className="col-xs-5 col-md-5 text-center"><h5><label>Przyjazd</label></h5></td>
+              <td className="col-xs-2 col-md-2 text-center"><h5><label>Przekroczenie granicy</label></h5></td>
             </tr>
             <tr>
-              <th className="text-center"><label>Kraj</label></th>
-              <th className="text-center"><label>Miejscowość</label></th>
-              <th className="text-center"><label>Data i godzina</label></th>
-              <th className="text-center"><label>Kraj</label></th>
-              <th className="text-center"><label>Miejscowość</label></th>
-              <th className="text-center"><label>Data i godz.</label></th>
-              <th className="text-center"><label>Data i godz.</label></th>
+              <td className="text-center"><label className="print-width-th">Kraj</label></td>
+              <td className="text-center"><label>Miejscowość</label></td>
+              <td className="text-center"><label>Data i godzina</label></td>
+              <td className="text-center"><label className="print-width-th">Kraj</label></td>
+              <td className="text-center"><label className="print-width-th">Miejscowość</label></td>
+              <td className="text-center"><label className="print-width-th2">Data i godz.</label></td>
+              <td className="text-center"><label className="print-width-th2">Data i godz.</label></td>
             </tr>
           </thead>
           <tbody>
@@ -236,9 +240,7 @@ render() {
           <div className="col-lg-2">
             <span class="pull-right"><button onClick={this.addTrip} className="btn btn-info">Dodaj przejazd</button></span>
           </div>
-        </div>
-
-        
+        </div>        
         <div>
           <br/>  
         </div>
