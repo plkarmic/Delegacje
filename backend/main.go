@@ -7,7 +7,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -110,8 +112,8 @@ func getTripDetails(rawData string) Trip {
 		rowDetail.StartTime, _ = time.Parse(dataLayout, gjson.Get(value.String(), "startTime").String())
 		rowDetail.ArrivalTime, _ = time.Parse(dataLayout, gjson.Get(value.String(), "endTime").String())
 		rowDetail.BorderTime, _ = time.Parse(dataLayout, gjson.Get(value.String(), "borderTime").String())
-		rowDetail.CountryTo = gjson.Get(value.String(), "destinationC").String()
-		rowDetail.CountryFrom = gjson.Get(value.String(), "country").String()
+		rowDetail.CountryTo = strings.Title(strings.ToLower(gjson.Get(value.String(), "destinationC").String())) //upper case to lower case and first letter as captial
+		rowDetail.CountryFrom = strings.Title(strings.ToLower(gjson.Get(value.String(), "country").String()))    //upper case to lower case and first letter as captial
 		trip.details = append(trip.details, rowDetail)
 		return true
 	})
@@ -126,38 +128,223 @@ func getTripDetails(rawData string) Trip {
 		return true
 	})
 
-	trip.durtion = calculate(trip).Hours()
+	trip.durtion = calculate(trip)
 	trip.totalCost = calculateTotalCost(trip)
 	fmt.Println(trip)
 	return trip
 
 }
 
-func calculate(trip Trip) time.Duration { //MAGIC :)
+func getExchangeReate(currency string) float64 {
+	url := "http://api.nbp.pl/api/exchangerates/rates/A/" + currency
 
-	var dieta time.Duration
-	var prevBorderDate time.Time //use to track borderDate from previous row
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("cache-control", "no-cache")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	return gjson.Get(string(body), "rates.0.mid").Float()
+
+	//body.rates[0].mid
+
+}
+
+func cena(time float64, country string) float64 {
+	//var Countryquerry string
+	//var Countrypricequerry string
+	//var Countrycurrencyquerry string
+	var result float64
+	//var days int
+	var modulo int
+
+	jsonFile, _ := os.Open("./CountryTable1.json")
+	defer jsonFile.Close()
+	byteValue, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		//	panic(err)
+	}
+	// var Kraj Countries
+	// json.Unmarshal(byteValue, &Kraj)
+	bodySTR := string(byteValue)
+	fmt.Println(bodySTR)
+	// roundTripNbr = gjson.Get(rawData, "roundTrip.#").String()
+	// strTmp, _ := strconv.Atoi(roundTripNbr) //convert string to Int, then remove 1 as the first row is 0
+
+	//Countryquerry := country+
+	Countrypricequerry := country + ".0.kwota"
+	Countrycurrencyquerry := country + ".0.waluta"
+	countryPrice := gjson.Get(bodySTR, Countrypricequerry).Float()
+	countryCurrency := gjson.Get(bodySTR, Countrycurrencyquerry).String()
+	exchangeRate := getExchangeReate(countryCurrency)
+	fmt.Println(exchangeRate)
+	//test := 2 * countryCurrency
+	// a =10 , b=20 a%b = 0
+	fmt.Println(countryPrice)
+	modulo = int(time) % 24
+
+	if country == "Polska" {
+		if time < 8 {
+			result = 0
+		} else {
+			if time >= 8 && time < 12 {
+
+				result = countryPrice / 2
+			} else {
+				if time >= 12 && time <= 24 {
+					result = countryPrice
+				} else {
+					if time > 24 {
+						days := int(time / 24)
+						//Result1 := int(countryPrice) * days
+						result = countryPrice * float64(days)
+						if modulo < 8 {
+							result = result + 0
+						} else {
+							if modulo >= 8 && modulo < 12 {
+								result = result + (countryPrice / 2)
+							} else {
+								if modulo >= 12 && modulo < 24 {
+									result = result + countryPrice
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+	} else {
+		if time < 8 {
+			result = (countryPrice / 3) * exchangeRate
+
+		} else {
+			if time >= 8 && time < 12 {
+
+				result = (countryPrice / 2) * exchangeRate
+			} else {
+				if time >= 12 && time <= 24 {
+					result = countryPrice * exchangeRate
+				} else {
+					if time > 24 {
+						days := int(time / 24)
+
+						result = countryPrice * float64(days) * exchangeRate
+						if modulo < 8 {
+							result = result + ((countryPrice / 3) * exchangeRate)
+						} else {
+							if modulo >= 8 && modulo < 12 {
+								result = result + ((countryPrice / 2) * exchangeRate)
+							} else {
+								if modulo >= 12 && modulo < 24 {
+									result = result + (countryPrice * exchangeRate)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return result
+
+}
+
+func calculate(trip Trip) float64 { //MAGIC :)
+
+	var czas time.Duration
+	//var prevBorderDate time.Time //use to track borderDate from previous row
 	var j int
-	var zeroDay, _ = time.Parse("2006-01-02T15:04", "0001/01/01T00:00")
-
-	prevBorderDate = zeroDay
+	//var airplane int = 0
+	var zeroDay, _ = time.Parse("01/02/2006 15:04", "01/01/0001 00:00")
+	var price float64
+	var dieta float64
 
 	for i := range trip.details {
-		if trip.details[i].BorderTime != zeroDay { //sprawdzic wartosc zmiennej w przypadku przekazania pustego ciągu z formularza -> funkcja getTripDetails: ustawic zeroDay
-			if prevBorderDate == zeroDay && i == 0 {
-				dieta = trip.details[i].BorderTime.Sub(trip.details[i].StartTime)
-				// prevBorderDate = trip.details[i].BorderTime
-			} else {
-				dieta += trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+		if i == 0 {
+			if trip.details[i].CountryFrom == "Polska" { //zbedne poniższy else też obliczy diete dla Polska
+				if trip.details[i].BorderTime == zeroDay {
+					trip.details[i].BorderTime = trip.details[i].ArrivalTime
+				}
+				czas = trip.details[i].BorderTime.Sub(trip.details[i].StartTime)
+				price = cena(czas.Hours(), "Polska")
+				dieta = price
 
+			} else {
+				if trip.details[i].BorderTime == zeroDay {
+					trip.details[i].BorderTime = trip.details[i].ArrivalTime
+					// czas = trip.details[i].StartTime.Sub(trip.details[i].BorderTime)
+					// price = cena(czas.Hours(), trip.details[i].CountryFrom)
+					// dieta += price
+				}
+				czas = trip.details[i].StartTime.Sub(trip.details[i].BorderTime)
+				price = cena(czas.Hours(), trip.details[i].CountryFrom)
+				dieta += price
+
+			}
+		} else {
+			if trip.details[i].BorderTime == zeroDay {
+				trip.details[i].BorderTime = trip.details[i].ArrivalTime
+				//sprawdzenie czy kraj ostatniego przyjazdu jest taki sam jak kraj przyjazdu dla tego wiersza
+				if trip.details[i].CountryTo == trip.details[i-1].CountryTo {
+					czas += trip.details[i].BorderTime.Sub(trip.details[i-1].StartTime)
+					price = cena(czas.Hours(), trip.details[i].CountryFrom)
+					dieta = price
+				} else {
+					czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+					price = cena(czas.Hours(), trip.details[i].CountryFrom)
+					//czas1 := czas.Hours()
+					dieta += price
+				}
+			} else {
+				czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+				price = cena(czas.Hours(), trip.details[i].CountryFrom)
+				dieta += price
 			}
 		}
 		j = i
 	}
-	dieta += trip.details[j].ArrivalTime.Sub(trip.details[j].BorderTime)
+
+	if trip.details[j].BorderTime != zeroDay {
+		czas = trip.details[j].ArrivalTime.Sub(trip.details[j].BorderTime)
+		price = cena(czas.Hours(), trip.details[j].CountryTo)
+		dieta += price
+	}
 
 	return dieta
 }
+
+// func calculate(trip Trip) time.Duration { //MAGIC :)
+
+// 	var dieta time.Duration
+// 	var prevBorderDate time.Time //use to track borderDate from previous row
+// 	var j int
+// 	var zeroDay, _ = time.Parse("2006-01-02T15:04", "0001/01/01T00:00")
+
+// 	prevBorderDate = zeroDay
+
+// 	for i := range trip.details {
+// 		if trip.details[i].BorderTime != zeroDay { //sprawdzic wartosc zmiennej w przypadku przekazania pustego ciągu z formularza -> funkcja getTripDetails: ustawic zeroDay
+// 			if prevBorderDate == zeroDay && i == 0 {
+// 				dieta = trip.details[i].BorderTime.Sub(trip.details[i].StartTime)
+// 				// prevBorderDate = trip.details[i].BorderTime
+// 			} else {
+// 				dieta += trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+
+// 			}
+// 		}
+// 		j = i
+// 	}
+// 	dieta += trip.details[j].ArrivalTime.Sub(trip.details[j].BorderTime)
+
+// 	return dieta
+// }
 
 func calculateTotalCost(trip Trip) float64 { //calculte total cost -> dieta + otherExpanses
 	for i := range trip.expansesDetails {
