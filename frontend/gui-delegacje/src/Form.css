@@ -22,13 +22,19 @@
     font-size: large;
   }
   
+.print-only {
+  display: none !important;
+}
 
+.footer {
+  display: none !important;
+}
 
   @keyframes Form-logo-spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
-  .transportType, .userNameForm {
+  .transportType, .userNameForm, .waluta {
     display: block;
     width: 100%;
     height: 34px;
@@ -53,9 +59,14 @@
             box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
   }
 
+.border-bottom {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
 
 @media print {
-  .transportType, .userNameForm {
+  .transportType {
     display: block;
     width: 100%;
     height: 34px;
@@ -78,9 +89,12 @@
     display: none
   }
 }
+
 @media print {
-  .hidden-print {
+  .userNameForm {
     display: none !important;
+    padding: 0px 0px;
+    height: 0px;
   }
 }
 
@@ -90,6 +104,18 @@
   }
 }
 
+@media print {
+  .print-only {
+    display: block !important;
+  }
+}
+
+@media print {
+  .label {
+    border: none;
+    padding: 0px 0px;
+  }
+}
 
 @media all {
   .page-break	{ display: none; }
@@ -99,4 +125,19 @@
 
 @media print {
   .page-break	{ display: block; page-break-before: always; }
+}
+
+@media print {
+  .footer {
+    display: block !important;
+    position: relative;
+    padding: 50px;
+    left: 3%;
+    right: 10%;
+    bottom: 0;
+    width: 100%;
+    color: black;
+    text-align: left;
+    font-size: 0.8em;
+  }
 }

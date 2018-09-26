@@ -14,9 +14,12 @@ const firstPageInput = (props) => {
                             name={dataId}
                             data-id={idx}
                             id={dataId}
-                            // value={props.zaliczka[idx].data} 
-                            className="userNameForm"
+                            value={props.zaliczka[idx].data} 
+                            className="userNameForm data"
                             />
+                            <label className="userNameForm data label print-only">
+                                {props.zaliczka[idx].data} 
+                            </label>
                         </td>
                         <td htmlFor={nrDowId}>
                             <input
@@ -24,9 +27,12 @@ const firstPageInput = (props) => {
                             name={nrDowId}
                             data-id={idx}
                             id={nrDowId}
-                            // value={props.zaliczka[idx].nrDow} 
-                            className="userNameForm"
+                            value={props.zaliczka[idx].nrDow} 
+                            className="userNameForm nrDow"
                             />
+                            <label className="userNameForm nrDow label print-only">
+                                {props.zaliczka[idx].nrDow} 
+                            </label>
                         </td>
                         <td htmlFor={walutaId}>
                             <input
@@ -34,9 +40,12 @@ const firstPageInput = (props) => {
                             name={walutaId}
                             data-id={idx}
                             id={walutaId}
-                            // value={props.zaliczka[idx].waluta} 
-                            className="userNameForm"
+                            value={props.zaliczka[idx].waluta} 
+                            className="userNameForm waluta"
                             />
+                            <label className="userNameForm waluta label print-only">
+                                {props.zaliczka[idx].waluta} 
+                            </label>
                         </td>
                         <td htmlFor={kwotaId}>
                             <input
@@ -44,9 +53,12 @@ const firstPageInput = (props) => {
                             name={kwotaId}
                             data-id={idx}
                             id={kwotaId}
-                            // value={props.zaliczka[idx].kwota} 
-                            className="userNameForm"
+                            value={props.zaliczka[idx].kwota} 
+                            className="userNameForm kwota"
                             />
+                            <label className="userNameForm kwota label print-only">
+                                {props.zaliczka[idx].kwota} 
+                            </label>
                         </td>
                         <td htmlFor={slownieId}>
                             <input
@@ -54,9 +66,12 @@ const firstPageInput = (props) => {
                             name={slownieId}
                             data-id={idx}
                             id={slownieId}
-                            // value={props.zaliczka[idx].slownie} 
-                            className="userNameForm"
+                            value={props.zaliczka[idx].slownie} 
+                            className="userNameForm slownie"
                             />
+                            <label className="userNameForm slownie label print-only">
+                                {props.zaliczka[idx].slownie} 
+                            </label>
                         </td>
                         <td htmlFor={pieczecId}>
                             <label
@@ -64,7 +79,7 @@ const firstPageInput = (props) => {
                             name={pieczecId}
                             data-id={idx}
                             id={pieczecId}
-                            className="userNameFormLabel"
+                            className="userNameFormLabel pieczec"
                             />
                         </td>
                     </tr>

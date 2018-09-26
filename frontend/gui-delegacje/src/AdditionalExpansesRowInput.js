@@ -18,6 +18,9 @@ const AdditionalExpansesRowInput = (props) => {
               value={props.expansesDetails[idx].remark} 
               className="remark"
             />
+            <label className="remark-print-only">
+              {props.expansesDetails[idx].remark} 
+            </label>
           </td>
           <td htmlFor={costVId}>
             <input
@@ -25,9 +28,12 @@ const AdditionalExpansesRowInput = (props) => {
               name={costVId}
               data-id={idx}
               id={costVId}
-              value={props.expansesDetails[idx].costVId} 
+              value={props.expansesDetails[idx].costV} 
               className="costV"
             />
+            <label className="costV-print-only">
+              {props.expansesDetails[idx].costV} 
+            </label>
           </td>
           <td htmlFor={costPLNId}>
             <input
@@ -38,6 +44,9 @@ const AdditionalExpansesRowInput = (props) => {
               value={props.expansesDetails[idx].costPLN} 
               className="costPLN"
             />
+            <label className="costPLN-print-only">
+              {props.expansesDetails[idx].costPLN} 
+            </label>
           </td>
         </tr>
       )
