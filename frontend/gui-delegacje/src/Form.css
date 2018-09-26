@@ -90,11 +90,30 @@
   }
 }
 
+.table-no-border {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 20px;
+}
+
+@media print {
+  .waluta, .transportType {
+    display: none !important;
+  }
+}
+
+
 @media print {
   .userNameForm {
     display: none !important;
     padding: 0px 0px;
     height: 0px;
+  }
+}
+
+@media print {
+  .border-bottom {
+    display: none !important;
   }
 }
 

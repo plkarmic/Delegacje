@@ -8,5 +8,12 @@ import registerServiceWorker from './registerServiceWorker';
 // import 'bootstrap/dist/css/bootstrap-theme.css';
 
 // ReactDOM.render(<App />, document.getElementById('root'));
-ReactDOM.render(<Form />, document.getElementById('form'));
+if((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true )) //IF IE > 10
+{
+  alert('Aplikacja działa tylko w przeglądarce Chrome lub Edge');
+  
+} 
+else {
+    ReactDOM.render(<Form />, document.getElementById('form'));
+}
 registerServiceWorker();

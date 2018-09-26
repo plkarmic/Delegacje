@@ -194,16 +194,16 @@ render() {
           <div className="col-xs-12 col-md-12">
             <span class="pull-right"><button onClick={this.addZaliczka} className="btn btn-info">Dodaj zaliczke</button></span>
           </div>
-          <div className="col-xs-12 col-md-12 border-bottom hidden-print"> </div>
+          
         </div>
-        <div className="row"><br></br></div>
-        <div className="row"><br></br></div>
-        <table class="table">
+        <div className="row"></div>
+        <div className="row"></div>
+        <table class="table-no-border">
           <tbody>
             <tr>
-              <div className="row">
+              <div className="row hidden-print">
                 <div className="col-xs-2 col-md-2 hidden-print">
-                  <td><h4><label htmlFor="transportType">Środek lokomocji</label></h4> </td>
+                  <td><h4><label htmlFor="transportType" className="hidden-print">Środek lokomocji</label></h4> </td>
                 </div>
                 <div className="col-xs-4 col-md-4 hidden-print">
                   <td> <input type="text" className="transportType" name="transportType" id="transportType" value={transportType}/></td>
@@ -214,9 +214,9 @@ render() {
               </div>
             </tr>
             <tr>
-              <div className="row">
+              <div className="row hidden-print">
                 <div className="col-xs-2 col-md-2 hidden-print">
-                  <td><h4><label htmlFor="waluta">Waluta</label></h4> </td>
+                  <td><h4><label htmlFor="waluta" className="hidden-print">Waluta</label></h4> </td>
                 </div>
                 <div className="col-xs-4 col-md-4 hidden-print">
                   <td> <input type="text" className="waluta" name="waluta" id="waluta" value={waluta}/></td>
