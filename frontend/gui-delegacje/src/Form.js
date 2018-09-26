@@ -8,8 +8,8 @@ import './Form.css'
 class Form extends React.Component {
   
   state = {
-    transportType: "",
-    tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:""}],
+    transportTypeAll: "Samochód",
+    tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType: ""}],
     expansesDetails: [{remark:"", costV:"",costPLN:""}],
     total: "",
     waluta: "EUR",
@@ -74,8 +74,9 @@ class Form extends React.Component {
   }
 handleChange = (e) => {
     //if (["name", "age"].includes(e.target.className) ) {
-    if (["country", "city", "destinationC", "cityD", "startTime", "endTime", "borderTime"].includes(e.target.className) ) {
       let tripDetails = [...this.state.tripDetails]
+    if (["country", "city", "destinationC", "cityD", "startTime", "endTime", "borderTime", "transportType"].includes(e.target.className) ) {
+      // let tripDetails = [...this.state.tripDetails]
       tripDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
       this.setState({ tripDetails }, () => console.log(this.state.transportType))
     }else if (["remark", "costV", "costPLN"].includes(e.target.className)){
@@ -88,11 +89,23 @@ handleChange = (e) => {
     }else if (["userNameForm data", "userNameForm nrDow", "userNameForm waluta", "userNameForm kwota", "userNameForm slownie"].includes(e.target.className)) {
       let zaliczka = [...this.state.zaliczka]
       zaliczka[e.target.dataset.id][e.target.className.substr(13)] = e.target.value.toUpperCase()
+      this.setState({ zaliczka}, () => console.log(this.state.zaliczka))
     }else if (["userNameForm name", "userNameForm to", "userNameForm timeFrom", "userNameForm timeTo", "userNameForm reason"].includes(e.target.className)){
       let person = [...this.state.person]
       person[0][e.target.className.substr(13)] = e.target.value.toUpperCase()
-      console.log(person)
-    } else {
+      this.setState({ person }, () => console.log(this.state.person))
+    } else if (["transportTypeAll"].includes(e.target.className)) {
+      let transportTypeAll = [...this.state.transportTypeAll]
+      transportTypeAll = e.target.value
+      this.setState({[e.target.name]: e.target.value.toUpperCase()})
+      for(var i = 0; i < tripDetails.length; i++)
+      {
+        tripDetails[i]["transportType"] = e.target.value.toUpperCase()
+      }
+      this.setState({ tripDetails }, () => console.log(this.state.transportType))
+      console.log(transportTypeAll)
+    }
+    else {
       this.setState({ [e.target.name]: e.target.value.toUpperCase() })
     }
     
@@ -128,7 +141,7 @@ handleChange = (e) => {
   }
 addTrip = (e) => {
     this.setState((prevState) => ({
-      tripDetails: [...prevState.tripDetails, {country:"", destinationC:"", startTime:"", endTime:"", borderTime:""}],
+      tripDetails: [...prevState.tripDetails, {country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType:this.state.transportTypeAll}],
     }));
   }
 addExpanses = (e) => {
@@ -185,7 +198,7 @@ handleSubmit = (e) => {
 
 }
 render() {
-    let {transportType, tripDetails, expansesDetails, waluta, zaliczka, person} = this.state
+    let {transportTypeAll, tripDetails, expansesDetails, waluta, zaliczka, person} = this.state
     return (
       <form onSubmit={this.handleSubmit} onChange={this.handleChange} >
 
@@ -201,15 +214,15 @@ render() {
         <table class="table-no-border">
           <tbody>
             <tr>
-              <div className="row hidden-print">
+              <div className="row">
                 <div className="col-xs-2 col-md-2 hidden-print">
                   <td><h4><label htmlFor="transportType" className="hidden-print">Środek lokomocji</label></h4> </td>
                 </div>
                 <div className="col-xs-4 col-md-4 hidden-print">
-                  <td> <input type="text" className="transportType" name="transportType" id="transportType" value={transportType}/></td>
+                  <td> <input type="text" className="transportTypeAll" name="transportTypeAll" id="transportTypeAll" value={transportTypeAll}/></td>
                 </div>
                 <div className="col-xs-6 col-md-6 print-only"> 
-                  <label>Środek lokomocji: {this.state.transportType}</label>
+                  <label>Środek lokomocji: {this.state.transportTypeAll}</label>
                 </div>
               </div>
             </tr>
@@ -234,9 +247,10 @@ render() {
           </tr> */}
           <thead>
             <tr>
-              <td colSpan='3' className="col-xs-5 col-md-5 text-center"><h5><label>Wyjazd</label></h5></td>
-              <td colSpan='3' className="col-xs-5 col-md-5 text-center"><h5><label>Przyjazd</label></h5></td>
+              <td colSpan='3' className="col-xs-4 col-md-4 text-center"><h5><label>Wyjazd</label></h5></td>
+              <td colSpan='3' className="col-xs-4 col-md-4 text-center"><h5><label>Przyjazd</label></h5></td>
               <td className="col-xs-2 col-md-2 text-center"><h5><label>Przekroczenie granicy</label></h5></td>
+              <td rowSpan='2' className="col-xs-2 col-md-2 text-center hidden-print"><h5><label>Śr. lokomocji</label></h5></td>
             </tr>
             <tr>
               <td className="text-center"><label className="print-width-th">Kraj</label></td>
@@ -246,6 +260,7 @@ render() {
               <td className="text-center"><label className="print-width-th">Miejscowość</label></td>
               <td className="text-center"><label className="print-width-th2">Data i godz.</label></td>
               <td className="text-center"><label className="print-width-th2">Data i godz.</label></td>
+              {/* <td className="text-center hidden-print"><label className="print-width-th2"></label></td> */}
             </tr>
           </thead>
           <tbody>

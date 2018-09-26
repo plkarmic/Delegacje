@@ -6,7 +6,7 @@ import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
 const TripRowInput = (props) => {
   return (
     props.tripDetails.map((val, idx)=> {
-      let countryId = `country-${idx}`, destinationCId = `destinationC-${idx}`, startTimeID = `startTime-${idx}`, endTimeID = `endTime-${idx}`, borderTimeID = `borderTime-${idx}`, cityId = `city-${idx}`, cityDId = `cityD-${idx}`
+      let countryId = `country-${idx}`, destinationCId = `destinationC-${idx}`, startTimeID = `startTime-${idx}`, endTimeID = `endTime-${idx}`, borderTimeID = `borderTime-${idx}`, cityId = `city-${idx}`, cityDId = `cityD-${idx}`, transportTypeID=`transportType-${idx}`
       return (
         <tr key={idx}>
           <td htmlFor={countryId}>
@@ -99,6 +99,19 @@ const TripRowInput = (props) => {
             <label className="borderTime-printOnly">
               {props.tripDetails[idx].borderTime} 
             </label>
+          </td>
+          <td htmlFor={transportTypeID} className="hidden-print">
+            <input
+              type="text"
+              name={transportTypeID}
+              data-id={idx}
+              id={transportTypeID}
+              value={props.tripDetails[idx].transportType} 
+              className="transportType"
+            />
+            {/* <label className="borderTime-printOnly">
+              {props.tripDetails[idx].borderTime} 
+            </label> */}
           </td>
         </tr>
       )

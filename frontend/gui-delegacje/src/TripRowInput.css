@@ -29,7 +29,7 @@
   }
 
 @media print {
-        .startTime, .country, .destinationC, .endTime, .borderTime, .city, .cityD {
+        .startTime, .country, .destinationC, .endTime, .borderTime, .city, .cityD, .transportType {
                 display: none;
         }
         .country:focus, .startTime:focus, destinationC:focus, endTime:focus, borderTime:focus, city:focus, cityD:focus {
@@ -40,5 +40,9 @@
         }
         .startTime-printOnly, .country-printOnly, .destinationC-printOnly, .endTime-printOnly, .borderTime-printOnly, .city-printOnly, .cityD-printOnly {
                 display: block;   
+        }
+
+        .hidden-print {
+                display: none;
         }
 }
