@@ -34,7 +34,7 @@
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
-  .transportType, .userNameForm, .waluta {
+  .transportType, .userNameForm, .waluta, .transportTypeAll {
     display: block;
     width: 100%;
     height: 34px;
