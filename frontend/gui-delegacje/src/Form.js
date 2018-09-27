@@ -10,12 +10,12 @@ class Form extends React.Component {
   state = {
     transportTypeAll: "Samochód",
     tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType: ""}],
-    expansesDetails: [{remark:"", costV:"",costPLN:""}],
+    expansesDetails: [{remark:"", costV: "", costPLN: ""}],
     total: "",
     waluta: "EUR",
     tabelaNBP: "",
     kurs: "",
-    zaliczka: [{data:"", nrDow:"", waluta:"", slownie:"", pieczec:""}],
+    zaliczka: [{data:"", nrDow:"", waluta:"", slownie:"", pieczec:"", kwota:0}],
     test: "",
     person: [{name:"", to:"",timeFrom:"",timeTo:"",reason:""}],
 
@@ -152,14 +152,23 @@ addExpanses = (e) => {
 
 addZaliczka = (e) => {
   this.setState((prevState) => ({
-    zaliczka: [...prevState.zaliczka, {data:"", nrDow:"", waluta:"", slownie:"", pieczec:""}],
+    zaliczka: [...prevState.zaliczka, {data:"", nrDow:"", waluta:"", slownie:"", pieczec:"", kwota:0}],
   }));
   }
 
 handleSubmit = (e) => { 
     console.log(
-        this.state.transportType,
-        this.state.tripDetails)
+        this.state.transportTypeAll,
+        this.state.tripDetails,
+        this.state.zaliczka)
+    let zaliczkaTotal = 0
+    for (var i =0; i < this.state.zaliczka.length; i++) {
+      zaliczkaTotal += parseInt(this.state.zaliczka[i].kwota)
+    }
+    let expansesDetailsAll = 0
+    for (var i = 0; i < this.state.expansesDetails.length; i++) {
+      expansesDetailsAll += parseInt(this.state.expansesDetails[i].costPLN)
+    }
     e.preventDefault()
     let response = {
         transportType: this.state.transportType,
@@ -183,7 +192,7 @@ handleSubmit = (e) => {
     .then(res => res.text())
     .then(res => {
       console.log(res)
-      this.state.total = "aa"
+      // this.state.total = "aa"
       return ({
         type: "GET_CALL",
         res: res,
@@ -191,9 +200,8 @@ handleSubmit = (e) => {
     })
     .then(out => {
       console.log(out.res)
-      this.setState({total: out.res});
+      this.setState({total: out.res - zaliczkaTotal + " PLN"});
     });
-
     console.log(this.state.total)
 
 }

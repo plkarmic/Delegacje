@@ -4,13 +4,18 @@ import './Form.css'
 const firstPageInput = (props) => {
     return (
         props.zaliczka.map((val, idx)=> {
+            let kwota = props.zaliczka[idx].kwota
+            if (kwota === 0)
+            {
+                kwota = ""
+            }
             let dataId = `data-${idx}`, nrDowId = `nrDow-${idx}`, walutaId = `waluta-${idx}`, kwotaId = `kwota-${idx}`, slownieId = `slownie-${idx}`, pieczecId = `pieczec-${idx}`
             return (
               
                     <tr key={idx}>
                         <td htmlFor={dataId}>
                             <input
-                            type="text"
+                            type="date"
                             name={dataId}
                             data-id={idx}
                             id={dataId}
@@ -49,7 +54,7 @@ const firstPageInput = (props) => {
                         </td>
                         <td htmlFor={kwotaId}>
                             <input
-                            type="text"
+                            type="number"
                             name={kwotaId}
                             data-id={idx}
                             id={kwotaId}
@@ -57,7 +62,7 @@ const firstPageInput = (props) => {
                             className="userNameForm kwota"
                             />
                             <label className="userNameForm kwota label print-only">
-                                {props.zaliczka[idx].kwota} 
+                                {kwota} 
                             </label>
                         </td>
                         <td htmlFor={slownieId}>

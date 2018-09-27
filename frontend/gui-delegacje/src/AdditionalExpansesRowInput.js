@@ -5,8 +5,24 @@ import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
 
 const AdditionalExpansesRowInput = (props) => {
   return (
+    
     props.expansesDetails.map((val, idx)=> {
+
       let remarkId = `remark-${idx}`, costVId = `costV-${idx}`, costPLNId = `costPLN-${idx}`
+      if (props.expansesDetails[idx].costV !=="" ) {
+        document.getElementById(costPLNId).readOnly = true;
+      }
+      else if (props.expansesDetails[idx].costPLN !=="" && props.expansesDetails[idx].costV ==="")
+      {
+        document.getElementById(costVId).readOnly = true;
+        document.getElementById(costPLNId).readOnly = false;
+      } else if (props.expansesDetails[idx].costPLN === "" && props.expansesDetails[idx].costV === "" && document.getElementById(costVId))
+      {
+        document.getElementById(costVId).readOnly = false;
+
+      }
+      
+
       return (
         <tr key={idx}>
           <td htmlFor={remarkId}>
@@ -24,7 +40,7 @@ const AdditionalExpansesRowInput = (props) => {
           </td>
           <td htmlFor={costVId}>
             <input
-              type="text"
+              type="number"
               name={costVId}
               data-id={idx}
               id={costVId}
@@ -37,7 +53,7 @@ const AdditionalExpansesRowInput = (props) => {
           </td>
           <td htmlFor={costPLNId}>
             <input
-              type="text"
+              type="number"
               name={costPLNId}
               data-id={idx}
               id={costPLNId}

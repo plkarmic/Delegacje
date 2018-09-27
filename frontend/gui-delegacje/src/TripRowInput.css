@@ -39,7 +39,9 @@
                         box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
         }
         .startTime-printOnly, .country-printOnly, .destinationC-printOnly, .endTime-printOnly, .borderTime-printOnly, .city-printOnly, .cityD-printOnly {
-                display: block;   
+                display: block;
+                font-size: 10px;
+                text-align: center;
         }
 
         .hidden-print {

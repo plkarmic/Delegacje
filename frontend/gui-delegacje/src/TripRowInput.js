@@ -7,6 +7,9 @@ const TripRowInput = (props) => {
   return (
     props.tripDetails.map((val, idx)=> {
       let countryId = `country-${idx}`, destinationCId = `destinationC-${idx}`, startTimeID = `startTime-${idx}`, endTimeID = `endTime-${idx}`, borderTimeID = `borderTime-${idx}`, cityId = `city-${idx}`, cityDId = `cityD-${idx}`, transportTypeID=`transportType-${idx}`
+      let timeTstart = (props.tripDetails[idx].startTime).replace("T", " ")
+      let timeTend = (props.tripDetails[idx].endTime).replace("T", " ")
+      let timeTborder = (props.tripDetails[idx].borderTime).replace("T", " ")
       return (
         <tr key={idx}>
           <td htmlFor={countryId}>
@@ -45,7 +48,7 @@ const TripRowInput = (props) => {
               className="startTime"
             />
             <label className="startTime-printOnly">
-              {props.tripDetails[idx].startTime} 
+              {timeTstart} 
             </label>
           </td>
           <td htmlFor={destinationCId}>
@@ -84,7 +87,7 @@ const TripRowInput = (props) => {
               className="endTime"
             />
             <label className="endTime-printOnly">
-              {props.tripDetails[idx].endTime} 
+              {timeTend}
             </label>
           </td>
           <td htmlFor={borderTimeID}>
@@ -97,7 +100,7 @@ const TripRowInput = (props) => {
               className="borderTime"
             />
             <label className="borderTime-printOnly">
-              {props.tripDetails[idx].borderTime} 
+              {timeTborder} 
             </label>
           </td>
           <td htmlFor={transportTypeID} className="hidden-print">

@@ -34,11 +34,12 @@ type Output struct {
 }
 
 type RowTrip struct {
-	CountryFrom string //start point
-	CountryTo   string //destination point
-	StartTime   time.Time
-	ArrivalTime time.Time
-	BorderTime  time.Time
+	CountryFrom   string //start point
+	CountryTo     string //destination point
+	StartTime     time.Time
+	ArrivalTime   time.Time
+	BorderTime    time.Time
+	TransportType string
 }
 type Expanses struct {
 	Remark  string
@@ -112,8 +113,9 @@ func getTripDetails(rawData string) Trip {
 		rowDetail.StartTime, _ = time.Parse(dataLayout, gjson.Get(value.String(), "startTime").String())
 		rowDetail.ArrivalTime, _ = time.Parse(dataLayout, gjson.Get(value.String(), "endTime").String())
 		rowDetail.BorderTime, _ = time.Parse(dataLayout, gjson.Get(value.String(), "borderTime").String())
-		rowDetail.CountryTo = strings.Title(strings.ToLower(gjson.Get(value.String(), "destinationC").String())) //upper case to lower case and first letter as captial
-		rowDetail.CountryFrom = strings.Title(strings.ToLower(gjson.Get(value.String(), "country").String()))    //upper case to lower case and first letter as captial
+		rowDetail.CountryTo = strings.Title(strings.ToLower(gjson.Get(value.String(), "destinationC").String()))      //upper case to lower case and first letter as captial
+		rowDetail.CountryFrom = strings.Title(strings.ToLower(gjson.Get(value.String(), "country").String()))         //upper case to lower case and first letter as captial
+		rowDetail.TransportType = strings.Title(strings.ToLower(gjson.Get(value.String(), "transportType").String())) //upper case to lower case and first letter as captial
 		trip.details = append(trip.details, rowDetail)
 		return true
 	})
@@ -128,7 +130,7 @@ func getTripDetails(rawData string) Trip {
 		return true
 	})
 
-	trip.durtion = calculate(trip)
+	trip.totalCost = calculate(trip)
 	trip.totalCost = calculateTotalCost(trip)
 	fmt.Println(trip)
 	return trip
@@ -172,7 +174,7 @@ func cena(time float64, country string) float64 {
 	// var Kraj Countries
 	// json.Unmarshal(byteValue, &Kraj)
 	bodySTR := string(byteValue)
-	fmt.Println(bodySTR)
+	//fmt.Println(bodySTR)
 	// roundTripNbr = gjson.Get(rawData, "roundTrip.#").String()
 	// strTmp, _ := strconv.Atoi(roundTripNbr) //convert string to Int, then remove 1 as the first row is 0
 
@@ -261,57 +263,85 @@ func calculate(trip Trip) float64 { //MAGIC :)
 	var czas time.Duration
 	//var prevBorderDate time.Time //use to track borderDate from previous row
 	var j int
-	//var airplane int = 0
+	var airplane int = 0
 	var zeroDay, _ = time.Parse("01/02/2006 15:04", "01/01/0001 00:00")
 	var price float64
 	var dieta float64
+	var CountryFrom string
 
 	for i := range trip.details {
-		if i == 0 {
-			if trip.details[i].CountryFrom == "Polska" { //zbedne poniższy else też obliczy diete dla Polska
-				if trip.details[i].BorderTime == zeroDay {
+		/// SAMOLOT ??
+		if trip.details[i].TransportType == "Samolot" {
+			if airplane == 0 {
+				trip.details[i].BorderTime = trip.details[i].StartTime
+				CountryFrom = trip.details[i].CountryFrom
+				airplane = 1
+				if i != 0 {
 					trip.details[i].BorderTime = trip.details[i].ArrivalTime
-				}
-				czas = trip.details[i].BorderTime.Sub(trip.details[i].StartTime)
-				price = cena(czas.Hours(), "Polska")
-				dieta = price
+					czas = trip.details[i].ArrivalTime.Sub(trip.details[i-1].BorderTime)
+					dieta += cena(czas.Hours(), trip.details[i].CountryFrom)
 
+				}
+			} else if airplane == 1 {
+				if trip.details[i].CountryTo != CountryFrom {
+					trip.details[i].BorderTime = trip.details[i].StartTime
+					czas = trip.details[i].StartTime.Sub(trip.details[i-1].StartTime)
+					dieta += cena(czas.Hours(), trip.details[i].CountryFrom)
+				} else {
+					trip.details[i].BorderTime = trip.details[i].ArrivalTime
+					czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+					dieta += cena(czas.Hours(), trip.details[i].CountryFrom)
+					airplane = 0
+				}
+			}
+		} else {
+			airplane = 0
+			if i == 0 {
+				if trip.details[i].CountryFrom == "Polska" { //zbedne poniższy else też obliczy diete dla Polska
+					if trip.details[i].BorderTime == zeroDay {
+						trip.details[i].BorderTime = trip.details[i].ArrivalTime
+					}
+					czas = trip.details[i].BorderTime.Sub(trip.details[i].StartTime)
+					price = cena(czas.Hours(), "Polska")
+					dieta = price
+
+				} else {
+					if trip.details[i].BorderTime == zeroDay {
+						trip.details[i].BorderTime = trip.details[i].ArrivalTime
+						// czas = trip.details[i].StartTime.Sub(trip.details[i].BorderTime)
+						// price = cena(czas.Hours(), trip.details[i].CountryFrom)
+						// dieta += price
+					}
+					czas = trip.details[i].StartTime.Sub(trip.details[i].BorderTime)
+					price = cena(czas.Hours(), trip.details[i].CountryFrom)
+					dieta += price
+
+				}
 			} else {
 				if trip.details[i].BorderTime == zeroDay {
 					trip.details[i].BorderTime = trip.details[i].ArrivalTime
-					// czas = trip.details[i].StartTime.Sub(trip.details[i].BorderTime)
-					// price = cena(czas.Hours(), trip.details[i].CountryFrom)
-					// dieta += price
-				}
-				czas = trip.details[i].StartTime.Sub(trip.details[i].BorderTime)
-				price = cena(czas.Hours(), trip.details[i].CountryFrom)
-				dieta += price
-
-			}
-		} else {
-			if trip.details[i].BorderTime == zeroDay {
-				trip.details[i].BorderTime = trip.details[i].ArrivalTime
-				//sprawdzenie czy kraj ostatniego przyjazdu jest taki sam jak kraj przyjazdu dla tego wiersza
-				if trip.details[i].CountryTo == trip.details[i-1].CountryTo {
-					czas += trip.details[i].BorderTime.Sub(trip.details[i-1].StartTime)
-					price = cena(czas.Hours(), trip.details[i].CountryFrom)
-					dieta = price
+					//sprawdzenie czy kraj ostatniego przyjazdu jest taki sam jak kraj przyjazdu dla tego wiersza
+					if trip.details[i].CountryTo == trip.details[i-1].CountryFrom && trip.transportType == "Samolot" {
+						czas = trip.details[i].BorderTime.Sub(trip.details[i-1].StartTime)
+						price = cena(czas.Hours(), trip.details[i].CountryFrom)
+						dieta = price
+					} else {
+						czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+						price = cena(czas.Hours(), trip.details[i].CountryFrom)
+						//czas1 := czas.Hours()
+						dieta += price
+					}
 				} else {
 					czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
 					price = cena(czas.Hours(), trip.details[i].CountryFrom)
-					//czas1 := czas.Hours()
 					dieta += price
 				}
-			} else {
-				czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
-				price = cena(czas.Hours(), trip.details[i].CountryFrom)
-				dieta += price
 			}
 		}
 		j = i
 	}
 
-	if trip.details[j].BorderTime != zeroDay {
+	if trip.details[j].BorderTime != zeroDay && trip.details[j].TransportType != "Samolot" {
 		czas = trip.details[j].ArrivalTime.Sub(trip.details[j].BorderTime)
 		price = cena(czas.Hours(), trip.details[j].CountryTo)
 		dieta += price

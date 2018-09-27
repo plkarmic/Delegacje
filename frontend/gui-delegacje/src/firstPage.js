@@ -7,11 +7,12 @@ const firstPage = (props) => {
     let person = props.person
     var date = new Date()
     date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
-    var sum = 0.0
+    let sum = 0
     for (var i = 0; i < zaliczka.length; i++)
     {
         sum+= parseInt(zaliczka[i].kwota)
     }
+    if (sum === 0) {sum = "0 PLN"} else {sum = sum + " PLN"}
     //console.log([props.event.target.dataset.id][props.event.target.className])
     return (
         <div>
@@ -26,7 +27,7 @@ const firstPage = (props) => {
             <div className="row"><br></br></div>
             <div className="row text-center">
                 <div className="col-xs-12 col-lg-12 text-center">
-                    <span className="text-center"><h1 className="text-center">Polecenie Wyjazdu Służbowego / Delegacja Zagraniczna</h1></span>
+                    <span className="text-center"><h1 className="text-center">Polecenie Wyjazdu Służbowego<br/>Delegacja Zagraniczna</h1></span>
                 </div>
             </div>
             <div className="row"><br></br></div>
@@ -44,9 +45,9 @@ const firstPage = (props) => {
             </div>
             <div className="row">
                 <div className="col-xs-2 col-md-2 hidden-print"> <h5><label forHtml="userNameFrom">na czas od</label></h5> </div>
-                <div className="col-xs-4 col-md-4 hidden-print"> <input type="text" className="userNameForm timeFrom" name="userNameFrom" id="userNameFrom"/></div>
+                <div className="col-xs-4 col-md-4 hidden-print"> <input type="date" className="userNameForm timeFrom" name="userNameFrom" id="userNameFrom"/></div>
                 <div className="col-xs-2 col-md-2 hidden-print"> <h5><label forHtml="userNameTo">na czas do</label></h5> </div>
-                <div className="col-xs-4 col-md-4 hidden-print"> <input type="text" className="userNameForm timeTo" name="userNameTo" id="userNameTo"/></div>
+                <div className="col-xs-4 col-md-4 hidden-print"> <input type="date" className="userNameForm timeTo" name="userNameTo" id="userNameTo"/></div>
                 <div className="col-xs-12 col-md-12 print-only"> <h5><label forHtml="userName">na czas od: {person[0].timeFrom} na czas do: {person[0].timeTo}</label></h5>  </div>
             </div>
             <div className="row">
@@ -69,7 +70,7 @@ const firstPage = (props) => {
                                 <th className="text-center"><label>Data</label></th>
                                 <th className="text-center"><label>Nr. dowodu</label></th>
                                 <th className="text-center"><label>Waluta</label></th>
-                                <th className="text-center"><label>Kwota</label></th>
+                                <th className="text-center"><label>Kwota PLN</label></th>
                                 <th className="text-center"><label>Słownie</label></th>
                                 <th className="text-center"><label>Pieczęć i podpis księgowego, kasjera</label></th>
                             </tr>
@@ -83,7 +84,7 @@ const firstPage = (props) => {
             <div className="row"><br></br></div>
             <div className="row">
                 <div className="col-xs-6 col-md-6"> </div>
-                <div className="col-xs-6 col-md-6"> <span className="pull-right"><h5><label forHtml="userNameZaliczkaSuma">wypłacona zaliczka (suma): {sum} PLN</label></h5></span></div>
+                <div className="col-xs-6 col-md-6"> <span className="pull-right"><h5><label forHtml="userNameZaliczkaSuma">wypłacona zaliczka (suma): {sum}</label></h5></span></div>
                 {/* <div className="col-xs-2 col-md-2"> <input type="text" className="userNameForm" name="userNameZaliczkaSuma" id="userNameZaliczkaSuma" value={sum}/></div> */}
             </div>
             <div className="row"><br></br></div>
