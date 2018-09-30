@@ -336,7 +336,7 @@ render() {
           
         <div className="row">
           <div className="col-lg-2">
-            <input type="submit" value="Oblicz" className="btn btn-danger btn-lg"/> 
+            <input type="submit" value="Oblicz" className="btn btn-danger btn-block"/> 
           </div>
           <div className="col-lg-8">
             {/* <button onClick={this.addTrip} className="btn btn-info">Dodaj nowy wiersz</button> */}
