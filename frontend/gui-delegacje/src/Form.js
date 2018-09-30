@@ -278,7 +278,7 @@ render() {
         <div className="row">
           <div className="col-lg-2">
             
-            <input type="submit" value="Oblicz" className="btn btn-success"/> 
+            {/* <input type="submit" value="Oblicz" className="btn btn-success"/>  */}
           </div>
           <div className="col-lg-8">
             {/* <button onClick={this.addTrip} className="btn btn-info">Dodaj nowy wiersz</button> */}
@@ -333,11 +333,24 @@ render() {
               </div>
             </div>
           </div>
+          
+        <div className="row">
+          <div className="col-lg-2">
+            <input type="submit" value="Oblicz" className="btn btn-danger btn-lg"/> 
+          </div>
+          <div className="col-lg-8">
+            {/* <button onClick={this.addTrip} className="btn btn-info">Dodaj nowy wiersz</button> */}
+          </div>
+          <div className="col-lg-2">
+          </div>
+        </div>
+
           <div className="row">
                   <div className="col-xs-12 col-md-12"><span className="pull-right"><label><h3>Razem: {this.state.total}</h3></label></span></div>
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.total}></input></h3></label></div> */}
           </div>
         </div>
+        
         <div className="footer">
                 <div className="col-xs-6 col-md-6">
                   <div> <label>Jednocześnie oświadczam, że korzystałem/nie <br/> korzystałem z bezpłatnego zakwaterowania wyżywienia.</label> </div>

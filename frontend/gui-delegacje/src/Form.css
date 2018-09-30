@@ -30,6 +30,10 @@
   display: none !important;
 }
 
+.btn btn-success {
+  background-color: #B2292E !important;
+}
+
   @keyframes Form-logo-spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
