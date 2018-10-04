@@ -18,8 +18,8 @@ COPY CountryTable1.json C:\\www\\CountryTable1.json
 EXPOSE 5000 8080
 
 # node-v10.11.0-win-x64\serve.cmd
-# RUN 'C:\\NodeLTS\\node-v10.11.0-win-x64\\npm.cmd install -g serve'
+RUN 'C:\\NodeLTS\\node-v10.11.0-win-x64\\npm.cmd install -g serve'
 
 
 RUN cd C:\www\
-# RUN C:\\NodeLTS\\node-v10.11.0-win-x64\\serve.cmd -s build
+RUN C:\\NodeLTS\\node-v10.11.0-win-x64\\serve.cmd -s build
