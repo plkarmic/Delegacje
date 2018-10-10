@@ -18,6 +18,8 @@ class Form extends React.Component {
     zaliczka: [{data:"", nrDow:"", waluta:"", slownie:"", pieczec:"", kwota:0}],
     test: "",
     person: [{name:"", to:"",timeFrom:"",timeTo:"",reason:""}],
+    ryczaltWyzywienie: 1,
+    ryczaltWyzywienieDetale: "FULL",
 
     outNBP: fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + 'EUR', {
       method: 'GET',
@@ -104,8 +106,15 @@ handleChange = (e) => {
       }
       this.setState({ tripDetails }, () => console.log(this.state.transportType))
       console.log(transportTypeAll)
-    }
-    else {
+    } else if (["ryczaltWyzywienie"].includes(e.target.className))  {
+      let ryczaltWyzywienie = this.state.ryczaltWyzywienie
+      ryczaltWyzywienie = e.target.value
+      this.setState({ ryczaltWyzywienie })
+    }else if (["ryczaltWyzywienieDetale"].includes(e.target.className))  {
+      let ryczaltWyzywienieDetale = this.state.ryczaltWyzywienieDetale
+      ryczaltWyzywienieDetale = e.target.value
+      this.setState({ ryczaltWyzywienieDetale }) 
+    }else {
       this.setState({ [e.target.name]: e.target.value.toUpperCase() })
     }
     
@@ -174,7 +183,9 @@ handleSubmit = (e) => {
         transportType: this.state.transportType,
         roundTrip: this.state.tripDetails,
         expansesDetails: this.state.expansesDetails,
-        duration: this.state.total
+        duration: this.state.total,
+        ryczaltWyzywienie: this.state.ryczaltWyzywienie,
+        ryczaltWyzywienieDetale: this.state.ryczaltWyzywienieDetale
     }
     console.log((JSON.stringify(response)))
 
@@ -206,7 +217,7 @@ handleSubmit = (e) => {
 
 }
 render() {
-    let {transportTypeAll, tripDetails, expansesDetails, waluta, zaliczka, person} = this.state
+    let {transportTypeAll, tripDetails, expansesDetails, waluta, zaliczka, person, ryczaltWyzywienie, ryczaltWyzywienieDetale} = this.state
     return (
       <form onSubmit={this.handleSubmit} onChange={this.handleChange} >
 
@@ -327,6 +338,32 @@ render() {
             </div>
             <div className="col-lg-8">
             <div className="row"><br></br></div>
+            <div className="row">
+            </div>
+            <div className="row">
+            
+              <div className="col-xs-12 col-md-12">
+              
+              <p>Oświadczam, że 
+                <select className="ryczaltWyzywienie" value={this.state.ryczaltWyzywienie}>
+                  <option value="1" >korzystałam(em)</option>
+                  <option value="0">nie korzystałam(em)</option>
+                </select>
+              z wyżywienia obejmującego:
+                <select className="ryczaltWyzywienieDetale" value={this.state.ryczaltWyzywienieDetale}>
+                  <option value="FULL" >sniadania, obiadu oraz kolacje</option>
+                  <option value="BRLA">śniadania oraz obiady</option>
+                  <option value="BRDN">śniadania oraz kolacje</option>
+                  <option value="LADN">obiady oraz obiady</option>
+                  <option value="BR">śniadania</option>
+                  <option value="LA">obiady</option>
+                  <option value="DN">kolacje</option>
+                </select>
+              </p>
+
+              </div>
+            
+            </div>
               <div className="row"> 
                   <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP}: {this.state.kurs}</label></span></div>
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.kurs} onChange={"aaa"}></input></h3></label></div> */}

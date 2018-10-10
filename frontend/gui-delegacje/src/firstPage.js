@@ -51,9 +51,9 @@ const firstPage = (props) => {
                 <div className="col-xs-12 col-md-12 print-only"> <h5><label forHtml="userName">na czas od: {person[0].timeFrom} na czas do: {person[0].timeTo}</label></h5>  </div>
             </div>
             <div className="row">
-                <div className="col-xs-2 col-md-2 hidden-print"> <h5><label forHtml="userNameFor">w celu</label></h5> </div>
-                <div className="col-xs-4 col-md-4 hidden-print"> <input type="text" className="userNameForm reason" name="userNameFor" id="userNameFor"/></div>
-                <div className="col-xs-12 col-md-12 print-only"> <h5><label forHtml="userName">w celu: {person[0].reason}</label></h5>  </div>
+                <div className="col-xs-2 col-md-2 hidden-print"> <h5><label forHtml="userNameFor">cel podróży</label></h5> </div>
+                <div className="col-xs-4 col-md-4 hidden-print"> <input type="text" className="userNameForm reason" name="userNameFor" id="userNameFor" required/></div>
+                <div className="col-xs-12 col-md-12 print-only"> <h5><label forHtml="userName">cel podróży: {person[0].reason}</label></h5>  </div>
             </div>
             <div className="row"><br></br></div>
             <div className="row"><br></br></div>
