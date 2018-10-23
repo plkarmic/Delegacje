@@ -20,6 +20,12 @@ class Form extends React.Component {
     person: [{name:"", to:"",timeFrom:"",timeTo:"",reason:""}],
     ryczaltWyzywienie: 1,
     ryczaltWyzywienieDetale: "FULL",
+    sniadanieCount: 0,
+    obiadyCount: 0,
+    kolacjeCount: 0,
+    ryczaltDoajzdyBagaze: 0,
+    ryczaltDojazdyKomunikacja: 0,
+    ryczaltNoclegi: 0,
 
     outNBP: fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + 'EUR', {
       method: 'GET',
@@ -114,7 +120,26 @@ handleChange = (e) => {
       let ryczaltWyzywienieDetale = this.state.ryczaltWyzywienieDetale
       ryczaltWyzywienieDetale = e.target.value
       this.setState({ ryczaltWyzywienieDetale }) 
-    }else {
+    }else if(["sniadanieCount"].includes(e.target.className)) {
+      let sniadanieCount = this.state.sniadanieCount
+      sniadanieCount = e.target.value
+      this.setState({sniadanieCount})
+    }else if(["obiadyCount"].includes(e.target.className)) {
+      let obiadyCount = this.state.obiadyCount
+      obiadyCount = e.target.value
+      this.setState({obiadyCount})
+    }else if(["kolacjeCount"].includes(e.target.className)) {
+      let kolacjeCount = this.state.kolacjeCount
+      kolacjeCount = e.target.value
+      this.setState({kolacjeCount})
+    }else if(["rybagdojazdy"].includes(e.target.className)) {
+      this.setState({ ryczaltDoajzdyBagaze: e.target.value })
+    }else if(["rydojkom"].includes(e.target.className)) {
+      this.setState({ ryczaltDojazdyKomunikacja: e.target.value })
+    } else if(["rynoc"].includes(e.target.className)) {
+      this.setState({ ryczaltNoclegi: e.target.value })
+    }
+    else {
       this.setState({ [e.target.name]: e.target.value.toUpperCase() })
     }
     
@@ -185,7 +210,13 @@ handleSubmit = (e) => {
         expansesDetails: this.state.expansesDetails,
         duration: this.state.total,
         ryczaltWyzywienie: this.state.ryczaltWyzywienie,
-        ryczaltWyzywienieDetale: this.state.ryczaltWyzywienieDetale
+        ryczaltWyzywienieDetale: this.state.ryczaltWyzywienieDetale,
+        sniadanieCount: this.state.sniadanieCount,
+        obiadyCount: this.state.obiadyCount,
+        kolacjeCount: this.state.kolacjeCount,
+        ryczaltDoajzdyBagaze: this.state.ryczaltDoajzdyBagaze,
+        ryczaltDojazdyKomunikacja: this.state.ryczaltDojazdyKomunikacja,
+        ryczaltNoclegi: this.state.ryczaltNoclegi
     }
     console.log((JSON.stringify(response)))
 
@@ -217,7 +248,13 @@ handleSubmit = (e) => {
 
 }
 render() {
-    let {transportTypeAll, tripDetails, expansesDetails, waluta, zaliczka, person, ryczaltWyzywienie, ryczaltWyzywienieDetale} = this.state
+    let {transportTypeAll, tripDetails, expansesDetails, waluta, zaliczka, person, ryczaltWyzywienie, ryczaltWyzywienieDetale, sniadanieCount, kolacjeCount, obiadyCount, ryczaltDoajzdyBagaze, ryczaltNoclegi, ryczaltDojazdyKomunikacja} = this.state
+    let wyzywnienieTXT = "korzystałem"
+    if (ryczaltWyzywienie === '0')
+    {
+      wyzywnienieTXT = "nie korzystałem"
+    }
+    
     return (
       <form onSubmit={this.handleSubmit} onChange={this.handleChange} >
 
@@ -330,6 +367,63 @@ render() {
               <span className="pull-right"><button onClick={this.addExpanses} className="btn btn-info">Dodaj wydatek</button> </span>
             </div>
           </div>
+          <div className="row"><br></br></div>
+          <div className="row">
+            <div className="col-xs-7 col-md-7"></div>
+            <div className="col-xs-5 col-md-5">
+              <table className="table-condensed table-no-border" width="100%">
+                <tbody>
+                  <tr>
+                    <td width="50%">Ryczały na bagażowych i dojazdy</td>
+                    <td width="50%">
+                      <input type="number" className="rybagdojazdy" name="rybagdojazdy" id="rybagdojazdy"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="50%">Ryczały na dojazdy komunikacją miejską</td>
+                    <td width="50%">
+                      <input type="number" className="rydojkom" name="rydojkom" id="rydojkom"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="50%">Ryczałt za nocleg</td>
+                    <td width="50%">
+                      <input type="number" className="rynoc" name="rynoc" id="rynoc"/>
+                    </td>
+                  </tr>
+                  <tr className="hidden-print">
+                    <td colSpan="2">
+                    Oświadczam, że 
+                      <select className="ryczaltWyzywienie" value={this.state.ryczaltWyzywienie}>
+                        <option value="1" >korzystałam(em)</option>
+                        <option value="0">nie korzystałam(em)</option>
+                        </select>
+                    z wyżywienia obejmującego:
+                    </td>
+                  </tr>
+                  <tr className="hidden-print">
+                      <td>śniadania</td>
+                      <td>
+                        <input type="number" className="sniadanieCount" name="sniadanieCount" id="sniadanieCount"/>
+                      </td>
+                  </tr>
+                  <tr className="hidden-print">
+                      <td>obiady</td>
+                      <td>
+                        <input type="number" className="obiadyCount" name="obiadyCount" id="obiadyCount"/>
+                      </td>
+                  </tr>
+                  <tr className="hidden-print">
+                      <td>kolacje</td>
+                      <td>
+                        <input type="number" className="kolacjeCount" name="kolacjeCount" id="kolacjeCount"/>
+                      </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <div className="row">
             <div className="col-lg-2">
             </div>
@@ -340,29 +434,9 @@ render() {
             <div className="row"><br></br></div>
             <div className="row">
             </div>
-            <div className="row">
+            <div className="row hidden-print">
             
-              <div className="col-xs-12 col-md-12">
-              
-              <p>Oświadczam, że 
-                <select className="ryczaltWyzywienie" value={this.state.ryczaltWyzywienie}>
-                  <option value="1" >korzystałam(em)</option>
-                  <option value="0">nie korzystałam(em)</option>
-                </select>
-              z wyżywienia obejmującego:
-                <select className="ryczaltWyzywienieDetale" value={this.state.ryczaltWyzywienieDetale}>
-                  <option value="FULL" >sniadania, obiadu oraz kolacje</option>
-                  <option value="BRLA">śniadania oraz obiady</option>
-                  <option value="BRDN">śniadania oraz kolacje</option>
-                  <option value="LADN">obiady oraz obiady</option>
-                  <option value="BR">śniadania</option>
-                  <option value="LA">obiady</option>
-                  <option value="DN">kolacje</option>
-                </select>
-              </p>
-
-              </div>
-            
+             
             </div>
               <div className="row"> 
                   <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP}: {this.state.kurs}</label></span></div>
@@ -390,7 +464,7 @@ render() {
         
         <div className="footer">
                 <div className="col-xs-6 col-md-6">
-                  <div> <label>Jednocześnie oświadczam, że korzystałem/nie <br/> korzystałem z bezpłatnego zakwaterowania wyżywienia.</label> </div>
+                  <div> <label>Jednocześnie oświadczam, {wyzywnienieTXT} <br/> z bezpłatnego zakwaterowania wyżywienia. <br /> (obejmującego: śniadania {sniadanieCount}, obiady: {obiadyCount}, kolacje {kolacjeCount})</label> </div>
                   <div> <br/></div>
                   <div><label>(data i podpis pracownika)</label> </div>
                 </div>
