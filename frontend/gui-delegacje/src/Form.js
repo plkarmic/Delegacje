@@ -146,7 +146,7 @@ handleChange = (e) => {
   
   
     //GET NBP DATA
-    let outNBP = fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + this.state.waluta, {
+    let outNBP = fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + this.state.waluta + '/last/2', {
       method: 'GET',
       headers: {
         // 'Access-Control-Allow-Origin': '*',
@@ -164,9 +164,25 @@ handleChange = (e) => {
     })
     .then(out => {
       console.log(out.res.code)
+      let kursNBP, tabelaNBP
+      var date = new Date()
+      var dateDay = date.getDate()
+      if (dateDay < 10) {
+        dateDay = '0' + date.getDate()
+      }
+      date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+
+      if(out.res.rates[1].EffectiveDate !== date)
+      {
+        kursNBP = out.res.rates[1].mid
+        tabelaNBP = out.res.rates[1].no
+      } else {
+        kursNBP = out.res.rates[0].mid
+        tabelaNBP = out.res.rates[0].no
+      }
       this.setState({
-        kurs: out.res.rates[0].mid,
-        tabelaNBP: out.res.rates[0].no
+          kurs: kursNBP,
+          tabelaNBP: tabelaNBP
       })
     })
   
