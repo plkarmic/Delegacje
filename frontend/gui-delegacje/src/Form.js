@@ -12,6 +12,8 @@ class Form extends React.Component {
     tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType: ""}],
     expansesDetails: [{remark:"", costV: "", costPLN: ""}],
     total: "",
+    totalV: "",
+    totalPLN: "",
     waluta: "EUR",
     tabelaNBP: "",
     kurs: "",
@@ -82,7 +84,10 @@ class Form extends React.Component {
   }
 handleChange = (e) => {
     //if (["name", "age"].includes(e.target.className) ) {
-      let tripDetails = [...this.state.tripDetails]
+    let ryczaltDoajzdyBagaze = this.state.ryczaltDoajzdyBagaze
+    let ryczaltDojazdyKomunikacja = this.state.ryczaltDojazdyKomunikacja
+    let ryczaltNoclegi = this.state.ryczaltNoclegi
+    let tripDetails = [...this.state.tripDetails]
     if (["country", "city", "destinationC", "cityD", "startTime", "endTime", "borderTime", "transportType"].includes(e.target.className) ) {
       // let tripDetails = [...this.state.tripDetails]
       tripDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
@@ -133,10 +138,13 @@ handleChange = (e) => {
       kolacjeCount = e.target.value
       this.setState({kolacjeCount})
     }else if(["rybagdojazdy"].includes(e.target.className)) {
+      ryczaltDoajzdyBagaze = e.target.value
       this.setState({ ryczaltDoajzdyBagaze: e.target.value })
     }else if(["rydojkom"].includes(e.target.className)) {
+      ryczaltDojazdyKomunikacja = e.target.value
       this.setState({ ryczaltDojazdyKomunikacja: e.target.value })
     } else if(["rynoc"].includes(e.target.className)) {
+      ryczaltNoclegi = e.target.value
       this.setState({ ryczaltNoclegi: e.target.value })
     }
     else {
@@ -180,15 +188,35 @@ handleChange = (e) => {
         kursNBP = out.res.rates[0].mid
         tabelaNBP = out.res.rates[0].no
       }
+      console.log(kursNBP)
+      console.log(tabelaNBP)
       this.setState({
           kurs: kursNBP,
           tabelaNBP: tabelaNBP
       })
     })
   
+    let expansesDetailsAllV = 0
+    {
+      for (var i = 0; i < this.state.expansesDetails.length; i++) {
+        if(parseInt(this.state.expansesDetails[i].costV) > 0)
+          expansesDetailsAllV += parseInt(this.state.expansesDetails[i].costV)
+      }
+    }
+
+    let expansesDetailsAllPLN = 0
+    for (var i = 0; i < this.state.expansesDetails.length; i++) {
+      var check = parseInt(this.state.expansesDetails[i].costV) || 0
+      if (parseInt(this.state.expansesDetails[i].costPLN) > 0 && check === 0)
+      expansesDetailsAllPLN += parseInt(this.state.expansesDetails[i].costPLN) || 0
+    }
+
+    expansesDetailsAllPLN = (parseInt(ryczaltDoajzdyBagaze) || 0) + (parseInt(ryczaltDojazdyKomunikacja) || 0) + (parseInt(ryczaltNoclegi) || 0)
+
+    this.setState({totalV: expansesDetailsAllV})
+    this.setState({totalPLN: expansesDetailsAllPLN})
   
-  
-  }
+  } 
 addTrip = (e) => {
     this.setState((prevState) => ({
       tripDetails: [...prevState.tripDetails, {country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType:this.state.transportTypeAll}],
@@ -264,7 +292,7 @@ handleSubmit = (e) => {
 
 }
 render() {
-    let {transportTypeAll, tripDetails, expansesDetails, waluta, zaliczka, person, ryczaltWyzywienie, ryczaltWyzywienieDetale, sniadanieCount, kolacjeCount, obiadyCount, ryczaltDoajzdyBagaze, ryczaltNoclegi, ryczaltDojazdyKomunikacja} = this.state
+    let {transportTypeAll, tripDetails, expansesDetails, waluta, zaliczka, person, ryczaltWyzywienie, ryczaltWyzywienieDetale, sniadanieCount, kolacjeCount, obiadyCount, ryczaltDoajzdyBagaze, ryczaltNoclegi, ryczaltDojazdyKomunikacja, totalPLN} = this.state
     let wyzywnienieTXT = "korzystałem"
     if (ryczaltWyzywienie === '0')
     {
@@ -456,6 +484,8 @@ render() {
             </div>
               <div className="row"> 
                   <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP}: {this.state.kurs}</label></span></div>
+                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {this.state.totalV} {this.state.waluta} </label></span></div>
+                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {totalPLN} PLN </label></span></div>
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.kurs} onChange={"aaa"}></input></h3></label></div> */}
               </div>
             </div>
@@ -473,7 +503,11 @@ render() {
         </div>
 
           <div className="row">
-                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label><h3>Razem: {this.state.total}</h3></label></span></div>
+                  
+                  {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.total}></input></h3></label></div> */}
+          </div>
+          <div className="row">
+                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label><h3>Do wypłaty: {this.state.total}</h3></label></span></div>
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.total}></input></h3></label></div> */}
           </div>
         </div>
