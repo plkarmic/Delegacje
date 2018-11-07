@@ -433,35 +433,37 @@ render() {
                     </td>
                   </tr>
                   <tr>
-                    <td width="50%">Ryczałt za nocleg</td>
+                    <td width="50%" >Ryczałt za nocleg</td>
                     <td width="50%">
                       <input type="number" className="rynoc" name="rynoc" id="rynoc"/>
                     </td>
                   </tr>
                   <tr className="hidden-print">
                     <td colSpan="2">
-                    Oświadczam, że 
-                      <select className="ryczaltWyzywienie" value={this.state.ryczaltWyzywienie}>
-                        <option value="1" >korzystałam(em)</option>
-                        <option value="0">nie korzystałam(em)</option>
-                        </select>
-                    z wyżywienia obejmującego:
+                      <td className="pull-right">
+                        Oświadczam, że 
+                          <select className="ryczaltWyzywienie" value={this.state.ryczaltWyzywienie}>
+                            <option value="1" >korzystałam(em)</option>
+                            <option value="0">nie korzystałam(em)</option>
+                            </select>
+                        z wyżywienia obejmującego:
+                      </td>
                     </td>
                   </tr>
                   <tr className="hidden-print">
-                      <td>śniadania</td>
+                      <td className="pull-right">śniadania</td>
                       <td>
                         <input type="number" className="sniadanieCount" name="sniadanieCount" id="sniadanieCount"/>
                       </td>
                   </tr>
                   <tr className="hidden-print">
-                      <td>obiady</td>
+                      <td className="pull-right">obiady</td>
                       <td>
                         <input type="number" className="obiadyCount" name="obiadyCount" id="obiadyCount"/>
                       </td>
                   </tr>
                   <tr className="hidden-print">
-                      <td>kolacje</td>
+                      <td className="pull-right">kolacje</td>
                       <td>
                         <input type="number" className="kolacjeCount" name="kolacjeCount" id="kolacjeCount"/>
                       </td>
