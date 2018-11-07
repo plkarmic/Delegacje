@@ -175,12 +175,15 @@ handleChange = (e) => {
       let kursNBP, tabelaNBP
       var date = new Date()
       var dateDay = date.getDate()
-      if (dateDay < 10) {
+    
+      if (date.getDate() < 10) {
         dateDay = '0' + date.getDate()
+      } else {
+        dateDay = date.getDate()
       }
-      date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+      date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + dateDay
 
-      if(out.res.rates[1].EffectiveDate !== date)
+      if(out.res.rates[1].effectiveDate !== date)
       {
         kursNBP = out.res.rates[1].mid
         tabelaNBP = out.res.rates[1].no
