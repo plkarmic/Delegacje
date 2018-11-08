@@ -289,7 +289,7 @@ handleSubmit = (e) => {
     })
     .then(out => {
       console.log(out.res)
-      this.setState({total: out.res - zaliczkaTotal + " PLN"});
+      this.setState({total: out.res - zaliczkaTotal + " PLN"}); //DODAC POLA Z BACKENDU
     });
     console.log(this.state.total)
 
@@ -385,7 +385,15 @@ render() {
         <div>
           <br/>  
         </div>
-
+        <div className="row">
+        <div className="col-xs-8 col-md-8"></div>
+          <div className="col-xs-4 col-md-4">
+            Podroż trwała ogółem !czas trwania podrozy zwracany z backendu!
+          </div>
+        </div>
+        <div>
+          <br/>  
+        </div>
         <div>
         <table name="formTable" id="formTable" className="table table-bordered table-condensed">
             <thead>
@@ -451,19 +459,19 @@ render() {
                     </td>
                   </tr>
                   <tr className="hidden-print">
-                      <td className="pull-right">śniadania</td>
+                      <td className="pull-right pull-right-center">śniadania</td>
                       <td>
                         <input type="number" className="sniadanieCount" name="sniadanieCount" id="sniadanieCount"/>
                       </td>
                   </tr>
                   <tr className="hidden-print">
-                      <td className="pull-right">obiady</td>
+                      <td className="pull-right pull-right-center">obiady</td>
                       <td>
                         <input type="number" className="obiadyCount" name="obiadyCount" id="obiadyCount"/>
                       </td>
                   </tr>
                   <tr className="hidden-print">
-                      <td className="pull-right">kolacje</td>
+                      <td className="pull-right pull-right-center">kolacje</td>
                       <td>
                         <input type="number" className="kolacjeCount" name="kolacjeCount" id="kolacjeCount"/>
                       </td>

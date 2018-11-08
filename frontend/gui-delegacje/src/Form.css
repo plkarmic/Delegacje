@@ -73,6 +73,9 @@
   padding-bottom: 5px;
   margin-bottom: 5px;
 }
+.pull-right-center{
+  margin-top: 10px;
+}
 
 @media print {
   .transportType {
