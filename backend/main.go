@@ -48,14 +48,22 @@ type Expanses struct {
 }
 
 type Trip struct {
-	startTime       time.Time
-	endTime         time.Time
-	transportType   string    //car, plain, train, etc
-	destination     string    //destination country
-	details         []RowTrip //array of strings with information for each trip details (time of departure, time of arrival,  boarder cross date, etc.)
-	expansesDetails []Expanses
-	durtion         float64
-	totalCost       float64
+	startTime                 time.Time
+	endTime                   time.Time
+	transportType             string    //car, plain, train, etc
+	destination               string    //destination country
+	details                   []RowTrip //array of strings with information for each trip details (time of departure, time of arrival,  boarder cross date, etc.)
+	expansesDetails           []Expanses
+	ryczaltWyzywienie         int64
+	ryczaltWyzywienieDetale   string
+	sniadanieCount            int64
+	obiadyCount               int64
+	kolacjeCount              int64
+	ryczaltDoajzdyBagaze      int64
+	ryczaltDojazdyKomunikacja int64
+	ryczaltNoclegi            int64
+	durtion                   float64
+	totalCost                 float64
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
@@ -104,6 +112,15 @@ func getTripDetails(rawData string) Trip {
 	trip.transportType = gjson.Get(rawData, "transportType").String()
 	trip.startTime, _ = time.Parse(dataLayout, gjson.Get(rawData, "roundTrip.0.startTime").String())
 	trip.endTime, _ = time.Parse(dataLayout, gjson.Get(rawData, tempQueryEndTime).String())
+
+	trip.ryczaltWyzywienie = gjson.Get(rawData, "ryczaltWyzywienie").Int()
+	trip.ryczaltWyzywienieDetale = gjson.Get(rawData, "ryczaltWyzywienieDetale").String()
+	trip.sniadanieCount = gjson.Get(rawData, "sniadanieCount").Int()
+	trip.obiadyCount = gjson.Get(rawData, "obiadyCount").Int()
+	trip.kolacjeCount = gjson.Get(rawData, "kolacjeCount").Int()
+	trip.ryczaltDoajzdyBagaze = gjson.Get(rawData, "ryczaltDoajzdyBagaze").Int()
+	trip.ryczaltDojazdyKomunikacja = gjson.Get(rawData, "ryczaltDojazdyKomunikacja").Int()
+	trip.ryczaltNoclegi = gjson.Get(rawData, "ryczaltNoclegi").Int()
 
 	tripDetail := gjson.Get(rawData, "roundTrip")
 	tripDetail.ForEach(func(key, value gjson.Result) bool { //populate trip details in trip struct
@@ -262,11 +279,14 @@ func calculate(trip Trip) float64 { //MAGIC :)
 
 	var czas time.Duration
 	//var prevBorderDate time.Time //use to track borderDate from previous row
+	var TripDuration time.Duration
 	var j int
 	var airplane int = 0
 	var zeroDay, _ = time.Parse("01/02/2006 15:04", "01/01/0001 00:00")
 	var price float64
 	var dieta float64
+	var TripDays int64
+	var calculatedieta float64
 	var CountryFrom string
 
 	for i := range trip.details {
@@ -279,6 +299,7 @@ func calculate(trip Trip) float64 { //MAGIC :)
 				if i != 0 {
 					trip.details[i].BorderTime = trip.details[i].ArrivalTime
 					czas = trip.details[i].ArrivalTime.Sub(trip.details[i-1].BorderTime)
+					TripDuration += czas
 					dieta += cena(czas.Hours(), trip.details[i].CountryFrom)
 
 				}
@@ -286,10 +307,12 @@ func calculate(trip Trip) float64 { //MAGIC :)
 				if trip.details[i].CountryTo != CountryFrom {
 					trip.details[i].BorderTime = trip.details[i].StartTime
 					czas = trip.details[i].StartTime.Sub(trip.details[i-1].StartTime)
+					TripDuration += czas
 					dieta += cena(czas.Hours(), trip.details[i].CountryFrom)
 				} else {
 					trip.details[i].BorderTime = trip.details[i].ArrivalTime
 					czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+					TripDuration += czas
 					dieta += cena(czas.Hours(), trip.details[i].CountryFrom)
 					airplane = 0
 				}
@@ -302,6 +325,7 @@ func calculate(trip Trip) float64 { //MAGIC :)
 						trip.details[i].BorderTime = trip.details[i].ArrivalTime
 					}
 					czas = trip.details[i].BorderTime.Sub(trip.details[i].StartTime)
+					TripDuration += czas
 					price = cena(czas.Hours(), "Polska")
 					dieta = price
 
@@ -313,6 +337,7 @@ func calculate(trip Trip) float64 { //MAGIC :)
 						// dieta += price
 					}
 					czas = trip.details[i].StartTime.Sub(trip.details[i].BorderTime)
+					TripDuration += czas
 					price = cena(czas.Hours(), trip.details[i].CountryFrom)
 					dieta += price
 
@@ -323,16 +348,19 @@ func calculate(trip Trip) float64 { //MAGIC :)
 					//sprawdzenie czy kraj ostatniego przyjazdu jest taki sam jak kraj przyjazdu dla tego wiersza
 					if trip.details[i].CountryTo == trip.details[i-1].CountryFrom && trip.transportType == "Samolot" {
 						czas = trip.details[i].BorderTime.Sub(trip.details[i-1].StartTime)
+						TripDuration += czas
 						price = cena(czas.Hours(), trip.details[i].CountryFrom)
 						dieta = price
 					} else {
 						czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+						TripDuration += czas
 						price = cena(czas.Hours(), trip.details[i].CountryFrom)
 						//czas1 := czas.Hours()
 						dieta += price
 					}
 				} else {
 					czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+					TripDuration += czas
 					price = cena(czas.Hours(), trip.details[i].CountryFrom)
 					dieta += price
 				}
@@ -343,9 +371,13 @@ func calculate(trip Trip) float64 { //MAGIC :)
 
 	if trip.details[j].BorderTime != zeroDay && trip.details[j].TransportType != "Samolot" {
 		czas = trip.details[j].ArrivalTime.Sub(trip.details[j].BorderTime)
+		TripDuration += czas
 		price = cena(czas.Hours(), trip.details[j].CountryTo)
 		dieta += price
 	}
+	// dieta - (dieta *(procent śniadań * ilosc dni delegacji/ilość śniadań))
+	TripDays = (int64(TripDuration) / 24)
+	calculatedieta = (dieta - float64(dieta*float64(0.15*float64(TripDays/trip.sniadanieCount)))) + (dieta - float64(dieta*(0.25*float64(TripDays/trip.obiadyCount)))) + (dieta - float64(dieta*(0.6*float64(TripDays/trip.kolacjeCount))))
 
 	return dieta
 }
