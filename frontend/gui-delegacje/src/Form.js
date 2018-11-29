@@ -28,6 +28,7 @@ class Form extends React.Component {
     ryczaltDoajzdyBagaze: 0,
     ryczaltDojazdyKomunikacja: 0,
     ryczaltNoclegi: 0,
+    tripDuration: "",
 
     outNBP: fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + 'EUR', {
       method: 'GET',
@@ -386,9 +387,9 @@ render() {
           <br/>  
         </div>
         <div className="row">
-        <div className="col-xs-8 col-md-8"></div>
-          <div className="col-xs-4 col-md-4">
-            Podroż trwała ogółem !czas trwania podrozy zwracany z backendu!
+        <div className="col-xs-10 col-md-10"></div>
+          <div className="col-xs-2 col-md-2">
+            Podroż trwała: {this.state.tripDuration}
           </div>
         </div>
         <div>

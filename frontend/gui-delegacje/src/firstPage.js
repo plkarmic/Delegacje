@@ -27,7 +27,7 @@ const firstPage = (props) => {
             <div className="row"><br></br></div>
             <div className="row text-center">
                 <div className="col-xs-12 col-lg-12 text-center">
-                    <span className="text-center"><h1 className="text-center">Polecenie Wyjazdu Służbowego<br/>Delegacja Zagraniczna</h1></span>
+                    <span className="text-center"><h1 className="text-center">Polecenie Wyjazdu Służbowego<br/></h1></span>
                 </div>
             </div>
             <div className="row"><br></br></div>
