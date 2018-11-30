@@ -12,12 +12,23 @@ class Form extends React.Component {
     tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType: ""}],
     expansesDetails: [{remark:"", costV: "", costPLN: ""}],
     total: "",
+    totalV: "",
+    totalPLN: "",
     waluta: "EUR",
     tabelaNBP: "",
     kurs: "",
     zaliczka: [{data:"", nrDow:"", waluta:"", slownie:"", pieczec:"", kwota:0}],
     test: "",
     person: [{name:"", to:"",timeFrom:"",timeTo:"",reason:""}],
+    ryczaltWyzywienie: 1,
+    ryczaltWyzywienieDetale: "FULL",
+    sniadanieCount: 0,
+    obiadyCount: 0,
+    kolacjeCount: 0,
+    ryczaltDoajzdyBagaze: 0,
+    ryczaltDojazdyKomunikacja: 0,
+    ryczaltNoclegi: 0,
+    tripDuration: "",
 
     outNBP: fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + 'EUR', {
       method: 'GET',
@@ -74,7 +85,10 @@ class Form extends React.Component {
   }
 handleChange = (e) => {
     //if (["name", "age"].includes(e.target.className) ) {
-      let tripDetails = [...this.state.tripDetails]
+    let ryczaltDoajzdyBagaze = this.state.ryczaltDoajzdyBagaze
+    let ryczaltDojazdyKomunikacja = this.state.ryczaltDojazdyKomunikacja
+    let ryczaltNoclegi = this.state.ryczaltNoclegi
+    let tripDetails = [...this.state.tripDetails]
     if (["country", "city", "destinationC", "cityD", "startTime", "endTime", "borderTime", "transportType"].includes(e.target.className) ) {
       // let tripDetails = [...this.state.tripDetails]
       tripDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
@@ -104,6 +118,35 @@ handleChange = (e) => {
       }
       this.setState({ tripDetails }, () => console.log(this.state.transportType))
       console.log(transportTypeAll)
+    } else if (["ryczaltWyzywienie"].includes(e.target.className))  {
+      let ryczaltWyzywienie = this.state.ryczaltWyzywienie
+      ryczaltWyzywienie = e.target.value
+      this.setState({ ryczaltWyzywienie })
+    }else if (["ryczaltWyzywienieDetale"].includes(e.target.className))  {
+      let ryczaltWyzywienieDetale = this.state.ryczaltWyzywienieDetale
+      ryczaltWyzywienieDetale = e.target.value
+      this.setState({ ryczaltWyzywienieDetale }) 
+    }else if(["sniadanieCount"].includes(e.target.className)) {
+      let sniadanieCount = this.state.sniadanieCount
+      sniadanieCount = e.target.value
+      this.setState({sniadanieCount})
+    }else if(["obiadyCount"].includes(e.target.className)) {
+      let obiadyCount = this.state.obiadyCount
+      obiadyCount = e.target.value
+      this.setState({obiadyCount})
+    }else if(["kolacjeCount"].includes(e.target.className)) {
+      let kolacjeCount = this.state.kolacjeCount
+      kolacjeCount = e.target.value
+      this.setState({kolacjeCount})
+    }else if(["rybagdojazdy"].includes(e.target.className)) {
+      ryczaltDoajzdyBagaze = e.target.value
+      this.setState({ ryczaltDoajzdyBagaze: e.target.value })
+    }else if(["rydojkom"].includes(e.target.className)) {
+      ryczaltDojazdyKomunikacja = e.target.value
+      this.setState({ ryczaltDojazdyKomunikacja: e.target.value })
+    } else if(["rynoc"].includes(e.target.className)) {
+      ryczaltNoclegi = e.target.value
+      this.setState({ ryczaltNoclegi: e.target.value })
     }
     else {
       this.setState({ [e.target.name]: e.target.value.toUpperCase() })
@@ -112,7 +155,7 @@ handleChange = (e) => {
   
   
     //GET NBP DATA
-    let outNBP = fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + this.state.waluta, {
+    let outNBP = fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + this.state.waluta + '/last/2', {
       method: 'GET',
       headers: {
         // 'Access-Control-Allow-Origin': '*',
@@ -130,15 +173,54 @@ handleChange = (e) => {
     })
     .then(out => {
       console.log(out.res.code)
+      let kursNBP, tabelaNBP
+      var date = new Date()
+      var dateDay = date.getDate()
+    
+      if (date.getDate() < 10) {
+        dateDay = '0' + date.getDate()
+      } else {
+        dateDay = date.getDate()
+      }
+      date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + dateDay
+
+      if(out.res.rates[1].effectiveDate !== date)
+      {
+        kursNBP = out.res.rates[1].mid
+        tabelaNBP = out.res.rates[1].no
+      } else {
+        kursNBP = out.res.rates[0].mid
+        tabelaNBP = out.res.rates[0].no
+      }
+      console.log(kursNBP)
+      console.log(tabelaNBP)
       this.setState({
-        kurs: out.res.rates[0].mid,
-        tabelaNBP: out.res.rates[0].no
+          kurs: kursNBP,
+          tabelaNBP: tabelaNBP
       })
     })
   
+    let expansesDetailsAllV = 0
+    {
+      for (var i = 0; i < this.state.expansesDetails.length; i++) {
+        if(parseInt(this.state.expansesDetails[i].costV) > 0)
+          expansesDetailsAllV += parseInt(this.state.expansesDetails[i].costV)
+      }
+    }
+
+    let expansesDetailsAllPLN = 0
+    for (var i = 0; i < this.state.expansesDetails.length; i++) {
+      var check = parseInt(this.state.expansesDetails[i].costV) || 0
+      if (parseInt(this.state.expansesDetails[i].costPLN) > 0 && check === 0)
+      expansesDetailsAllPLN += parseInt(this.state.expansesDetails[i].costPLN) || 0
+    }
+
+    expansesDetailsAllPLN = (parseInt(ryczaltDoajzdyBagaze) || 0) + (parseInt(ryczaltDojazdyKomunikacja) || 0) + (parseInt(ryczaltNoclegi) || 0)
+
+    this.setState({totalV: expansesDetailsAllV})
+    this.setState({totalPLN: expansesDetailsAllPLN})
   
-  
-  }
+  } 
 addTrip = (e) => {
     this.setState((prevState) => ({
       tripDetails: [...prevState.tripDetails, {country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType:this.state.transportTypeAll}],
@@ -174,7 +256,15 @@ handleSubmit = (e) => {
         transportType: this.state.transportType,
         roundTrip: this.state.tripDetails,
         expansesDetails: this.state.expansesDetails,
-        duration: this.state.total
+        duration: this.state.total,
+        ryczaltWyzywienie: this.state.ryczaltWyzywienie,
+        ryczaltWyzywienieDetale: this.state.ryczaltWyzywienieDetale,
+        sniadanieCount: this.state.sniadanieCount,
+        obiadyCount: this.state.obiadyCount,
+        kolacjeCount: this.state.kolacjeCount,
+        ryczaltDoajzdyBagaze: this.state.ryczaltDoajzdyBagaze,
+        ryczaltDojazdyKomunikacja: this.state.ryczaltDojazdyKomunikacja,
+        ryczaltNoclegi: this.state.ryczaltNoclegi
     }
     console.log((JSON.stringify(response)))
 
@@ -200,13 +290,19 @@ handleSubmit = (e) => {
     })
     .then(out => {
       console.log(out.res)
-      this.setState({total: out.res - zaliczkaTotal + " PLN"});
+      this.setState({total: out.res - zaliczkaTotal + " PLN"}); //DODAC POLA Z BACKENDU
     });
     console.log(this.state.total)
 
 }
 render() {
-    let {transportTypeAll, tripDetails, expansesDetails, waluta, zaliczka, person} = this.state
+    let {transportTypeAll, tripDetails, expansesDetails, waluta, zaliczka, person, ryczaltWyzywienie, ryczaltWyzywienieDetale, sniadanieCount, kolacjeCount, obiadyCount, ryczaltDoajzdyBagaze, ryczaltNoclegi, ryczaltDojazdyKomunikacja, totalPLN} = this.state
+    let wyzywnienieTXT = "korzystałem"
+    if (ryczaltWyzywienie === '0')
+    {
+      wyzywnienieTXT = "nie korzystałem"
+    }
+    
     return (
       <form onSubmit={this.handleSubmit} onChange={this.handleChange} >
 
@@ -290,7 +386,15 @@ render() {
         <div>
           <br/>  
         </div>
-
+        <div className="row">
+        <div className="col-xs-10 col-md-10"></div>
+          <div className="col-xs-2 col-md-2">
+            Podroż trwała: {this.state.tripDuration}
+          </div>
+        </div>
+        <div>
+          <br/>  
+        </div>
         <div>
         <table name="formTable" id="formTable" className="table table-bordered table-condensed">
             <thead>
@@ -319,6 +423,65 @@ render() {
               <span className="pull-right"><button onClick={this.addExpanses} className="btn btn-info">Dodaj wydatek</button> </span>
             </div>
           </div>
+          <div className="row"><br></br></div>
+          <div className="row">
+            <div className="col-xs-7 col-md-7"></div>
+            <div className="col-xs-5 col-md-5">
+              <table className="table-condensed table-no-border" width="100%">
+                <tbody>
+                  <tr>
+                    <td width="50%">Ryczały na bagażowych i dojazdy</td>
+                    <td width="50%">
+                      <input type="number" className="rybagdojazdy" name="rybagdojazdy" id="rybagdojazdy"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="50%">Ryczały na dojazdy komunikacją miejską</td>
+                    <td width="50%">
+                      <input type="number" className="rydojkom" name="rydojkom" id="rydojkom"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="50%" >Ryczałt za nocleg</td>
+                    <td width="50%">
+                      <input type="number" className="rynoc" name="rynoc" id="rynoc"/>
+                    </td>
+                  </tr>
+                  <tr className="hidden-print">
+                    <td colSpan="2">
+                      <td className="pull-right">
+                        Oświadczam, że 
+                          <select className="ryczaltWyzywienie" value={this.state.ryczaltWyzywienie}>
+                            <option value="1" >korzystałam(em)</option>
+                            <option value="0">nie korzystałam(em)</option>
+                            </select>
+                        z wyżywienia obejmującego:
+                      </td>
+                    </td>
+                  </tr>
+                  <tr className="hidden-print">
+                      <td className="pull-right pull-right-center">śniadania</td>
+                      <td>
+                        <input type="number" className="sniadanieCount" name="sniadanieCount" id="sniadanieCount"/>
+                      </td>
+                  </tr>
+                  <tr className="hidden-print">
+                      <td className="pull-right pull-right-center">obiady</td>
+                      <td>
+                        <input type="number" className="obiadyCount" name="obiadyCount" id="obiadyCount"/>
+                      </td>
+                  </tr>
+                  <tr className="hidden-print">
+                      <td className="pull-right pull-right-center">kolacje</td>
+                      <td>
+                        <input type="number" className="kolacjeCount" name="kolacjeCount" id="kolacjeCount"/>
+                      </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <div className="row">
             <div className="col-lg-2">
             </div>
@@ -327,8 +490,16 @@ render() {
             </div>
             <div className="col-lg-8">
             <div className="row"><br></br></div>
+            <div className="row">
+            </div>
+            <div className="row hidden-print">
+            
+             
+            </div>
               <div className="row"> 
                   <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP}: {this.state.kurs}</label></span></div>
+                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {this.state.totalV} {this.state.waluta} </label></span></div>
+                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {totalPLN} PLN </label></span></div>
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.kurs} onChange={"aaa"}></input></h3></label></div> */}
               </div>
             </div>
@@ -346,14 +517,18 @@ render() {
         </div>
 
           <div className="row">
-                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label><h3>Razem: {this.state.total}</h3></label></span></div>
+                  
+                  {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.total}></input></h3></label></div> */}
+          </div>
+          <div className="row">
+                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label><h3>Do wypłaty: {this.state.total}</h3></label></span></div>
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.total}></input></h3></label></div> */}
           </div>
         </div>
         
         <div className="footer">
                 <div className="col-xs-6 col-md-6">
-                  <div> <label>Jednocześnie oświadczam, że korzystałem/nie <br/> korzystałem z bezpłatnego zakwaterowania wyżywienia.</label> </div>
+                  <div> <label>Jednocześnie oświadczam, {wyzywnienieTXT} <br/> z bezpłatnego zakwaterowania wyżywienia. <br /> (obejmującego: śniadania {sniadanieCount}, obiady: {obiadyCount}, kolacje {kolacjeCount})</label> </div>
                   <div> <br/></div>
                   <div><label>(data i podpis pracownika)</label> </div>
                 </div>

@@ -38,12 +38,12 @@
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
-  .transportType, .userNameForm, .waluta, .transportTypeAll {
+  .transportType, .userNameForm, .waluta, .transportTypeAll, .sniadanieCount, .obiadyCount, .kolacjeCount, .rybagdojazdy, .rydojkom, .rynoc {
     display: block;
     width: 100%;
     height: 34px;
     padding: 6px 12px;
-    font-size: 10px;
+    font-size: 9px;
     line-height: 1.42857143;
     color: #555;
     background-color: #fff;
@@ -56,17 +56,25 @@
          -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
             transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   }
-.transportType:focus, userNameForm:focus {
+.transportType:focus, userNameForm:focus, .sniadanieCount:focus, .obiadyCount:focus, .kolacjeCount:focus, .rybagdojazdy:focus, .rydojkom:focus, .rynoc:focus {
     border-color: #66afe9;
     outline: 0;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
             box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
   }
 
+  .sniadanieCount, .obiadyCount, .kolacjeCount {
+    width: 100%;
+    margin: 2px 2px;
+  }
+
 .border-bottom {
   border-bottom: 1px solid #ddd;
   padding-bottom: 5px;
   margin-bottom: 5px;
+}
+.pull-right-center{
+  margin-top: 10px;
 }
 
 @media print {
