@@ -56,9 +56,9 @@ type Trip struct {
 	expansesDetails           []Expanses
 	ryczaltWyzywienie         int64
 	ryczaltWyzywienieDetale   string
-	sniadanieCount            int64
-	obiadyCount               int64
-	kolacjeCount              int64
+	sniadanieCount            float64
+	obiadyCount               float64
+	kolacjeCount              float64
 	ryczaltDoajzdyBagaze      int64
 	ryczaltDojazdyKomunikacja int64
 	ryczaltNoclegi            int64
@@ -115,9 +115,9 @@ func getTripDetails(rawData string) Trip {
 
 	trip.ryczaltWyzywienie = gjson.Get(rawData, "ryczaltWyzywienie").Int()
 	trip.ryczaltWyzywienieDetale = gjson.Get(rawData, "ryczaltWyzywienieDetale").String()
-	trip.sniadanieCount = gjson.Get(rawData, "sniadanieCount").Int()
-	trip.obiadyCount = gjson.Get(rawData, "obiadyCount").Int()
-	trip.kolacjeCount = gjson.Get(rawData, "kolacjeCount").Int()
+	trip.sniadanieCount = gjson.Get(rawData, "sniadanieCount").Float()
+	trip.obiadyCount = gjson.Get(rawData, "obiadyCount").Float()
+	trip.kolacjeCount = gjson.Get(rawData, "kolacjeCount").Float()
 	trip.ryczaltDoajzdyBagaze = gjson.Get(rawData, "ryczaltDoajzdyBagaze").Int()
 	trip.ryczaltDojazdyKomunikacja = gjson.Get(rawData, "ryczaltDojazdyKomunikacja").Int()
 	trip.ryczaltNoclegi = gjson.Get(rawData, "ryczaltNoclegi").Int()
@@ -375,11 +375,19 @@ func calculate(trip Trip) float64 { //MAGIC :)
 		price = cena(czas.Hours(), trip.details[j].CountryTo)
 		dieta += price
 	}
-	// dieta - (dieta *(procent śniadań * ilosc dni delegacji/ilość śniadań))
-	TripDays = (int64(TripDuration) / 24)
-	calculatedieta = (dieta - float64(dieta*float64(0.15*float64(TripDays/trip.sniadanieCount)))) + (dieta - float64(dieta*(0.25*float64(TripDays/trip.obiadyCount)))) + (dieta - float64(dieta*(0.6*float64(TripDays/trip.kolacjeCount))))
 
-	return dieta
+	fmt.Println(trip.details[j].CountryFrom)
+	TripDays = (int64(TripDuration.Hours()) / 24)
+	//dieta jest liczona w zaleznosci od kraju (dla polski inna stawka procentowa niz dla zagranicy)
+	if trip.details[j].CountryFrom == "Polska" {
+		calculatedieta = dieta - ((dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.30) * (trip.obiadyCount / float64(TripDays))) + (dieta * float64(0.30) * (trip.kolacjeCount / float64(TripDays))))
+	} else {
+		calculatedieta = dieta - ((dieta * float64(0.25) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.50) * (trip.obiadyCount / float64(TripDays))) + (dieta * float64(0.25) * (trip.kolacjeCount / float64(TripDays))))
+	}
+
+	calculatedieta = dieta - ((dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))))
+
+	return calculatedieta
 }
 
 // func calculate(trip Trip) time.Duration { //MAGIC :)
