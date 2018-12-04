@@ -88,7 +88,7 @@ func readBody(w http.ResponseWriter, r *http.Request) {
 
 	tripData = getTripDetails(bodyString)
 
-	fmt.Fprint(w, tripData.totalCost)
+	fmt.Fprint(w, (strconv.FormatFloat(tripData.totalCost, 'f', 4, 64))+";"+(strconv.FormatFloat(tripData.durtion, 'f', -1, 64)))
 
 	defer r.Body.Close()
 
@@ -147,7 +147,7 @@ func getTripDetails(rawData string) Trip {
 		return true
 	})
 
-	trip.totalCost = calculate(trip)
+	trip.totalCost, trip.durtion = calculate(trip)
 	trip.totalCost = calculateTotalCost(trip)
 	fmt.Println(trip)
 	return trip
@@ -275,7 +275,7 @@ func cena(time float64, country string) float64 {
 
 }
 
-func calculate(trip Trip) float64 { //MAGIC :)
+func calculate(trip Trip) (float64, float64) { //MAGIC :)
 
 	var czas time.Duration
 	//var prevBorderDate time.Time //use to track borderDate from previous row
@@ -385,9 +385,10 @@ func calculate(trip Trip) float64 { //MAGIC :)
 		calculatedieta = dieta - ((dieta * float64(0.25) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.50) * (trip.obiadyCount / float64(TripDays))) + (dieta * float64(0.25) * (trip.kolacjeCount / float64(TripDays))))
 	}
 
-	calculatedieta = dieta - ((dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))))
+	//calculatedieta = dieta - ((dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))))
 
-	return calculatedieta
+	return calculatedieta, TripDuration.Hours()
+
 }
 
 // func calculate(trip Trip) time.Duration { //MAGIC :)
@@ -437,7 +438,7 @@ func main() {
 	// methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://wassv076:5000"},
+		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
 	})
 

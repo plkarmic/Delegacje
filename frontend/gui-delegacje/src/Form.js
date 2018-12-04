@@ -269,7 +269,7 @@ handleSubmit = (e) => {
     console.log((JSON.stringify(response)))
 
     //send POST request to backend server
-    let out = fetch('http://wassv076.einstein.local:8080/', {
+    let out = fetch('http://localhost:8080/', {
       method: 'POST',
       // mode: 'no-cors',
       headers: {
@@ -290,9 +290,31 @@ handleSubmit = (e) => {
     })
     .then(out => {
       console.log(out.res)
-      this.setState({total: out.res - zaliczkaTotal + " PLN"}); //DODAC POLA Z BACKENDU
+      let s = out.res.split(";")
+      this.setState({total: s[0] - zaliczkaTotal + " PLN"}); //DODAC POLA Z BACKENDU
+
+      let days = parseInt(s[1]/24)
+      let hours = parseInt(s[1]%24)
+
+      let tempDuration = days +" dni i " + hours + " godzin(y)"
+      if (hours == 1)
+      {
+        tempDuration = days +" dni i " + hours + " godzinę"
+      }
+      if (days == 1) 
+      {
+        tempDuration = days +" dzień i " + hours + " godzin(y)"
+        if (hours == 1)
+        {
+          tempDuration = days +" dzień i " + hours + " godzinę"
+        }
+      }
+
+
+      this.setState({tripDuration: tempDuration })
     });
     console.log(this.state.total)
+    console.log(this.state.tripDuration)
 
 }
 render() {
@@ -387,8 +409,8 @@ render() {
           <br/>  
         </div>
         <div className="row">
-        <div className="col-xs-10 col-md-10"></div>
-          <div className="col-xs-2 col-md-2">
+        <div className="col-xs-9 col-md-9"></div>
+          <div className="col-xs-3 col-md-3">
             Podroż trwała: {this.state.tripDuration}
           </div>
         </div>
