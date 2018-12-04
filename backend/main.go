@@ -379,7 +379,7 @@ func calculate(trip Trip) (float64, float64) { //MAGIC :)
 	fmt.Println(trip.details[j].CountryFrom)
 	TripDays = (int64(TripDuration.Hours()) / 24)
 	//dieta jest liczona w zaleznosci od kraju (dla polski inna stawka procentowa niz dla zagranicy)
-	if trip.details[j].CountryFrom == "Polska" {
+	if trip.details[j].CountryFrom != "Polska" {
 		calculatedieta = dieta - ((dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.30) * (trip.obiadyCount / float64(TripDays))) + (dieta * float64(0.30) * (trip.kolacjeCount / float64(TripDays))))
 	} else {
 		calculatedieta = dieta - ((dieta * float64(0.25) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.50) * (trip.obiadyCount / float64(TripDays))) + (dieta * float64(0.25) * (trip.kolacjeCount / float64(TripDays))))
