@@ -376,13 +376,27 @@ func calculate(trip Trip) (float64, float64) { //MAGIC :)
 		dieta += price
 	}
 
-	fmt.Println(trip.details[j].CountryFrom)
+	jsonFile, _ := os.Open("./CountryTable1.json")
+	defer jsonFile.Close()
+	byteValue, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		panic(err)
+	}
+
+	bodySTR := string(byteValue)
+	country := trip.details[j].CountryFrom
+	Countrypricequerry := country + ".0.kwota"
+	Countrycurrencyquerry := country + ".0.waluta"
+	countryPrice := gjson.Get(bodySTR, Countrypricequerry).Float()
+	countryCurrency := gjson.Get(bodySTR, Countrycurrencyquerry).String()
+	exchangeRate := getExchangeReate(countryCurrency)
 	TripDays = (int64(TripDuration.Hours()) / 24)
+	dietatemp := (float64(TripDays) * countryPrice) * exchangeRate
 	//dieta jest liczona w zaleznosci od kraju (dla polski inna stawka procentowa niz dla zagranicy)
 	if trip.details[j].CountryFrom != "Polska" {
-		calculatedieta = dieta - ((dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.30) * (trip.obiadyCount / float64(TripDays))) + (dieta * float64(0.30) * (trip.kolacjeCount / float64(TripDays))))
+		calculatedieta = dieta - ((dietatemp * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.kolacjeCount / float64(TripDays))))
 	} else {
-		calculatedieta = dieta - ((dieta * float64(0.25) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.50) * (trip.obiadyCount / float64(TripDays))) + (dieta * float64(0.25) * (trip.kolacjeCount / float64(TripDays))))
+		calculatedieta = dieta - ((dietatemp * float64(0.25) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.50) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.25) * (trip.kolacjeCount / float64(TripDays))))
 	}
 
 	//calculatedieta = dieta - ((dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))))
