@@ -16,6 +16,7 @@ class Form extends React.Component {
     totalPLN: "",
     waluta: "EUR",
     tabelaNBP: "",
+    tabelaNBPData: "",
     kurs: "",
     zaliczka: [{data:"", nrDow:"", waluta:"", slownie:"", pieczec:"", kwota:0}],
     test: "",
@@ -84,12 +85,15 @@ class Form extends React.Component {
     })
   
   }
+
+
 handleChange = (e) => {
     //if (["name", "age"].includes(e.target.className) ) {
     let ryczaltDoajzdyBagaze = this.state.ryczaltDoajzdyBagaze
     let ryczaltDojazdyKomunikacja = this.state.ryczaltDojazdyKomunikacja
     let ryczaltNoclegi = this.state.ryczaltNoclegi
     let tripDetails = [...this.state.tripDetails]
+    let zaliczka = [...this.state.zaliczka]
     if (["country", "city", "destinationC", "cityD", "startTime", "endTime", "borderTime", "transportType"].includes(e.target.className) ) {
       // let tripDetails = [...this.state.tripDetails]
       tripDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
@@ -102,7 +106,6 @@ handleChange = (e) => {
       }
       this.setState({expansesDetails}, () => console.log(this.state.expansesDetails))
     }else if (["userNameForm data", "userNameForm nrDow", "userNameForm waluta", "userNameForm kwota", "userNameForm slownie"].includes(e.target.className)) {
-      let zaliczka = [...this.state.zaliczka]
       zaliczka[e.target.dataset.id][e.target.className.substr(13)] = e.target.value.toUpperCase()
       this.setState({ zaliczka}, () => console.log(this.state.zaliczka))
     }else if (["userNameForm name", "userNameForm to", "userNameForm timeFrom", "userNameForm timeTo", "userNameForm reason"].includes(e.target.className)){
@@ -153,11 +156,47 @@ handleChange = (e) => {
       this.setState({ [e.target.name]: e.target.value.toUpperCase() })
     }
     
-  
-  
     //GET NBP DATA
 
-    let NBPQuery = 'http://api.nbp.pl/api/exchangerates/rates/A/' + this.state.waluta + '/2018-12-03'
+    var startDate = new Date()
+    startDate.setDate(startDate.getDate() - 10)
+    var endDate = new Date()
+    endDate.setDate(endDate.getDate() - 1)
+    var startDateDay
+    var endDateDay
+  
+    // var dataZaliczka = new Date()
+    if(zaliczka[0].data !== "")
+    {
+      console.log("jest zaliczka")
+      // dateZaliczka = new Date(zaliczka[0].data)
+      startDate = new Date(zaliczka[0].data)
+      startDate.setDate(startDate.getDate() - 10)
+      endDate = new Date(zaliczka[0].data)
+      endDate.setDate(endDate.getDate())
+    
+      console.log("startDate: " +startDate)
+      console.log("endDate: " + endDate)
+
+    }
+
+
+
+    if (startDate.getDate() < 10) {
+      startDateDay = '0' + startDate.getDate()
+    } else {
+      startDateDay = startDate.getDate()
+    }
+    startDate = startDate.getFullYear() + "-" + (startDate.getMonth() + 1) + "-" + startDateDay
+
+    if (endDate.getDate() < 10) {
+      endDateDay = '0' + endDate.getDate()
+    } else {
+      endDateDay = endDate.getDate()
+    }
+    endDate = endDate.getFullYear() + "-" + (endDate.getMonth() + 1) + "-" + endDateDay
+
+    let NBPQuery = 'http://api.nbp.pl/api/exchangerates/rates/A/' + this.state.waluta + '/' + startDate + '/' + endDate
 
     let outNBP = fetch(NBPQuery, {
       method: 'GET',
@@ -167,71 +206,76 @@ handleChange = (e) => {
         //'Accept': 'application/json',                  
       } 
     })
+    .then(res => res.json())
     .then(res => {
-      if(res.status !== 404)
-      {
-        console.log(res.status)
-        res.json()
-      }
-      else {
-        console.log('error')
-        return ({
-          code: 404,
-        });
-      }
-    })
-    .then(res => {
-      console.log("test")
-      // console.log(res.code)
-      if(res.code === 404) {
-        return ({
-          res: 404
-        });
-      }
-      else {
-        console.log("Trying to GET_CALL")
-        return ({
-          type: "GET_CALL",
-          res: res,
-        });
-      }
+      return ({
+        type: "GET_CALL",
+        res: res,
+      });
     })
     .then(out => {
-      console.log(out)
-      if(out.res !== 404)
-      {
-        console.log(out.res.code)
-        let kursNBP, tabelaNBP
-        var date = new Date()
-        var dateDay = date.getDate()
+      let kursNBP, tabelaNBP, tabelaNBPData
+       var date = new Date()
+      // // var startDate = new Date()
+      // // startDate.setDate(startDate.getDate() - 10)
+      // // var endDate = new Date()
+      // // endDate.setDate(endDate.getDate() - 1)
+      // // var startDateDay
+      // // var endDateDay
+    
       
-        if (date.getDate() < 10) {
-          dateDay = '0' + date.getDate()
-        } else {
-          dateDay = date.getDate()
-        }
-        date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + dateDay
 
-        if(out.res.rates[1].effectiveDate !== date)
-        {
-          kursNBP = out.res.rates[1].mid
-          tabelaNBP = out.res.rates[1].no
-        } else {
-          kursNBP = out.res.rates[0].mid
-          tabelaNBP = out.res.rates[0].no
-        }
-        console.log(kursNBP)
-        console.log(tabelaNBP)
-        this.setState({
-            kurs: kursNBP,
-            tabelaNBP: tabelaNBP
-        })
+      // // if (startDate.getDate() < 10) {
+      // //   startDateDay = '0' + startDate.getDate()
+      // // } else {
+      // //   startDateDay = startDate.getDate()
+      // // }
+      // // startDate = startDate.getFullYear() + "-" + (startDate.getMonth() + 1) + "-" + startDateDay
+
+      // // if (endDate.getDate() < 10) {
+      // //   endDateDay = '0' + endDate.getDate()
+      // // } else {
+      // //   endDateDay = endDate.getDate()
+      // // }
+      // // endDate = endDate.getFullYear() + "-" + (endDate.getMonth() + 1) + "-" + endDateDay
+
+      // console.log("StartDate: " + startDate)
+      // console.log("EndDate: " + endDate)
+
+
+      if(out.res.rates[1].effectiveDate !== date)
+      {
+        kursNBP = out.res.rates[1].mid
+        tabelaNBP = out.res.rates[1].no
+      } else {
+        kursNBP = out.res.rates[0].mid
+        tabelaNBP = out.res.rates[0].no
       }
-      else {
-        console.log("error -1")
-        this.setState({kursError: -1})
-        console.log(this.state.kursError)
+
+      //ostatnia dostepna wartosc - w przypadku daty pobrania zaliczki
+
+      kursNBP = out.res.rates[(out.res.rates.length - 1)].mid
+      tabelaNBP = out.res.rates[(out.res.rates.length - 1)].no
+
+      //wartos z dnia poprzedniego w przeciwnym wypadku
+      if(out.res.rates[(out.res.rates.length - 1)].effectiveDate !== date)
+      {
+        kursNBP = out.res.rates[(out.res.rates.length - 1)].mid
+        tabelaNBP = out.res.rates[(out.res.rates.length - 1)].no
+        tabelaNBPData = out.res.rates[(out.res.rates.length - 1)].effectiveDate
+      } else {
+        kursNBP = out.res.rates[(out.res.rates.length - 2)].mid
+        tabelaNBP = out.res.rates[(out.res.rates.length - 2)].no
+        tabelaNBPData = out.res.rates[(out.res.rates.length - 2)].effectiveDate
       }
+
+      console.log(kursNBP)
+      console.log(tabelaNBP)
+      this.setState({
+          kurs: kursNBP,
+          tabelaNBP: tabelaNBP,
+          tabelaNBPData: tabelaNBPData
+      })
     })
 
     console.log("result")
@@ -333,20 +377,30 @@ handleSubmit = (e) => {
 
       let days = parseInt(s[1]/24)
       let hours = parseInt(s[1]%24)
+      let minutes = parseInt((s[1]*60)%60)
 
-      let tempDuration = days +" dni i " + hours + " godzin(y)"
+      let tempDuration = days +" dni " + hours + " godzin(y)"
+      if (minutes == 0) {
+        minutes = ""
+      }
+      else if (minutes == 1) {
+        minutes = minutes + " minutę"
+      } else {
+        minutes =  minutes + " minut(y)"
+      }
       if (hours == 1)
       {
-        tempDuration = days +" dni i " + hours + " godzinę"
+        tempDuration = days +" dni " + hours + " godzinę"
       }
       if (days == 1) 
       {
-        tempDuration = days +" dzień i " + hours + " godzin(y)"
+        tempDuration = days +" dzień " + hours + " godzin(y)"
         if (hours == 1)
         {
-          tempDuration = days +" dzień i " + hours + " godzinę"
+          tempDuration = days +" dzień " + hours + " godzinę"
         }
       }
+      tempDuration = tempDuration + " " + minutes
 
 
       this.setState({tripDuration: tempDuration })
@@ -447,9 +501,11 @@ render() {
           <br/>  
         </div>
         <div className="row">
-        <div className="col-xs-9 col-md-9"></div>
-          <div className="col-xs-3 col-md-3">
-            Podroż trwała: {this.state.tripDuration}
+        <div className="col-xs-6 col-md-6"></div>
+          <div className="col-xs-6 col-md-6">
+            <span className="pull-right">
+              Podroż trwała: {this.state.tripDuration}
+            </span>
           </div>
         </div>
         <div>
@@ -557,7 +613,7 @@ render() {
              
             </div>
               <div className="row"> 
-                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP}: {this.state.kurs}</label></span></div>
+                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP} z dnia {this.state.tabelaNBPData}: {this.state.kurs}</label></span></div>
                   <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {this.state.totalV} {this.state.waluta} </label></span></div>
                   <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {totalPLN} PLN </label></span></div>
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.kurs} onChange={"aaa"}></input></h3></label></div> */}
