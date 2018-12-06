@@ -29,6 +29,7 @@ class Form extends React.Component {
     ryczaltDojazdyKomunikacja: 0,
     ryczaltNoclegi: 0,
     tripDuration: "",
+    kursError: 0,
 
     outNBP: fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + 'EUR', {
       method: 'GET',
@@ -155,50 +156,87 @@ handleChange = (e) => {
   
   
     //GET NBP DATA
-    let outNBP = fetch('http://api.nbp.pl/api/exchangerates/rates/A/' + this.state.waluta + '/last/2', {
+
+    let NBPQuery = 'http://api.nbp.pl/api/exchangerates/rates/A/' + this.state.waluta + '/2018-12-03'
+
+    let outNBP = fetch(NBPQuery, {
       method: 'GET',
       headers: {
         // 'Access-Control-Allow-Origin': '*',
         //'Content-Type': 'application/json',
         //'Accept': 'application/json',                  
+      } 
+    })
+    .then(res => {
+      if(res.status !== 404)
+      {
+        console.log(res.status)
+        res.json()
+      }
+      else {
+        console.log('error')
+        return ({
+          code: 404,
+        });
       }
     })
-    .then(res => res.json())
     .then(res => {
-      console.log(res)
-      return ({
-        type: "GET_CALL",
-        res: res,
-      });
+      console.log("test")
+      // console.log(res.code)
+      if(res.code === 404) {
+        return ({
+          res: 404
+        });
+      }
+      else {
+        console.log("Trying to GET_CALL")
+        return ({
+          type: "GET_CALL",
+          res: res,
+        });
+      }
     })
     .then(out => {
-      console.log(out.res.code)
-      let kursNBP, tabelaNBP
-      var date = new Date()
-      var dateDay = date.getDate()
-    
-      if (date.getDate() < 10) {
-        dateDay = '0' + date.getDate()
-      } else {
-        dateDay = date.getDate()
-      }
-      date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + dateDay
-
-      if(out.res.rates[1].effectiveDate !== date)
+      console.log(out)
+      if(out.res !== 404)
       {
-        kursNBP = out.res.rates[1].mid
-        tabelaNBP = out.res.rates[1].no
-      } else {
-        kursNBP = out.res.rates[0].mid
-        tabelaNBP = out.res.rates[0].no
+        console.log(out.res.code)
+        let kursNBP, tabelaNBP
+        var date = new Date()
+        var dateDay = date.getDate()
+      
+        if (date.getDate() < 10) {
+          dateDay = '0' + date.getDate()
+        } else {
+          dateDay = date.getDate()
+        }
+        date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + dateDay
+
+        if(out.res.rates[1].effectiveDate !== date)
+        {
+          kursNBP = out.res.rates[1].mid
+          tabelaNBP = out.res.rates[1].no
+        } else {
+          kursNBP = out.res.rates[0].mid
+          tabelaNBP = out.res.rates[0].no
+        }
+        console.log(kursNBP)
+        console.log(tabelaNBP)
+        this.setState({
+            kurs: kursNBP,
+            tabelaNBP: tabelaNBP
+        })
       }
-      console.log(kursNBP)
-      console.log(tabelaNBP)
-      this.setState({
-          kurs: kursNBP,
-          tabelaNBP: tabelaNBP
-      })
+      else {
+        console.log("error -1")
+        this.setState({kursError: -1})
+        console.log(this.state.kursError)
+      }
     })
+
+    console.log("result")
+    console.log(this.state.kursError)
+    if(this.state.kursError === -1) {console.log("brak danych")}
   
     let expansesDetailsAllV = 0
     {
