@@ -208,28 +208,35 @@ func cena(time float64, country string) float64 {
 	modulo = int(time) % 24
 
 	if country == "Polska" {
-		if time < 8 {
-			result = 0
-		} else {
-			if time >= 8 && time < 12 {
-
+		if int(time) > 24 {
+			if time <= 8 {
 				result = countryPrice / 2
 			} else {
-				if time >= 12 && time <= 24 {
-					result = countryPrice
+				result = countryPrice
+			}
+		} else {
+			if time < 8 {
+				result = 0
+			} else {
+				if time >= 8 && time < 12 {
+					result = countryPrice / 2
 				} else {
-					if time > 24 {
-						days := int(time / 24)
-						//Result1 := int(countryPrice) * days
-						result = countryPrice * float64(days)
-						if modulo < 8 {
-							result = result + 0
-						} else {
-							if modulo >= 8 && modulo < 12 {
-								result = result + (countryPrice / 2)
+					if time >= 12 && time <= 24 {
+						result = countryPrice
+					} else {
+						if time > 24 {
+							days := int(time / 24)
+							//Result1 := int(countryPrice) * days
+							result = countryPrice * float64(days)
+							if modulo < 8 {
+								result = result + 0
 							} else {
-								if modulo >= 12 && modulo < 24 {
-									result = result + countryPrice
+								if modulo >= 8 && modulo < 12 {
+									result = result + (countryPrice / 2)
+								} else {
+									if modulo >= 12 && modulo < 24 {
+										result = result + countryPrice
+									}
 								}
 							}
 						}
@@ -237,7 +244,6 @@ func cena(time float64, country string) float64 {
 				}
 			}
 		}
-
 	} else {
 		if time < 8 {
 			result = (countryPrice / 3) * exchangeRate
