@@ -367,7 +367,7 @@ handleSubmit = (e) => {
     console.log((JSON.stringify(response)))
 
     //send POST request to backend server
-    let out = fetch('http://wassv076.einstein.local:8080/', {
+    let out = fetch('http://localhost:8080/', {
       method: 'POST',
       // mode: 'no-cors',
       headers: {
