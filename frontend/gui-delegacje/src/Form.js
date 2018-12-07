@@ -164,6 +164,8 @@ handleChange = (e) => {
     endDate.setDate(endDate.getDate() - 1)
     var startDateDay
     var endDateDay
+    var startDateMonth
+    var endDateMonth
   
     // var dataZaliczka = new Date()
     if(zaliczka[0].data !== "")
@@ -187,14 +189,28 @@ handleChange = (e) => {
     } else {
       startDateDay = startDate.getDate()
     }
-    startDate = startDate.getFullYear() + "-" + (startDate.getMonth() + 1) + "-" + startDateDay
+
+    if ((startDate.getMonth() + 1) < 10) {
+      startDateMonth = '0' + (startDate.getMonth() + 1) 
+    } else {
+      startDateMonth = (startDate.getMonth() + 1) 
+    }
+
+    startDate = startDate.getFullYear() + "-" + startDateMonth + "-" + startDateDay
 
     if (endDate.getDate() < 10) {
       endDateDay = '0' + endDate.getDate()
     } else {
       endDateDay = endDate.getDate()
     }
-    endDate = endDate.getFullYear() + "-" + (endDate.getMonth() + 1) + "-" + endDateDay
+
+    if ((endDate.getMonth() + 1) < 10) {
+      endDateMonth = '0' + (endDate.getMonth() + 1) 
+    } else {
+      endDateMonth = (endDate.getMonth() + 1) 
+    }
+
+    endDate = endDate.getFullYear() + "-" + endDateMonth + "-" + endDateDay
 
     let NBPQuery = 'http://api.nbp.pl/api/exchangerates/rates/A/' + this.state.waluta + '/' + startDate + '/' + endDate
 
@@ -297,7 +313,7 @@ handleChange = (e) => {
       expansesDetailsAllPLN += parseInt(this.state.expansesDetails[i].costPLN) || 0
     }
 
-    expansesDetailsAllPLN = (parseInt(ryczaltDoajzdyBagaze) || 0) + (parseInt(ryczaltDojazdyKomunikacja) || 0) + (parseInt(ryczaltNoclegi) || 0)
+    expansesDetailsAllV += (parseInt(ryczaltDoajzdyBagaze) || 0) + (parseInt(ryczaltDojazdyKomunikacja) || 0) + (parseInt(ryczaltNoclegi) || 0)
 
     this.setState({totalV: expansesDetailsAllV})
     this.setState({totalPLN: expansesDetailsAllPLN})
@@ -373,7 +389,7 @@ handleSubmit = (e) => {
     .then(out => {
       console.log(out.res)
       let s = out.res.split(";")
-      this.setState({total: s[0] - zaliczkaTotal + " PLN"}); //DODAC POLA Z BACKENDU
+      this.setState({total: s[0] - zaliczkaTotal + (((parseInt(this.state.ryczaltDoajzdyBagaze) || 0) + (parseInt(this.state.ryczaltDojazdyKomunikacja) || 0) + (parseInt(this.state.ryczaltNoclegi) || 0)) * this.state.kurs) + " PLN"}); //DODAC POLA Z BACKENDU
 
       let days = parseInt(s[1]/24)
       let hours = parseInt(s[1]%24)
@@ -546,20 +562,20 @@ render() {
               <table className="table-condensed table-no-border" width="100%">
                 <tbody>
                   <tr>
-                    <td width="50%">Ryczały na bagażowych i dojazdy</td>
-                    <td width="50%">
+                    <td width="60%">Ryczały na bagażowych i dojazdy [{this.state.waluta}]</td>
+                    <td width="40%">
                       <input type="number" className="rybagdojazdy" name="rybagdojazdy" id="rybagdojazdy"/>
                     </td>
                   </tr>
                   <tr>
-                    <td width="50%">Ryczały na dojazdy komunikacją miejską</td>
-                    <td width="50%">
+                    <td width="60%">Ryczały na dojazdy komunikacją miejską [{this.state.waluta}]</td>
+                    <td width="40%">
                       <input type="number" className="rydojkom" name="rydojkom" id="rydojkom"/>
                     </td>
                   </tr>
                   <tr>
-                    <td width="50%" >Ryczałt za nocleg</td>
-                    <td width="50%">
+                    <td width="60%" >Ryczałt za nocleg [{this.state.waluta}]</td>
+                    <td width="40%">
                       <input type="number" className="rynoc" name="rynoc" id="rynoc"/>
                     </td>
                   </tr>
