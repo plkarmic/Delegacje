@@ -362,7 +362,8 @@ handleSubmit = (e) => {
         kolacjeCount: this.state.kolacjeCount,
         ryczaltDoajzdyBagaze: this.state.ryczaltDoajzdyBagaze,
         ryczaltDojazdyKomunikacja: this.state.ryczaltDojazdyKomunikacja,
-        ryczaltNoclegi: this.state.ryczaltNoclegi
+        ryczaltNoclegi: this.state.ryczaltNoclegi,
+        exchangeRate: this.state.kurs
     }
     console.log((JSON.stringify(response)))
 
@@ -390,6 +391,8 @@ handleSubmit = (e) => {
       console.log(out.res)
       let s = out.res.split(";")
       this.setState({total: s[0] - zaliczkaTotal + (((parseInt(this.state.ryczaltDoajzdyBagaze) || 0) + (parseInt(this.state.ryczaltDojazdyKomunikacja) || 0) + (parseInt(this.state.ryczaltNoclegi) || 0)) * this.state.kurs) + " PLN"}); //DODAC POLA Z BACKENDU
+
+      var tripCostCurrency
 
       let days = parseInt(s[1]/24)
       let hours = parseInt(s[1]%24)
@@ -420,6 +423,10 @@ handleSubmit = (e) => {
 
 
       this.setState({tripDuration: tempDuration })
+
+      tripCostCurrency = ((parseFloat(this.state.totalV) || 0) + parseFloat(s[2]))
+
+      this.setState({totalV: tripCostCurrency})
     });
     console.log(this.state.total)
     console.log(this.state.tripDuration)
