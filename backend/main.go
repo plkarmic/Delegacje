@@ -213,36 +213,24 @@ func cena(time float64, country string, exchangeRate float64) (float64, float64)
 	modulo = int(time) % 24
 
 	if country == "Polska" {
-		if int(time) > 24 {
-			if time <= 8 {
+		if time <= 8 {
+			result = 0
+		} else {
+			if time > 8 && time <= 12 {
 				result = countryPrice / 2
 			} else {
-				result = countryPrice
-			}
-		} else {
-			if time < 8 {
-				result = 0
-			} else {
-				if time >= 8 && time < 12 {
-					result = countryPrice / 2
+				if time > 12 && time <= 24 {
+					result = countryPrice
 				} else {
-					if time >= 12 && time <= 24 {
-						result = countryPrice
-					} else {
-						if time > 24 {
-							days := int(time / 24)
-							//Result1 := int(countryPrice) * days
-							result = countryPrice * float64(days)
-							if modulo < 8 {
-								result = result + 0
-							} else {
-								if modulo >= 8 && modulo < 12 {
-									result = result + (countryPrice / 2)
-								} else {
-									if modulo >= 12 && modulo < 24 {
-										result = result + countryPrice
-									}
-								}
+					if time > 24 {
+						days := int(time / 24)
+						//Result1 := int(countryPrice) * days
+						result = countryPrice * float64(days)
+						if modulo <= 8 {
+							result = result + (countryPrice / 2)
+						} else {
+							if modulo > 8 {
+								result = result + countryPrice
 							}
 						}
 					}
@@ -307,6 +295,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 	var TripDays int64
 	var calculatedieta float64
 	var CountryFrom string
+	//var zagranica int = 0
 
 	for i := range trip.details {
 		/// SAMOLOT ??
@@ -342,6 +331,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 					airplane = 0
 				}
 			}
+
 		} else {
 			airplane = 0
 			if i == 0 {
@@ -372,10 +362,10 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 				if trip.details[i].BorderTime == zeroDay {
 					trip.details[i].BorderTime = trip.details[i].ArrivalTime
 					//sprawdzenie czy kraj ostatniego przyjazdu jest taki sam jak kraj przyjazdu dla tego wiersza
-					if trip.details[i].CountryTo == trip.details[i-1].CountryFrom && trip.transportType == "Samolot" {
+					if trip.details[i].CountryTo == trip.details[i-1].CountryFrom {
 						czas = trip.details[i].BorderTime.Sub(trip.details[i-1].StartTime)
 						TripDuration += czas
-						price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+						price, priceCurrency = cena(TripDuration.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
 						dieta = price
 						dietaCurrency += priceCurrency
 					} else {
