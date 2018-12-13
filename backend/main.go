@@ -78,6 +78,13 @@ func home(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 }
 
+func showVer(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("version: 1.1")
+
+	defer r.Body.Close()
+}
+
 func readBody(w http.ResponseWriter, r *http.Request) {
 	var bodyBytes []byte
 	if r.Body != nil {
@@ -461,6 +468,7 @@ func calculateTotalCost(trip Trip) float64 { //calculte total cost -> dieta + ot
 func main() {
 	router = mux.NewRouter()
 	router.HandleFunc("/", home).Methods("GET")
+	router.HandleFunc("/version", showVer).Methods("GET")
 	//router.HandleFunc("/", insert).Methods("POST")
 
 	router.HandleFunc("/", readBody).Methods("POST")
