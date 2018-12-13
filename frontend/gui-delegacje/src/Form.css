@@ -30,6 +30,10 @@
   display: none !important;
 }
 
+.version {
+  font-size: 6px;
+}
+
 .btn btn-success {
   background-color: #B2292E !important;
 }

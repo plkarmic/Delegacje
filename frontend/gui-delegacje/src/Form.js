@@ -579,19 +579,19 @@ render() {
                   <tr>
                     <td width="60%">Ryczały na bagażowych i dojazdy [{this.state.waluta}]</td>
                     <td width="40%">
-                      <input type="number" className="rybagdojazdy" name="rybagdojazdy" id="rybagdojazdy"/>
+                      <input type="number" step="0.01" className="rybagdojazdy" name="rybagdojazdy" id="rybagdojazdy"/>
                     </td>
                   </tr>
                   <tr>
                     <td width="60%">Ryczały na dojazdy komunikacją miejską [{this.state.waluta}]</td>
                     <td width="40%">
-                      <input type="number" className="rydojkom" name="rydojkom" id="rydojkom"/>
+                      <input type="number" step="0.01" className="rydojkom" name="rydojkom" id="rydojkom"/>
                     </td>
                   </tr>
                   <tr>
                     <td width="60%" >Ryczałt za nocleg [{this.state.waluta}]</td>
                     <td width="40%">
-                      <input type="number" className="rynoc" name="rynoc" id="rynoc"/>
+                      <input type="number" step="0.01" className="rynoc" name="rynoc" id="rynoc"/>
                     </td>
                   </tr>
                   <tr className="hidden-print">
@@ -685,7 +685,13 @@ render() {
                     <div><label>(data i podpis przełożonego)</label> </div>
                 </div>
             </div>
+            <div className="row">
+              <div className="col-md-12">
+                <span className="version hidden-print">v1.1</span>
+              </div>
+            </div>
       </form>
+      
     )
   }
 }
