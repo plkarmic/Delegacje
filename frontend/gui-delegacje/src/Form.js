@@ -301,19 +301,19 @@ handleChange = (e) => {
     let expansesDetailsAllV = 0
     {
       for (var i = 0; i < this.state.expansesDetails.length; i++) {
-        if(parseInt(this.state.expansesDetails[i].costV) > 0)
-          expansesDetailsAllV += parseInt(this.state.expansesDetails[i].costV)
+        if(parseFloat(this.state.expansesDetails[i].costV) > 0)
+          expansesDetailsAllV += parseFloat(this.state.expansesDetails[i].costV)
       }
     }
 
     let expansesDetailsAllPLN = 0
     for (var i = 0; i < this.state.expansesDetails.length; i++) {
-      var check = parseInt(this.state.expansesDetails[i].costV) || 0
-      if (parseInt(this.state.expansesDetails[i].costPLN) > 0 && check === 0)
-      expansesDetailsAllPLN += parseInt(this.state.expansesDetails[i].costPLN) || 0
+      var check = parseFloat(this.state.expansesDetails[i].costV) || 0
+      if (parseFloat(this.state.expansesDetails[i].costPLN) > 0 && check === 0)
+      expansesDetailsAllPLN += parseFloat(this.state.expansesDetails[i].costPLN) || 0
     }
 
-    expansesDetailsAllV += (parseInt(ryczaltDoajzdyBagaze) || 0) + (parseInt(ryczaltDojazdyKomunikacja) || 0) + (parseInt(ryczaltNoclegi) || 0)
+    expansesDetailsAllV += (parseFloat(ryczaltDoajzdyBagaze) || 0) + (parseFloat(ryczaltDojazdyKomunikacja) || 0) + (parseFloat(ryczaltNoclegi) || 0)
 
     this.setState({totalV: expansesDetailsAllV})
     this.setState({totalPLN: expansesDetailsAllPLN})
@@ -343,11 +343,11 @@ handleSubmit = (e) => {
         this.state.zaliczka)
     let zaliczkaTotal = 0
     for (var i =0; i < this.state.zaliczka.length; i++) {
-      zaliczkaTotal += parseInt(this.state.zaliczka[i].kwota)
+      zaliczkaTotal += parseFloat(this.state.zaliczka[i].kwota)
     }
     let expansesDetailsAll = 0
     for (var i = 0; i < this.state.expansesDetails.length; i++) {
-      expansesDetailsAll += parseInt(this.state.expansesDetails[i].costPLN)
+      expansesDetailsAll += parseFloat(this.state.expansesDetails[i].costPLN)
     }
     e.preventDefault()
     let response = {
@@ -390,9 +390,9 @@ handleSubmit = (e) => {
     .then(out => {
       console.log(out.res)
       let s = out.res.split(";")
-      this.setState({total: s[0] - zaliczkaTotal + (((parseInt(this.state.ryczaltDoajzdyBagaze) || 0) + (parseInt(this.state.ryczaltDojazdyKomunikacja) || 0) + (parseInt(this.state.ryczaltNoclegi) || 0)) * this.state.kurs) + " PLN"}); //DODAC POLA Z BACKENDU
+      this.setState({total: ((s[0] - zaliczkaTotal + (((parseFloat(this.state.ryczaltDoajzdyBagaze) || 0) + (parseFloat(this.state.ryczaltDojazdyKomunikacja) || 0) + (parseFloat(this.state.ryczaltNoclegi) || 0)) * this.state.kurs)) || 0).toFixed(2) + " PLN"}); //DODAC POLA Z BACKENDU
 
-      var tripCostCurrency
+      var tripCostCurrency = 0
 
       let days = parseInt(s[1]/24)
       let hours = parseInt(s[1]%24)
@@ -424,7 +424,15 @@ handleSubmit = (e) => {
 
       this.setState({tripDuration: tempDuration })
 
-      tripCostCurrency = ((parseFloat(this.state.totalV) || 0) + parseFloat(s[2]))
+
+      for (var i = 0; i < this.state.expansesDetails.length; i++) {
+        if(parseFloat(this.state.expansesDetails[i].costV) > 0)
+          tripCostCurrency += parseFloat(this.state.expansesDetails[i].costV) || 0
+          console.log(this.state.expansesDetails[i].costV)
+      }
+
+      tripCostCurrency += (parseFloat(s[2]) || 0) + (parseFloat(this.state.ryczaltDoajzdyBagaze) || 0) + (parseFloat(this.state.ryczaltDojazdyKomunikacja) || 0) + (parseFloat(this.state.ryczaltNoclegi) || 0)
+      tripCostCurrency = tripCostCurrency.toFixed(2)
 
       this.setState({totalV: tripCostCurrency})
     });
