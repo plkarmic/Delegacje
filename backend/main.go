@@ -78,13 +78,6 @@ func home(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 }
 
-func showVer(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("version: 1.1")
-
-	defer r.Body.Close()
-}
-
 func readBody(w http.ResponseWriter, r *http.Request) {
 	var bodyBytes []byte
 	if r.Body != nil {
@@ -245,16 +238,16 @@ func cena(time float64, country string, exchangeRate float64) (float64, float64)
 			}
 		}
 	} else {
-		if time < 8 {
+		if time <= 8 {
 			result = (countryPrice / 3) * exchangeRate
 			resultCurrency = (countryPrice / 3)
 		} else {
-			if time >= 8 && time < 12 {
+			if time > 8 && time <= 12 {
 
 				result = (countryPrice / 2) * exchangeRate
 				resultCurrency = (countryPrice / 2)
 			} else {
-				if time >= 12 && time <= 24 {
+				if time > 12 && time <= 24 {
 					result = countryPrice * exchangeRate
 					resultCurrency = countryPrice
 				} else {
@@ -263,15 +256,15 @@ func cena(time float64, country string, exchangeRate float64) (float64, float64)
 
 						result = countryPrice * float64(days) * exchangeRate
 						resultCurrency = countryPrice * float64(days)
-						if modulo < 8 {
+						if modulo <= 8 {
 							result = result + ((countryPrice / 3) * exchangeRate)
 							resultCurrency = resultCurrency + (countryPrice / 3)
 						} else {
-							if modulo >= 8 && modulo < 12 {
+							if modulo > 8 && modulo <= 12 {
 								result = result + ((countryPrice / 2) * exchangeRate)
 								resultCurrency = resultCurrency + (countryPrice / 2)
 							} else {
-								if modulo >= 12 && modulo < 24 {
+								if modulo > 12 && modulo < 24 {
 									result = result + (countryPrice * exchangeRate)
 									resultCurrency = resultCurrency + countryPrice
 								}
@@ -372,7 +365,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 					if trip.details[i].CountryTo == trip.details[i-1].CountryFrom {
 						czas = trip.details[i].BorderTime.Sub(trip.details[i-1].StartTime)
 						TripDuration += czas
-						price, priceCurrency = cena(TripDuration.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+						price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
 						dieta = price
 						dietaCurrency += priceCurrency
 					} else {
@@ -420,10 +413,14 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 	TripDays = (int64(TripDuration.Hours()) / 24)
 	dietatemp := (float64(TripDays) * countryPrice) * exchangeRate
 	//dieta jest liczona w zaleznosci od kraju (dla polski inna stawka procentowa niz dla zagranicy)
-	if trip.details[j].CountryFrom != "Polska" {
-		calculatedieta = dieta - ((dietatemp * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.kolacjeCount / float64(TripDays))))
+	if trip.sniadanieCount != 0 || trip.obiadyCount != 0 || trip.kolacjeCount != 0 {
+		if trip.details[j].CountryFrom != "Polska" {
+			calculatedieta = dieta - ((dietatemp * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.kolacjeCount / float64(TripDays))))
+		} else {
+			calculatedieta = dieta - ((dietatemp * float64(0.25) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.50) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.25) * (trip.kolacjeCount / float64(TripDays))))
+		}
 	} else {
-		calculatedieta = dieta - ((dietatemp * float64(0.25) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.50) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.25) * (trip.kolacjeCount / float64(TripDays))))
+		calculatedieta = dieta
 	}
 
 	//calculatedieta = dieta - ((dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dieta * float64(0.15) * (trip.sniadanieCount / float64(TripDays))))
@@ -468,7 +465,6 @@ func calculateTotalCost(trip Trip) float64 { //calculte total cost -> dieta + ot
 func main() {
 	router = mux.NewRouter()
 	router.HandleFunc("/", home).Methods("GET")
-	router.HandleFunc("/version", showVer).Methods("GET")
 	//router.HandleFunc("/", insert).Methods("POST")
 
 	router.HandleFunc("/", readBody).Methods("POST")
@@ -486,6 +482,6 @@ func main() {
 
 	handler := c.Handler(router)
 
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	log.Fatal(http.ListenAndServe(":3000", handler))
 
 }
