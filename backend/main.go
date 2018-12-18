@@ -80,7 +80,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 func showVer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("version: 1.1")
+	json.NewEncoder(w).Encode("version: 1.2")
 
 	defer r.Body.Close()
 }
