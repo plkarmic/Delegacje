@@ -78,16 +78,6 @@ func home(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 }
 
-<<<<<<< HEAD
-func showVer(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("version: 1.2")
-
-	defer r.Body.Close()
-}
-
-=======
->>>>>>> 55d20f4c9d3bfea32e2506bd41f2ec76f4ca7ab8
 func readBody(w http.ResponseWriter, r *http.Request) {
 	var bodyBytes []byte
 	if r.Body != nil {
@@ -474,7 +464,7 @@ func calculateTotalCost(trip Trip) float64 { //calculte total cost -> dieta + ot
 
 func showVer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("version: 1.1")
+	json.NewEncoder(w).Encode("version: 1.2")
 
 	defer r.Body.Close()
 }
@@ -500,6 +490,6 @@ func main() {
 
 	handler := c.Handler(router)
 
-	log.Fatal(http.ListenAndServe(":3000", handler))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 
 }
