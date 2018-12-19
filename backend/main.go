@@ -416,7 +416,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 	if trip.sniadanieCount != 0 || trip.obiadyCount != 0 || trip.kolacjeCount != 0 {
 		if trip.details[j].CountryFrom != "Polska" {
 			calculatedieta = dieta - ((dietatemp * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.kolacjeCount / float64(TripDays))))
-		} else {
+			} else {
 			calculatedieta = dieta - ((dietatemp * float64(0.25) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.50) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.25) * (trip.kolacjeCount / float64(TripDays))))
 		}
 	} else {

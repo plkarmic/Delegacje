@@ -298,13 +298,13 @@ handleChange = (e) => {
     console.log(this.state.kursError)
     if(this.state.kursError === -1) {console.log("brak danych")}
   
-    let expansesDetailsAllV = 0
-    {
-      for (var i = 0; i < this.state.expansesDetails.length; i++) {
-        if(parseFloat(this.state.expansesDetails[i].costV) > 0)
-          expansesDetailsAllV += parseFloat(this.state.expansesDetails[i].costV)
-      }
-    }
+    let expansesDetailsAllV = 0 //MM -> totalV przed potraceniem zaliczki?!?
+    // {
+    //   for (var i = 0; i < this.state.expansesDetails.length; i++) {
+    //     if(parseFloat(this.state.expansesDetails[i].costV) > 0)
+    //       expansesDetailsAllV += parseFloat(this.state.expansesDetails[i].costV)
+    //   }
+    // }
 
     let expansesDetailsAllPLN = 0
     for (var i = 0; i < this.state.expansesDetails.length; i++) {
