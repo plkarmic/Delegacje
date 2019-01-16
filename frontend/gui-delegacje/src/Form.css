@@ -81,6 +81,19 @@
   margin-top: 10px;
 }
 
+.extra-padding {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.min-width {
+  min-width: 10ch;
+}
+
+.max-width {
+  max-width: 15ch;
+}
+
 @media print {
   .transportType {
     display: block;

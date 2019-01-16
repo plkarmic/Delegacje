@@ -13,7 +13,7 @@ Invoke-Command -ComputerName WASSV076 -ScriptBlock {
     
     #docker stop delegacje
 
-    docker build -t delegacje:stage13 .
-    docker run -p 5000:5000 -p 8080:8080 --name delegacje delegacje:stage13
+    docker build -t delegacje:latest .
+    docker run -p 5000:5000 -p 8080:8080 --name delegacje delegacje:latest
 
 }

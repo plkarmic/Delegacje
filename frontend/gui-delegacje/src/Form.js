@@ -502,13 +502,13 @@ render() {
               <td rowSpan='2' className="col-xs-2 col-md-2 text-center hidden-print"><h5><label>Śr. lokomocji</label></h5></td>
             </tr>
             <tr>
-              <td className="text-center"><label className="print-width-th">Kraj</label></td>
-              <td className="text-center"><label>Miejscowość</label></td>
-              <td className="text-center"><label>Data i godzina</label></td>
-              <td className="text-center"><label className="print-width-th">Kraj</label></td>
-              <td className="text-center"><label className="print-width-th">Miejscowość</label></td>
-              <td className="text-center"><label className="print-width-th2">Data i godz.</label></td>
-              <td className="text-center"><label className="print-width-th2">Data i godz.</label></td>
+              <td className="text-center min-width"><label className="print-width-th">Kraj</label></td>
+              <td className="text-center max-width"><label>Miejscowość</label></td>
+              <td className="text-center max-width"><label>Data i godzina</label></td>
+              <td className="text-center min-width"><label className="print-width-th">Kraj</label></td>
+              <td className="text-center max-width"><label className="print-width-th">Miejscowość</label></td>
+              <td className="text-center max-width"><label className="print-width-th2">Data i godz.</label></td>
+              <td className="text-center max-width"><label className="print-width-th2">Data i godz.</label></td>
               {/* <td className="text-center hidden-print"><label className="print-width-th2"></label></td> */}
             </tr>
           </thead>
@@ -606,18 +606,18 @@ render() {
                       </td>
                     </td>
                   </tr>
-                  <table width="70%" className="pull-right">
+                  <table width="80%" className="pull-right">
                     <tr className="hidden-print">
-                        <td className="pull-right pull-right-center">śniadania</td>
-                        <td width="15%">
+                        <td className="pull-right pull-right-center extra-padding">śniadania</td>
+                        <td width="20%">
                           <input type="number" className="sniadanieCount" name="sniadanieCount" id="sniadanieCount"/>
                         </td>
-                        <td className="pull-right pull-right-center">obiady</td>
-                        <td width="15%">
+                        <td className="pull-right pull-right-center extra-padding">obiady</td>
+                        <td width="20%">
                           <input type="number" className="obiadyCount" name="obiadyCount" id="obiadyCount"/>
                         </td>
-                        <td className="pull-right pull-right-center">kolacje</td>
-                        <td width="15%">
+                        <td className="pull-right pull-right-center extra-padding">kolacje</td>
+                        <td width="20%">
                           <input type="number" className="kolacjeCount" name="kolacjeCount" id="kolacjeCount"/>
                         </td>
                     </tr>
@@ -703,7 +703,7 @@ render() {
             </div>
             <div className="row">
               <div className="col-md-12">
-                <span className="version hidden-print">v1.1</span>
+                <span className="version hidden-print">v1.5@2018-01-16</span>
               </div>
             </div>
       </form>
