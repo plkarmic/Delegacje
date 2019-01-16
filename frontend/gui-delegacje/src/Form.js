@@ -576,7 +576,7 @@ render() {
             <div className="col-xs-5 col-md-5">
               <table className="table-condensed table-no-border" width="100%">
                 <tbody>
-                  <tr>
+                  {/* <tr>
                     <td width="60%">Ryczały na bagażowych i dojazdy [{this.state.waluta}]</td>
                     <td width="40%">
                       <input type="number" step="0.01" className="rybagdojazdy" name="rybagdojazdy" id="rybagdojazdy"/>
@@ -593,7 +593,7 @@ render() {
                     <td width="40%">
                       <input type="number" step="0.01" className="rynoc" name="rynoc" id="rynoc"/>
                     </td>
-                  </tr>
+                  </tr> */}
                   <tr className="hidden-print">
                     <td colSpan="2">
                       <td className="pull-right">
@@ -606,9 +606,25 @@ render() {
                       </td>
                     </td>
                   </tr>
-                  <tr className="hidden-print">
+                  <table width="70%" className="pull-right">
+                    <tr className="hidden-print">
+                        <td className="pull-right pull-right-center">śniadania</td>
+                        <td width="15%">
+                          <input type="number" className="sniadanieCount" name="sniadanieCount" id="sniadanieCount"/>
+                        </td>
+                        <td className="pull-right pull-right-center">obiady</td>
+                        <td width="15%">
+                          <input type="number" className="obiadyCount" name="obiadyCount" id="obiadyCount"/>
+                        </td>
+                        <td className="pull-right pull-right-center">kolacje</td>
+                        <td width="15%">
+                          <input type="number" className="kolacjeCount" name="kolacjeCount" id="kolacjeCount"/>
+                        </td>
+                    </tr>
+                  </table>
+                  {/* <tr className="hidden-print">
                       <td className="pull-right pull-right-center">śniadania</td>
-                      <td>
+                      <td width="10%">
                         <input type="number" className="sniadanieCount" name="sniadanieCount" id="sniadanieCount"/>
                       </td>
                   </tr>
@@ -623,7 +639,7 @@ render() {
                       <td>
                         <input type="number" className="kolacjeCount" name="kolacjeCount" id="kolacjeCount"/>
                       </td>
-                  </tr>
+                  </tr> */}
                 </tbody>
               </table>
             </div>
