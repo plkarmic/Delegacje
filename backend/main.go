@@ -363,6 +363,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 					trip.details[i].BorderTime = trip.details[i].ArrivalTime
 					//sprawdzenie czy kraj ostatniego przyjazdu jest taki sam jak kraj przyjazdu dla tego wiersza
 					if trip.details[i].CountryTo == trip.details[i-1].CountryFrom {
+						TripDuration = 0 //zmiana 20.01.2019
 						czas = trip.details[i].BorderTime.Sub(trip.details[i-1].StartTime)
 						TripDuration += czas
 						price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
@@ -416,7 +417,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 	if trip.sniadanieCount != 0 || trip.obiadyCount != 0 || trip.kolacjeCount != 0 {
 		if trip.details[j].CountryFrom != "Polska" {
 			calculatedieta = dieta - ((dietatemp * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.kolacjeCount / float64(TripDays))))
-			} else {
+		} else {
 			calculatedieta = dieta - ((dietatemp * float64(0.25) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.50) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.25) * (trip.kolacjeCount / float64(TripDays))))
 		}
 	} else {
@@ -464,7 +465,7 @@ func calculateTotalCost(trip Trip) float64 { //calculte total cost -> dieta + ot
 
 func showVer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("version: 1.2")
+	json.NewEncoder(w).Encode("version: 1.3")
 
 	defer r.Body.Close()
 }
@@ -490,6 +491,6 @@ func main() {
 
 	handler := c.Handler(router)
 
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	log.Fatal(http.ListenAndServe(":3000", handler))
 
 }
