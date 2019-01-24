@@ -26,6 +26,6 @@
 
   @media print {
         .food_country, .food_breakfast, .food_lunch, .food_dinner  {
-                display: none;
+                display: none; 
         }
 }

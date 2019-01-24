@@ -629,7 +629,7 @@ render() {
           </div>
 
           {/* <div className="row"> */}
-          <div className={this.state.ryczaltWyzywienie == 0 ? 'hidden' : 'row'}>
+          <div className={this.state.ryczaltWyzywienie == 0 ? 'hidden hidden-print' : 'row hidden-print'}>
             <div className="col-xs-6 col-md-6"> </div>
             <div className="col-xs-6 col-md-6">
               <table name="formTable" id="formTable" className="table table-bordered table-condensed">
