@@ -40,6 +40,9 @@ type RowTrip struct {
 	ArrivalTime   time.Time
 	BorderTime    time.Time
 	TransportType string
+	Breakfast     float64
+	Lunch         float64
+	Dinner        float64
 }
 type Expanses struct {
 	Remark  string
@@ -135,6 +138,9 @@ func getTripDetails(rawData string) Trip {
 		rowDetail.CountryTo = strings.Title(strings.ToLower(gjson.Get(value.String(), "destinationC").String()))      //upper case to lower case and first letter as captial
 		rowDetail.CountryFrom = strings.Title(strings.ToLower(gjson.Get(value.String(), "country").String()))         //upper case to lower case and first letter as captial
 		rowDetail.TransportType = strings.Title(strings.ToLower(gjson.Get(value.String(), "transportType").String())) //upper case to lower case and first letter as captial
+		rowDetail.Breakfast = gjson.Get(value.String(), "breakfast").Float()
+		rowDetail.Lunch = gjson.Get(value.String(), "lunch").Float()
+		rowDetail.Dinner = gjson.Get(value.String(), "dinner").Float()
 		trip.details = append(trip.details, rowDetail)
 		return true
 	})
@@ -286,10 +292,11 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 	//var prevBorderDate time.Time //use to track borderDate from previous row
 	var TripDuration time.Duration
 	var j int
-	//var k int = 0
-	var boardercrossed int = 0
-	var firstairplanerow int = 0
-	var airplane int = 0
+	var k int = 0
+	//var i int = 0
+	// var boardercrossed int = 0
+	// var firstairplanerow int = 0
+	// var airplane int = 0
 	var zeroDay, _ = time.Parse("01/02/2006 15:04", "01/01/0001 00:00")
 	var price float64
 	var priceCurrency float64
@@ -297,166 +304,276 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 	var dietaCurrency float64
 	var TripDays int64
 	var calculatedieta float64
+	var RowsSum int = 0
 	//var CountryFrom string
 	//var zagranica int = 0
 
+	// for i := range trip.details {
+	// 	/// SAMOLOT ??
+	// 	if trip.details[i].TransportType == "Samolot" {
+	// 		if airplane == 0 {
+	// 			firstairplanerow = i
+	// 			trip.details[i].BorderTime = trip.details[i].StartTime
+	// 			//CountryFrom = trip.details[i].CountryFrom
+	// 			airplane = 1
+	// 			// if i != 0 {
+	// 			// 	trip.details[i].BorderTime = trip.details[i].ArrivalTime
+	// 			// 	czas = trip.details[i].ArrivalTime.Sub(trip.details[i-1].BorderTime)
+	// 			// 	TripDuration += czas
+	// 			// 	dietaTemp, dietaCurrencyTemp := cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+	// 			// 	dieta += dietaTemp
+	// 			// 	dietaCurrency += dietaCurrencyTemp
+
+	// 			// }
+	// 		} else if airplane == 1 {
+	// 			// if trip.details[i].CountryTo != CountryFrom { // stwierdzilem ze to glupota
+
+	// 			// 		trip.details[i].BorderTime = trip.details[i].ArrivalTime
+	// 			// 		czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+	// 			// 		TripDuration += czas
+	// 			// 		dietaTemp, dietaCurrencyTemp := cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+	// 			// 		dieta += dietaTemp
+	// 			// 		dietaCurrency += dietaCurrencyTemp
+	// 			// } else {
+	// 			if trip.details[firstairplanerow].CountryTo == trip.details[i].CountryFrom && boardercrossed == 0 { //nowy warunek zmiana 24.01.2019
+	// 				trip.details[i].BorderTime = trip.details[i].ArrivalTime
+	// 				czas = trip.details[i].BorderTime.Sub(trip.details[firstairplanerow].BorderTime)
+	// 				TripDuration = czas
+	// 				price, priceCurrency := cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+	// 				dieta = price
+	// 				dietaCurrency = priceCurrency
+	// 			} else {
+	// 				trip.details[i].BorderTime = trip.details[i].ArrivalTime
+	// 				czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+	// 				TripDuration += czas
+	// 				price, priceCurrency := cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+	// 				dieta += price
+	// 				dietaCurrency += priceCurrency
+	// 				//airplane = 0
+	// 			}
+
+	// 			//}
+	// 		}
+
+	// 	} else {
+	// 		//airplane = 0
+	// 		if i == 0 {
+	// 			if trip.details[i].CountryFrom == "Polska" { //zbedne poniższy else też obliczy diete dla Polska
+	// 				if trip.details[i].BorderTime == zeroDay {
+	// 					trip.details[i].BorderTime = trip.details[i].ArrivalTime
+	// 				}
+	// 				czas = trip.details[i].ArrivalTime.Sub(trip.details[i].StartTime)
+	// 				TripDuration += czas
+	// 				price, _ = cena(czas.Hours(), "Polska", trip.exchangeRate)
+	// 				dieta = price
+
+	// 			} else {
+	// 				if trip.details[i].BorderTime == zeroDay {
+	// 					trip.details[i].BorderTime = trip.details[i].ArrivalTime
+	// 					// czas = trip.details[i].StartTime.Sub(trip.details[i].BorderTime)
+	// 					// price = cena(czas.Hours(), trip.details[i].CountryFrom)
+	// 					// dieta += price
+	// 				}
+	// 				czas = trip.details[i].StartTime.Sub(trip.details[i].BorderTime)
+	// 				TripDuration += czas
+	// 				price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+	// 				dieta += price
+	// 				dietaCurrency += priceCurrency
+
+	// 			}
+	// 		} else {
+	// 			if trip.details[i].BorderTime == zeroDay {
+	// 				trip.details[i].BorderTime = trip.details[i].ArrivalTime
+	// 				//sprawdzenie czy kraj ostatniego przyjazdu jest taki sam jak kraj przyjazdu dla tego wiersza
+	// 				if trip.details[i].CountryTo == trip.details[i-1].CountryFrom {
+	// 					if i == 1 { //zmiana 22.01.2019
+	// 						//k++
+	// 						TripDuration = 0
+	// 						czas = trip.details[i].BorderTime.Sub(trip.details[i-1].StartTime)
+	// 						TripDuration += czas
+	// 						price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+	// 						dieta = price
+	// 						dietaCurrency += priceCurrency
+	// 					} else {
+	// 						//k++
+	// 						czas = trip.details[i].BorderTime.Sub(trip.details[i-1].StartTime)
+	// 						TripDuration += czas
+	// 						price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+	// 						dieta = price // zmienic na =+ price !!!!!!
+	// 						dietaCurrency += priceCurrency
+	// 					}
+
+	// 				} else {
+	// 					//k = 0
+	// 					czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+	// 					TripDuration += czas
+	// 					price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+	// 					//czas1 := czas.Hours()
+	// 					dieta += price
+	// 					dietaCurrency += priceCurrency
+	// 				}
+	// 			} else {
+	// 				boardercrossed = i
+	// 				czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
+	// 				TripDuration += czas
+	// 				price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+	// 				dieta += price
+	// 				dietaCurrency += priceCurrency
+	// 			}
+	// 		}
+	// 	}
+	// 	j = i
+	// }
 	for i := range trip.details {
-		/// SAMOLOT ??
-		if trip.details[i].TransportType == "Samolot" {
-			if airplane == 0 {
-				firstairplanerow = i
-				trip.details[i].BorderTime = trip.details[i].StartTime
-				//CountryFrom = trip.details[i].CountryFrom
-				airplane = 1
-				// if i != 0 {
-				// 	trip.details[i].BorderTime = trip.details[i].ArrivalTime
-				// 	czas = trip.details[i].ArrivalTime.Sub(trip.details[i-1].BorderTime)
-				// 	TripDuration += czas
-				// 	dietaTemp, dietaCurrencyTemp := cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
-				// 	dieta += dietaTemp
-				// 	dietaCurrency += dietaCurrencyTemp
+		RowsSum = i
+	}
 
-				// }
-			} else if airplane == 1 {
-				// if trip.details[i].CountryTo != CountryFrom { // stwierdzilem ze to glupota
-
-				// 		trip.details[i].BorderTime = trip.details[i].ArrivalTime
-				// 		czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
-				// 		TripDuration += czas
-				// 		dietaTemp, dietaCurrencyTemp := cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
-				// 		dieta += dietaTemp
-				// 		dietaCurrency += dietaCurrencyTemp
-				// } else {
-				if trip.details[firstairplanerow].CountryTo == trip.details[i].CountryFrom && boardercrossed == 0 { //nowy warunek zmiana 24.01.2019
-					trip.details[i].BorderTime = trip.details[i].ArrivalTime
-					czas = trip.details[i].BorderTime.Sub(trip.details[firstairplanerow].BorderTime)
-					TripDuration = czas
-					price, priceCurrency := cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
-					dieta = price
-					dietaCurrency = priceCurrency
-				} else {
-					trip.details[i].BorderTime = trip.details[i].ArrivalTime
-					czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
-					TripDuration += czas
-					price, priceCurrency := cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
-					dieta += price
-					dietaCurrency += priceCurrency
-					//airplane = 0
+	//	for i := range trip.details{
+	//i := 0
+	for i := 0; i <= RowsSum; i++ {
+		if trip.details[i].CountryFrom == trip.details[i].CountryTo {
+			for k = i + 1; k <= RowsSum; k++ {
+				if trip.details[i].CountryFrom != trip.details[k].CountryTo {
+					j = k
+					break
 				}
-
-				//}
+				j = k + 1
+				if j > RowsSum {
+					j = j - 1
+				}
 			}
-
-		} else {
-			//airplane = 0
-			if i == 0 {
-				if trip.details[i].CountryFrom == "Polska" { //zbedne poniższy else też obliczy diete dla Polska
-					if trip.details[i].BorderTime == zeroDay {
-						trip.details[i].BorderTime = trip.details[i].ArrivalTime
+			if trip.details[j].BorderTime == zeroDay {
+				trip.details[j].BorderTime = trip.details[j].ArrivalTime
+				czas = trip.details[j].BorderTime.Sub(trip.details[i].StartTime)
+				TripDuration += czas
+				price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+				dieta = price
+				dietaCurrency = priceCurrency
+				TripDays = (int64(czas.Hours()) / 24)
+				if trip.details[i].Breakfast != 0 || trip.details[i].Lunch != 0 || trip.details[i].Dinner != 0 {
+					if trip.details[i].CountryFrom != "Polska" {
+						calculatedieta += dieta - ((dieta * float64(0.15) * (trip.details[i].Breakfast / float64(TripDays))) + (dieta * float64(0.30) * (trip.details[i].Lunch / float64(TripDays))) + (dieta * float64(0.30) * (trip.details[i].Dinner / float64(TripDays))))
+					} else {
+						calculatedieta += dieta - ((dieta * float64(0.25) * (trip.details[i].Breakfast / float64(TripDays))) + (dieta * float64(0.50) * (trip.details[i].Lunch / float64(TripDays))) + (dieta * float64(0.25) * (trip.details[i].Dinner / float64(TripDays))))
 					}
-					czas = trip.details[i].ArrivalTime.Sub(trip.details[i].StartTime)
-					TripDuration += czas
-					price, _ = cena(czas.Hours(), "Polska", trip.exchangeRate)
-					dieta = price
-
 				} else {
-					if trip.details[i].BorderTime == zeroDay {
-						trip.details[i].BorderTime = trip.details[i].ArrivalTime
-						// czas = trip.details[i].StartTime.Sub(trip.details[i].BorderTime)
-						// price = cena(czas.Hours(), trip.details[i].CountryFrom)
-						// dieta += price
-					}
-					czas = trip.details[i].StartTime.Sub(trip.details[i].BorderTime)
-					TripDuration += czas
-					price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
-					dieta += price
-					dietaCurrency += priceCurrency
-
+					calculatedieta += dieta
 				}
 			} else {
-				if trip.details[i].BorderTime == zeroDay {
-					trip.details[i].BorderTime = trip.details[i].ArrivalTime
-					//sprawdzenie czy kraj ostatniego przyjazdu jest taki sam jak kraj przyjazdu dla tego wiersza
-					if trip.details[i].CountryTo == trip.details[i-1].CountryFrom {
-						if i == 1 { //zmiana 22.01.2019
-							//k++
-							TripDuration = 0
-							czas = trip.details[i].BorderTime.Sub(trip.details[i-1].StartTime)
-							TripDuration += czas
-							price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
-							dieta = price
-							dietaCurrency += priceCurrency
-						} else {
-							//k++
-							czas = trip.details[i].BorderTime.Sub(trip.details[i-1].StartTime)
-							TripDuration += czas
-							price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
-							dieta = price // zmienic na =+ price !!!!!!
-							dietaCurrency += priceCurrency
-						}
-
+				czas = trip.details[j].BorderTime.Sub(trip.details[i].StartTime)
+				TripDuration += czas
+				price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+				dieta = price
+				dietaCurrency = priceCurrency
+				TripDays = (int64(czas.Hours()) / 24)
+				if trip.details[i+1].Breakfast != 0 || trip.details[i+1].Lunch != 0 || trip.details[i+1].Dinner != 0 {
+					if trip.details[i].CountryFrom != "Polska" {
+						calculatedieta += dieta - ((dieta * float64(0.15) * (trip.details[i].Breakfast / float64(TripDays))) + (dieta * float64(0.30) * (trip.details[i].Lunch / float64(TripDays))) + (dieta * float64(0.30) * (trip.details[i].Dinner / float64(TripDays))))
 					} else {
-						//k = 0
-						czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
-						TripDuration += czas
-						price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
-						//czas1 := czas.Hours()
-						dieta += price
-						dietaCurrency += priceCurrency
+						calculatedieta += dieta - ((dieta * float64(0.25) * (trip.details[i].Breakfast / float64(TripDays))) + (dieta * float64(0.50) * (trip.details[i].Lunch / float64(TripDays))) + (dieta * float64(0.25) * (trip.details[i].Dinner / float64(TripDays))))
 					}
 				} else {
-					boardercrossed = i
-					czas = trip.details[i].BorderTime.Sub(trip.details[i-1].BorderTime)
-					TripDuration += czas
-					price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
-					dieta += price
-					dietaCurrency += priceCurrency
+					calculatedieta += dieta
+				}
+
+			}
+			i = j
+		} else {
+			if trip.details[i].BorderTime == zeroDay {
+				trip.details[i].BorderTime = trip.details[i].StartTime
+			}
+			for k = i + 1; k <= RowsSum; k++ {
+				if trip.details[i].CountryTo != trip.details[k].CountryTo {
+					j = k
+					break
+				}
+				j = k + 1
+				if j > RowsSum {
+					j = j - 1
 				}
 			}
+			if trip.details[j].BorderTime == zeroDay {
+				trip.details[j].BorderTime = trip.details[j].ArrivalTime
+				czas = trip.details[j].BorderTime.Sub(trip.details[i].BorderTime)
+				TripDuration += czas
+				price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryTo, trip.exchangeRate)
+				dieta = price
+				dietaCurrency = priceCurrency
+				TripDays = (int64(czas.Hours()) / 24)
+				if trip.details[i+1].Breakfast != 0 || trip.details[i+1].Lunch != 0 || trip.details[i+1].Dinner != 0 {
+					if trip.details[i].CountryTo != "Polska" {
+						calculatedieta += dieta - ((dieta * float64(0.15) * (trip.details[i+1].Breakfast / float64(TripDays))) + (dieta * float64(0.30) * (trip.details[i+1].Lunch / float64(TripDays))) + (dieta * float64(0.30) * (trip.details[i+1].Dinner / float64(TripDays))))
+					} else {
+						calculatedieta += dieta - ((dieta * float64(0.25) * (trip.details[i+1].Breakfast / float64(TripDays))) + (dieta * float64(0.50) * (trip.details[i+1].Lunch / float64(TripDays))) + (dieta * float64(0.25) * (trip.details[i+1].Dinner / float64(TripDays))))
+					}
+				} else {
+					calculatedieta += dieta
+				}
+			} else {
+				czas = trip.details[j].BorderTime.Sub(trip.details[i].BorderTime)
+				TripDuration += czas
+				price, priceCurrency = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+				dieta = price
+				dietaCurrency = priceCurrency
+				TripDays = (int64(czas.Hours()) / 24)
+				if trip.details[i+1].Breakfast != 0 || trip.details[i+1].Lunch != 0 || trip.details[i+1].Dinner != 0 {
+					if trip.details[i].CountryFrom != "Polska" {
+						calculatedieta += dieta - ((dieta * float64(0.15) * (trip.details[i+1].Breakfast / float64(TripDays))) + (dieta * float64(0.30) * (trip.details[i+1].Lunch / float64(TripDays))) + (dieta * float64(0.30) * (trip.details[i+1].Dinner / float64(TripDays))))
+					} else {
+						calculatedieta += dieta - ((dieta * float64(0.25) * (trip.details[i+1].Breakfast / float64(TripDays))) + (dieta * float64(0.50) * (trip.details[i+1].Lunch / float64(TripDays))) + (dieta * float64(0.25) * (trip.details[i+1].Dinner / float64(TripDays))))
+					}
+				} else {
+					calculatedieta += dieta
+				}
+
+			}
+
 		}
-		j = i
-	}
+		i = j
 
-	if trip.details[j].BorderTime != zeroDay && trip.details[j].TransportType != "Samolot" {
-		czas = trip.details[j].ArrivalTime.Sub(trip.details[j].BorderTime)
-		TripDuration += czas
-		price, priceCurrency = cena(czas.Hours(), trip.details[j].CountryTo, trip.exchangeRate)
-		dieta += price
-		dietaCurrency += priceCurrency
 	}
+	//	}
 
-	jsonFile, _ := os.Open("./CountryTable1.json")
-	defer jsonFile.Close()
-	byteValue, err := ioutil.ReadAll(jsonFile)
-	if err != nil {
-		panic(err)
-	}
+	// if trip.details[j].BorderTime != zeroDay && trip.details[j].TransportType != "Samolot" {
+	// 	czas = trip.details[j].ArrivalTime.Sub(trip.details[j].BorderTime)
+	// 	TripDuration += czas
+	// 	price, priceCurrency = cena(czas.Hours(), trip.details[j].CountryTo, trip.exchangeRate)
+	// 	dieta += price
+	// 	dietaCurrency += priceCurrency
+	// }
 
-	bodySTR := string(byteValue)
-	country := trip.details[j].CountryFrom
-	var dietatemp float64
-	Countrypricequerry := country + ".0.kwota"
-	// Countrycurrencyquerry := country + ".0.waluta"
-	countryPrice := gjson.Get(bodySTR, Countrypricequerry).Float()
-	// countryCurrency := gjson.Get(bodySTR, Countrycurrencyquerry).String()
-	exchangeRate := trip.exchangeRate
-	TripDays = (int64(TripDuration.Hours()) / 24)
-	if exchangeRate == 0 {
-		dietatemp = (float64(TripDays) * countryPrice)
-	} else {
-		dietatemp = (float64(TripDays) * countryPrice) * exchangeRate
-	}
+	// jsonFile, _ := os.Open("./CountryTable1.json")
+	// defer jsonFile.Close()
+	// byteValue, err := ioutil.ReadAll(jsonFile)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	//dieta jest liczona w zaleznosci od kraju (dla polski inna stawka procentowa niz dla zagranicy)
-	if trip.sniadanieCount != 0 || trip.obiadyCount != 0 || trip.kolacjeCount != 0 {
-		if trip.details[j].CountryFrom != "Polska" {
-			calculatedieta = dieta - ((dietatemp * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.kolacjeCount / float64(TripDays))))
-		} else {
-			calculatedieta = dieta - ((dietatemp * float64(0.25) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.50) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.25) * (trip.kolacjeCount / float64(TripDays))))
-		}
-	} else {
-		calculatedieta = dieta
-	}
+	// bodySTR := string(byteValue)
+	// country := trip.details[j].CountryFrom
+	// var dietatemp float64
+	// Countrypricequerry := country + ".0.kwota"
+	// // Countrycurrencyquerry := country + ".0.waluta"
+	// countryPrice := gjson.Get(bodySTR, Countrypricequerry).Float()
+	// // countryCurrency := gjson.Get(bodySTR, Countrycurrencyquerry).String()
+	// exchangeRate := trip.exchangeRate
+	// TripDays = (int64(TripDuration.Hours()) / 24)
+	// if exchangeRate == 0 {
+	// 	dietatemp = (float64(TripDays) * countryPrice)
+	// } else {
+	// 	dietatemp = (float64(TripDays) * countryPrice) * exchangeRate
+	// }
+
+	// //dieta jest liczona w zaleznosci od kraju (dla polski inna stawka procentowa niz dla zagranicy)
+	// if trip.sniadanieCount != 0 || trip.obiadyCount != 0 || trip.kolacjeCount != 0 {
+	// 	if trip.details[j].CountryFrom != "Polska" {
+	// 		calculatedieta = dieta - ((dietatemp * float64(0.15) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.30) * (trip.kolacjeCount / float64(TripDays))))
+	// 	} else {
+	// 		calculatedieta = dieta - ((dietatemp * float64(0.25) * (trip.sniadanieCount / float64(TripDays))) + (dietatemp * float64(0.50) * (trip.obiadyCount / float64(TripDays))) + (dietatemp * float64(0.25) * (trip.kolacjeCount / float64(TripDays))))
+	// 	}
+	// } else {
+	// 	calculatedieta = dieta
+	// }
 
 	return calculatedieta, TripDuration.Hours(), dietaCurrency
 
@@ -471,7 +588,7 @@ func calculateTotalCost(trip Trip) float64 { //calculte total cost -> dieta + ot
 
 func showVer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("version: 1.3")
+	json.NewEncoder(w).Encode("version: 1.4")
 
 	defer r.Body.Close()
 }
