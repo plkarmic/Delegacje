@@ -4,12 +4,13 @@ import AdditionalExpansesRowInput from "./AdditionalExpansesRowInput"
 import FirstPage from "./firstPage.js"
 import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
 import './Form.css'
+import { Food } from './Food.js'
 
 class Form extends React.Component {
   
   state = {
     transportTypeAll: "Samochód",
-    tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType: ""}],
+    tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType: "", breakfast: 0, lunch: 0, dinner: 0}],
     expansesDetails: [{remark:"", costV: "", costPLN: ""}],
     total: "",
     totalV: "",
@@ -86,6 +87,32 @@ class Form extends React.Component {
   
   }
 
+updateFood = (e) => {
+    let tripDetails = [...this.state.tripDetails]
+    if (["food_country", "food_breakfast", "food_lunch", "food_dinner"].includes(e.target.className) ) {
+      // let tripDetails = [...this.state.tripDetails]
+      tripDetails[e.target.dataset.id][e.target.className] = e.target.value
+      this.setState({ tripDetails })
+    }
+}
+
+
+calculateFood = () => {
+  let breakfastC =0 , lunchC =0, dinnerC = 0
+  for (var i = 0; i < this.state.tripDetails.length; i++)
+  {
+    breakfastC += parseInt(this.state.tripDetails[i].breakfast) || 0
+    lunchC +=parseInt(this.state.tripDetails[i].lunch) || 0
+    dinnerC +=parseInt(this.state.tripDetails[i].dinner) || 0
+  }
+
+  this.setState({
+    sniadanieCount: breakfastC,
+    obiadyCount: lunchC,
+    kolacjeCount: dinnerC
+  })
+
+}
 
 handleChange = (e) => {
     //if (["name", "age"].includes(e.target.className) ) {
@@ -151,6 +178,10 @@ handleChange = (e) => {
     } else if(["rynoc"].includes(e.target.className)) {
       ryczaltNoclegi = e.target.value
       this.setState({ ryczaltNoclegi: e.target.value })
+    } else if (["food_country", "food_breakfast", "food_lunch", "food_dinner"].includes(e.target.className) ) {
+      // let tripDetails = [...this.state.tripDetails]
+      tripDetails[e.target.dataset.id][e.target.className.split("_")[1]] = e.target.value
+      this.setState({ tripDetails })
     }
     else {
       this.setState({ [e.target.name]: e.target.value.toUpperCase() })
@@ -318,10 +349,12 @@ handleChange = (e) => {
     this.setState({totalV: expansesDetailsAllV})
     this.setState({totalPLN: expansesDetailsAllPLN})
   
+    this.calculateFood()
+
   } 
 addTrip = (e) => {
     this.setState((prevState) => ({
-      tripDetails: [...prevState.tripDetails, {country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType:this.state.transportTypeAll}],
+      tripDetails: [...prevState.tripDetails, {country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType:this.state.transportTypeAll, breakfast:0, lunch:0, dinner:0}],
     }));
   }
 addExpanses = (e) => {
@@ -570,30 +603,14 @@ render() {
               <span className="pull-right"><button onClick={this.addExpanses} className="btn btn-info">Dodaj wydatek</button> </span>
             </div>
           </div>
+
           <div className="row"><br></br></div>
+
           <div className="row">
             <div className="col-xs-7 col-md-7"></div>
             <div className="col-xs-5 col-md-5">
               <table className="table-condensed table-no-border" width="100%">
                 <tbody>
-                  {/* <tr>
-                    <td width="60%">Ryczały na bagażowych i dojazdy [{this.state.waluta}]</td>
-                    <td width="40%">
-                      <input type="number" step="0.01" className="rybagdojazdy" name="rybagdojazdy" id="rybagdojazdy"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width="60%">Ryczały na dojazdy komunikacją miejską [{this.state.waluta}]</td>
-                    <td width="40%">
-                      <input type="number" step="0.01" className="rydojkom" name="rydojkom" id="rydojkom"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width="60%" >Ryczałt za nocleg [{this.state.waluta}]</td>
-                    <td width="40%">
-                      <input type="number" step="0.01" className="rynoc" name="rynoc" id="rynoc"/>
-                    </td>
-                  </tr> */}
                   <tr className="hidden-print">
                     <td colSpan="2">
                       <td className="pull-right">
@@ -602,48 +619,42 @@ render() {
                             <option value="1" >korzystałam(em)</option>
                             <option value="0">nie korzystałam(em)</option>
                             </select>
-                        z wyżywienia obejmującego:
+                            z wyżywienia<font className={this.state.ryczaltWyzywienie == 0 ? 'hidden' : ''}> obejmującego:</font>
                       </td>
                     </td>
                   </tr>
-                  <table width="80%" className="pull-right">
-                    <tr className="hidden-print">
-                        <td className="pull-right pull-right-center extra-padding">śniadania</td>
-                        <td width="20%">
-                          <input type="number" className="sniadanieCount" name="sniadanieCount" id="sniadanieCount"/>
-                        </td>
-                        <td className="pull-right pull-right-center extra-padding">obiady</td>
-                        <td width="20%">
-                          <input type="number" className="obiadyCount" name="obiadyCount" id="obiadyCount"/>
-                        </td>
-                        <td className="pull-right pull-right-center extra-padding">kolacje</td>
-                        <td width="20%">
-                          <input type="number" className="kolacjeCount" name="kolacjeCount" id="kolacjeCount"/>
-                        </td>
-                    </tr>
-                  </table>
-                  {/* <tr className="hidden-print">
-                      <td className="pull-right pull-right-center">śniadania</td>
-                      <td width="10%">
-                        <input type="number" className="sniadanieCount" name="sniadanieCount" id="sniadanieCount"/>
-                      </td>
-                  </tr>
-                  <tr className="hidden-print">
-                      <td className="pull-right pull-right-center">obiady</td>
-                      <td>
-                        <input type="number" className="obiadyCount" name="obiadyCount" id="obiadyCount"/>
-                      </td>
-                  </tr>
-                  <tr className="hidden-print">
-                      <td className="pull-right pull-right-center">kolacje</td>
-                      <td>
-                        <input type="number" className="kolacjeCount" name="kolacjeCount" id="kolacjeCount"/>
-                      </td>
-                  </tr> */}
                 </tbody>
               </table>
             </div>
           </div>
+
+          {/* <div className="row"> */}
+          <div className={this.state.ryczaltWyzywienie == 0 ? 'hidden' : 'row'}>
+            <div className="col-xs-6 col-md-6"> </div>
+            <div className="col-xs-6 col-md-6">
+              <table name="formTable" id="formTable" className="table table-bordered table-condensed">
+              <thead>
+                <tr>
+                  <th colSpan="4" className="text-center"><label>Wyżywienie</label></th>
+                </tr>
+                <tr className="table table-bordered table-condensed">
+                  <th className="text-center" width="40%"><label>Kraj</label></th>
+                  <th className="text-center" width="20%"><label>Śniadania</label></th>
+                  <th className="text-center" width="20%"><label>Obiady</label></th>
+                  <th className="text-center" width="20%"><label>Kolacje</label></th>
+                </tr>
+              </thead>
+              <tbody>
+                <Food tripDetails={tripDetails} readOnly={this.state.ryczaltWyzywienie}/>
+              </tbody>
+            </table>
+
+
+
+              
+            </div>
+          </div>
+        
 
           <div className="row">
             <div className="col-lg-2">
@@ -688,7 +699,6 @@ render() {
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.total}></input></h3></label></div> */}
           </div>
         </div>
-        
         <div className="footer">
                 <div className="col-xs-6 col-md-6">
                   <div> <label>Jednocześnie oświadczam, {wyzywnienieTXT} <br/> z bezpłatnego zakwaterowania wyżywienia. <br /> (obejmującego: śniadania {sniadanieCount}, obiady: {obiadyCount}, kolacje {kolacjeCount})</label> </div>
