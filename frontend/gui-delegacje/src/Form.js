@@ -713,7 +713,7 @@ render() {
             </div>
             <div className="row">
               <div className="col-md-12">
-                <span className="version hidden-print">v1.5@2018-01-16</span>
+                <span className="version hidden-print">v1.7@2018-01-25</span>
               </div>
             </div>
       </form>
