@@ -442,6 +442,9 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 					j = j - 1
 				}
 			}
+			if k > RowsSum {
+				j = RowsSum
+			}
 			if trip.details[j].BorderTime == zeroDay {
 				trip.details[j].BorderTime = trip.details[j].ArrivalTime
 				czas = trip.details[j].BorderTime.Sub(trip.details[i].StartTime)
@@ -491,6 +494,9 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 				if j > RowsSum {
 					j = j - 1
 				}
+			}
+			if k > RowsSum {
+				j = RowsSum
 			}
 			if trip.details[j].BorderTime == zeroDay {
 				trip.details[j].BorderTime = trip.details[j].ArrivalTime
@@ -588,7 +594,7 @@ func calculateTotalCost(trip Trip) float64 { //calculte total cost -> dieta + ot
 
 func showVer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("version: 1.4")
+	json.NewEncoder(w).Encode("version: 1.4.1@2019-01-25")
 
 	defer r.Body.Close()
 }
@@ -614,6 +620,6 @@ func main() {
 
 	handler := c.Handler(router)
 
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	log.Fatal(http.ListenAndServe(":3000", handler))
 
 }
