@@ -285,6 +285,14 @@ func getFoodDetails(trip Trip, country string) (float64, float64, float64) {
 
 	return breakfast, lunch, dinner
 }
+func stringinarray(str string, list []string) bool {
+	for _, v := range list {
+		if v == str {
+			return true
+		}
+	}
+	return false
+}
 
 func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 
@@ -310,6 +318,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 	for i := range trip.details {
 		RowsSum = i
 	}
+	countryarray := make([]string, RowsSum)
 
 	//	for i := range trip.details{
 	//i := 0
@@ -351,15 +360,20 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 					TripDays = 1
 				}
 				//dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
-				if trip.details[i].Breakfast != 0 || trip.details[i].Lunch != 0 || trip.details[i].Dinner != 0 {
-					if trip.details[i].CountryFrom != "Polska" {
-						breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
-						dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
-						calculatedieta += dieta - ((dietatemp * float64(0.15) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.30) * (lunch / float64(TripDays))) + (dietatemp * float64(0.30) * (dinner / float64(TripDays))))
+				if !stringinarray(trip.details[i].CountryFrom, countryarray) {
+					breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
+					if breakfast != 0 || lunch != 0 || dinner != 0 {
+						if trip.details[i].CountryFrom != "Polska" {
+							dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
+							countryarray = append(countryarray, trip.details[i].CountryFrom)
+							calculatedieta += dieta - ((dietatemp * float64(0.15) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.30) * (lunch / float64(TripDays))) + (dietatemp * float64(0.30) * (dinner / float64(TripDays))))
+						} else {
+							dietatemp := (CountryPrice * float64(TripDays))
+							countryarray = append(countryarray, trip.details[i].CountryFrom)
+							calculatedieta += dieta - ((dietatemp * float64(0.25) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.50) * (lunch / float64(TripDays))) + (dietatemp * float64(0.25) * (dinner / float64(TripDays))))
+						}
 					} else {
-						breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
-						dietatemp := (CountryPrice * float64(TripDays))
-						calculatedieta += dieta - ((dietatemp * float64(0.25) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.50) * (lunch / float64(TripDays))) + (dietatemp * float64(0.25) * (dinner / float64(TripDays))))
+						calculatedieta += dieta
 					}
 				} else {
 					calculatedieta += dieta
@@ -375,15 +389,20 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 					TripDays = 1
 				}
 				//dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
-				if trip.details[i].Breakfast != 0 || trip.details[i].Lunch != 0 || trip.details[i].Dinner != 0 {
-					if trip.details[i].CountryFrom != "Polska" {
-						breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
-						dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
-						calculatedieta += dieta - ((dietatemp * float64(0.15) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.30) * (lunch / float64(TripDays))) + (dietatemp * float64(0.30) * (dinner / float64(TripDays))))
+				if !stringinarray(trip.details[i].CountryFrom, countryarray) {
+					breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
+					if breakfast != 0 || lunch != 0 || dinner != 0 {
+						if trip.details[i].CountryFrom != "Polska" {
+							dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
+							countryarray = append(countryarray, trip.details[i].CountryFrom)
+							calculatedieta += dieta - ((dietatemp * float64(0.15) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.30) * (lunch / float64(TripDays))) + (dietatemp * float64(0.30) * (dinner / float64(TripDays))))
+						} else {
+							dietatemp := (CountryPrice * float64(TripDays))
+							countryarray = append(countryarray, trip.details[i].CountryFrom)
+							calculatedieta += dieta - ((dietatemp * float64(0.25) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.50) * (lunch / float64(TripDays))) + (dietatemp * float64(0.25) * (dinner / float64(TripDays))))
+						}
 					} else {
-						breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
-						dietatemp := (CountryPrice * float64(TripDays))
-						calculatedieta += dieta - ((dietatemp * float64(0.25) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.50) * (lunch / float64(TripDays))) + (dietatemp * float64(0.25) * (dinner / float64(TripDays))))
+						calculatedieta += dieta
 					}
 				} else {
 					calculatedieta += dieta
@@ -420,15 +439,20 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 					TripDays = 1
 				}
 				//dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
-				if trip.details[i].Breakfast != 0 || trip.details[i].Lunch != 0 || trip.details[i].Dinner != 0 {
-					if trip.details[i].CountryFrom != "Polska" {
-						breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
-						dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
-						calculatedieta += dieta - ((dietatemp * float64(0.15) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.30) * (lunch / float64(TripDays))) + (dietatemp * float64(0.30) * (dinner / float64(TripDays))))
+				if !stringinarray(trip.details[i].CountryTo, countryarray) {
+					breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryTo)
+					if breakfast != 0 || lunch != 0 || dinner != 0 {
+						if trip.details[i].CountryTo != "Polska" {
+							dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
+							countryarray = append(countryarray, trip.details[i].CountryTo)
+							calculatedieta += dieta - ((dietatemp * float64(0.15) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.30) * (lunch / float64(TripDays))) + (dietatemp * float64(0.30) * (dinner / float64(TripDays))))
+						} else {
+							dietatemp := (CountryPrice * float64(TripDays))
+							countryarray = append(countryarray, trip.details[i].CountryTo)
+							calculatedieta += dieta - ((dietatemp * float64(0.25) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.50) * (lunch / float64(TripDays))) + (dietatemp * float64(0.25) * (dinner / float64(TripDays))))
+						}
 					} else {
-						breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
-						dietatemp := (CountryPrice * float64(TripDays))
-						calculatedieta += dieta - ((dietatemp * float64(0.25) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.50) * (lunch / float64(TripDays))) + (dietatemp * float64(0.25) * (dinner / float64(TripDays))))
+						calculatedieta += dieta
 					}
 				} else {
 					calculatedieta += dieta
@@ -444,15 +468,20 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 					TripDays = 1
 				}
 				//dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
-				if trip.details[i].Breakfast != 0 || trip.details[i].Lunch != 0 || trip.details[i].Dinner != 0 {
-					if trip.details[i].CountryFrom != "Polska" {
-						breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
-						dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
-						calculatedieta += dieta - ((dietatemp * float64(0.15) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.30) * (lunch / float64(TripDays))) + (dietatemp * float64(0.30) * (dinner / float64(TripDays))))
+				if !stringinarray(trip.details[i].CountryFrom, countryarray) {
+					breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
+					if breakfast != 0 || lunch != 0 || dinner != 0 {
+						if trip.details[i].CountryFrom != "Polska" {
+							dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
+							countryarray = append(countryarray, trip.details[i].CountryFrom)
+							calculatedieta += dieta - ((dietatemp * float64(0.15) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.30) * (lunch / float64(TripDays))) + (dietatemp * float64(0.30) * (dinner / float64(TripDays))))
+						} else {
+							dietatemp := (CountryPrice * float64(TripDays))
+							countryarray = append(countryarray, trip.details[i].CountryFrom)
+							calculatedieta += dieta - ((dietatemp * float64(0.25) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.50) * (lunch / float64(TripDays))) + (dietatemp * float64(0.25) * (dinner / float64(TripDays))))
+						}
 					} else {
-						breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
-						dietatemp := (CountryPrice * float64(TripDays))
-						calculatedieta += dieta - ((dietatemp * float64(0.25) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.50) * (lunch / float64(TripDays))) + (dietatemp * float64(0.25) * (dinner / float64(TripDays))))
+						calculatedieta += dieta
 					}
 				} else {
 					calculatedieta += dieta
@@ -478,7 +507,7 @@ func calculateTotalCost(trip Trip) float64 { //calculte total cost -> dieta + ot
 
 func showVer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("version: 1.5.1@2019-02-5")
+	json.NewEncoder(w).Encode("version: 1.6@2019-02-05")
 
 	defer r.Body.Close()
 }
