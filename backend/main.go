@@ -297,15 +297,10 @@ func stringinarray(str string, list []string) bool {
 func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 
 	var czas time.Duration
-	//var prevBorderDate time.Time //use to track borderDate from previous row
 	var TripDuration time.Duration
 	var j int
 	var k int = 0
 	var Border int = 0
-	//var i int = 0
-	// var boardercrossed int = 0
-	// var firstairplanerow int = 0
-	// var airplane int = 0
 	var zeroDay, _ = time.Parse("01/02/2006 15:04", "01/01/0001 00:00")
 	var price float64
 	var priceCurrency float64
@@ -438,7 +433,6 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 				if TripDays == 0 {
 					TripDays = 1
 				}
-				//dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
 				if !stringinarray(trip.details[i].CountryTo, countryarray) {
 					breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryTo)
 					if breakfast != 0 || lunch != 0 || dinner != 0 {
@@ -467,7 +461,6 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 				if TripDays == 0 {
 					TripDays = 1
 				}
-				//dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
 				if !stringinarray(trip.details[i].CountryFrom, countryarray) {
 					breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
 					if breakfast != 0 || lunch != 0 || dinner != 0 {
@@ -507,7 +500,7 @@ func calculateTotalCost(trip Trip) float64 { //calculte total cost -> dieta + ot
 
 func showVer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("version: 1.6@2019-02-05")
+	json.NewEncoder(w).Encode("version: 1.6@2019-02-06")
 
 	defer r.Body.Close()
 }
