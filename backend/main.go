@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -189,7 +190,7 @@ func cena(time float64, country string, exchangeRate float64) (float64, float64,
 	var result float64
 	var resultCurrency float64
 
-	var modulo int
+	var modulo float64
 
 	jsonFile, _ := os.Open("./CountryTable1.json")
 	defer jsonFile.Close()
@@ -203,7 +204,7 @@ func cena(time float64, country string, exchangeRate float64) (float64, float64,
 	countryPrice := gjson.Get(bodySTR, Countrypricequerry).Float()
 	fmt.Println(exchangeRate)
 	fmt.Println(countryPrice)
-	modulo = int(time) % 24
+	modulo = math.Mod(time, 24)
 
 	if country == "Polska" {
 		if time <= 8 {
