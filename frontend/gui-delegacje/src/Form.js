@@ -172,39 +172,43 @@ getCountryCurrencyExpanse = (country,idx) => {
         expansesDetails
       })
     })
-
+    // .then((out)=> {
+    //   this.getCountryCurrencyExpanseRate(out.res,idx,this.state.tabelaNBPData)
+    //   })
 }
 
-getCountryCurrencyExpanseRate = (waluta,idx,date) => {
+
+getCountryCurrencyExpanseRate = (idx) => {
   let expansesDetails = [...this.state.expansesDetails]
 
-  let NBPQuery = 'http://api.nbp.pl/api/exchangerates/rates/A/' + waluta + '/' + date
+  
+    let NBPQuery = 'http://api.nbp.pl/api/exchangerates/rates/A/' + expansesDetails[idx].costVCurrency + '/' + this.state.tabelaNBPData
 
-  console.log(NBPQuery)
+    console.log(NBPQuery)
 
-  fetch(NBPQuery, {
-    method: 'GET',
-    headers: {
-      // 'Access-Control-Allow-Origin': '*',
-      //'Content-Type': 'application/json',
-      //'Accept': 'application/json',                  
-    }
-  })
-  .then(res => res.json())
-  .then(res => {
-    return ({
-      type: "GET_CALL",
-      res: res,
-    });
-  })
-  .then(out => {
-    console.log(out.res.rates[0].mid)
-    expansesDetails[idx]["costVCurrencyRate"] = out.res.rates[0].mid
-    this.setState({
-      expansesDetails
+    fetch(NBPQuery, {
+      method: 'GET',
+      headers: {
+        // 'Access-Control-Allow-Origin': '*',
+        //'Content-Type': 'application/json',
+        //'Accept': 'application/json',                  
+      }
     })
-  })
-
+    .then(res => res.json())
+    .then(res => {
+      return ({
+        type: "GET_CALL",
+        res: res,
+      });
+    })
+    .then(out => {
+      console.log("TEST:" + out.res.rates[0].mid)
+      expansesDetails[idx]['costVCurrencyRate'] = out.res.rates[0].mid
+      console.log(expansesDetails)
+      this.setState({
+        expansesDetails
+      })
+    })
 }
 
 handleChange = (e) => {
@@ -439,7 +443,7 @@ addTrip = (e) => {
   }
 addExpanses = (e) => {
   this.setState((prevState) => ({
-    expansesDetails: [...prevState.expansesDetails, {remark:"", costV:"", costPLN:""}],
+    expansesDetails: [...prevState.expansesDetails, {remark:"", remarkCountry:"", costV: "", costVCurrency:"", costVCurrencyRate: "", costPLN: ""}],
   }));
   }
 
@@ -449,20 +453,22 @@ addZaliczka = (e) => {
   }));
   }
 
-getExpansesRates = () => {
-  for (var i = 0; i < this.state.expansesDetails.length; i++) {
+// getExpansesRates = () => {
+//   for (var i = 0; i < this.state.expansesDetails.length; i++) {
     
  
-    this.state.expansesDetails[i].costVCurrencyRate = (this.getCountryCurrencyExpanseRate(this.state.expansesDetails[i].costVCurrency,i,this.state.tabelaNBPData) || 1)
+//     this.state.expansesDetails[i].costVCurrencyRate = (this.getCountryCurrencyExpanseRate(this.state.expansesDetails[i].costVCurrency,i,this.state.tabelaNBPData) || 1)
 
     
-  }
-}
+//   }
+// }
 
 calculateExpanses = () => {
    
   for (var i = 0; i < this.state.expansesDetails.length; i++) {
     
+    this.getCountryCurrencyExpanseRate(i);
+
     this.state.expansesDetails[i].costPLN = parseFloat(this.state.expansesDetails[i].costV) * parseFloat(this.state.expansesDetails[i].costVCurrencyRate)
   }
 }
@@ -473,6 +479,8 @@ handleSubmit = (e) => {
         this.state.tripDetails,
         this.state.zaliczka)
     let zaliczkaTotal = 0
+     
+
     for (var i =0; i < this.state.zaliczka.length; i++) {
       zaliczkaTotal += parseFloat(this.state.zaliczka[i].kwota)
     }
