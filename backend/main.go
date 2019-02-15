@@ -166,22 +166,25 @@ func getTripDetails(rawData string) Trip {
 }
 
 func getExchangeReate(currency string) float64 {
-	url := "http://api.nbp.pl/api/exchangerates/rates/A/" + currency
 
-	req, _ := http.NewRequest("GET", url, nil)
+	//url := "http://api.nbp.pl/api/exchangerates/rates/A/" + currency
+	url := "http://localhost:3000/"
+	response, err := http.Get(url)
 
-	req.Header.Add("cache-control", "no-cache")
-
-	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		panic(err)
+		fmt.Printf("%s", err)
+		os.Exit(1)
+		return 1
 	}
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
-
-	return gjson.Get(string(body), "rates.0.mid").Float()
-
-	//body.rates[0].mid
+	defer response.Body.Close()
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		fmt.Printf("%s", err)
+		os.Exit(1)
+	}
+	fmt.Printf("%s\n", string(contents))
+	rate := gjson.Get(string(contents), "rates.0.mid").Float()
+	return rate
 
 }
 
@@ -200,9 +203,12 @@ func cena(time float64, country string, exchangeRate float64) (float64, float64,
 	}
 	bodySTR := string(byteValue)
 	Countrypricequerry := country + ".0.kwota"
+	Countrypricequerry2 := country + ".0.waluta"
 
 	countryPrice := gjson.Get(bodySTR, Countrypricequerry).Float()
+	CountryShortCurrency := gjson.Get(bodySTR, Countrypricequerry2).String()
 	fmt.Println(exchangeRate)
+	exchangeRate = getExchangeReate(CountryShortCurrency)
 	fmt.Println(countryPrice)
 	modulo = math.Mod(time, 24)
 
@@ -455,7 +461,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 			} else {
 				czas = trip.details[j].BorderTime.Sub(trip.details[i].BorderTime)
 				TripDuration += czas
-				price, priceCurrency, CountryPrice = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+				price, priceCurrency, CountryPrice = cena(czas.Hours(), trip.details[j].CountryFrom, trip.exchangeRate)
 				dieta = price
 				dietaCurrency = priceCurrency
 				TripDays = (int64(czas.Hours()) / 24)
@@ -463,11 +469,11 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 					TripDays = 1
 				}
 				if !stringinarray(trip.details[i].CountryFrom, countryarray) {
-					breakfast, lunch, dinner := getFoodDetails(trip, trip.details[i].CountryFrom)
+					breakfast, lunch, dinner := getFoodDetails(trip, trip.details[j].CountryFrom)
 					if breakfast != 0 || lunch != 0 || dinner != 0 {
 						if trip.details[i].CountryFrom != "Polska" {
 							dietatemp := (CountryPrice * float64(TripDays) * trip.exchangeRate)
-							countryarray = append(countryarray, trip.details[i].CountryFrom)
+							countryarray = append(countryarray, trip.details[j].CountryFrom)
 							calculatedieta += dieta - ((dietatemp * float64(0.15) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.30) * (lunch / float64(TripDays))) + (dietatemp * float64(0.30) * (dinner / float64(TripDays))))
 						} else {
 							dietatemp := (CountryPrice * float64(TripDays))
@@ -527,6 +533,6 @@ func main() {
 
 	handler := c.Handler(router)
 
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	log.Fatal(http.ListenAndServe(":3000", handler))
 
 }
