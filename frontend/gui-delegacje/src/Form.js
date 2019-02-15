@@ -10,8 +10,8 @@ class Form extends React.Component {
   
   state = {
     transportTypeAll: "Samochód",
-    tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType: "", breakfast: 0, lunch: 0, dinner: 0}],
-    expansesDetails: [{remark:"", costV: "", costPLN: ""}],
+    tripDetails: [{country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType: "", breakfast: 0, lunch: 0, dinner: 0, currency:""}],
+    expansesDetails: [{remark:"", remarkCountry:"", costV: "", costVCurrency:"", costVCurrencyRate: "", costPLN: ""}],
     total: "",
     totalV: "",
     totalPLN: "",
@@ -114,6 +114,99 @@ calculateFood = () => {
 
 }
 
+getCountryCurrency = (country,idx) => {
+  let tripDetails = [...this.state.tripDetails]
+
+  fetch('http://localhost:8080/countryCurrency?country=' + country, {
+      method: 'GET',
+      headers: {
+        // 'Access-Control-Allow-Origin': '*',
+        //'Content-Type': 'application/json',
+        //'Accept': 'application/json',                  
+      }
+    })
+    .then(res => res.json())
+    .then(res => {
+      console.log(res)
+      return ({
+        type: "GET_CALL",
+        res: res,
+      });
+    })
+    .then(out => {
+      console.log(out)
+      console.log(idx)
+      console.log(tripDetails)
+      tripDetails[idx]['currency'] = out.res
+      this.setState({
+        tripDetails 
+      })
+    })
+
+}
+getCountryCurrencyExpanse = (country,idx) => {
+  let expansesDetails = [...this.state.expansesDetails]
+
+  fetch('http://localhost:8080/countryCurrency?country=' + country, {
+      method: 'GET',
+      headers: {
+        // 'Access-Control-Allow-Origin': '*',
+        //'Content-Type': 'application/json',
+        //'Accept': 'application/json',                  
+      }
+    })
+    .then(res => res.json())
+    .then(res => {
+      console.log(res)
+      return ({
+        type: "GET_CALL",
+        res: res,
+      });
+    })
+    .then(out => {
+      console.log(out)
+      console.log(idx)
+      console.log(expansesDetails)
+      expansesDetails[idx]["costVCurrency"] = out.res
+      this.setState({
+        expansesDetails
+      })
+    })
+
+}
+
+getCountryCurrencyExpanseRate = (waluta,idx,date) => {
+  let expansesDetails = [...this.state.expansesDetails]
+
+  let NBPQuery = 'http://api.nbp.pl/api/exchangerates/rates/A/' + waluta + '/' + date
+
+  console.log(NBPQuery)
+
+  fetch(NBPQuery, {
+    method: 'GET',
+    headers: {
+      // 'Access-Control-Allow-Origin': '*',
+      //'Content-Type': 'application/json',
+      //'Accept': 'application/json',                  
+    }
+  })
+  .then(res => res.json())
+  .then(res => {
+    return ({
+      type: "GET_CALL",
+      res: res,
+    });
+  })
+  .then(out => {
+    console.log(out.res.rates[0].mid)
+    expansesDetails[idx]["costVCurrencyRate"] = out.res.rates[0].mid
+    this.setState({
+      expansesDetails
+    })
+  })
+
+}
+
 handleChange = (e) => {
     //if (["name", "age"].includes(e.target.className) ) {
     let ryczaltDoajzdyBagaze = this.state.ryczaltDoajzdyBagaze
@@ -124,13 +217,24 @@ handleChange = (e) => {
     if (["country", "city", "destinationC", "cityD", "startTime", "endTime", "borderTime", "transportType"].includes(e.target.className) ) {
       // let tripDetails = [...this.state.tripDetails]
       tripDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
+      tripDetails[e.target.dataset.id]["currency"] = this.getCountryCurrency(tripDetails[e.target.dataset.id]["country"],e.target.dataset.id)
+
       this.setState({ tripDetails }, () => console.log(this.state.transportType))
-    }else if (["remark", "costV", "costPLN"].includes(e.target.className)){
+    }else if (["remark", "costV", "costPLN","remarkCountry"].includes(e.target.className)){
       let expansesDetails = [...this.state.expansesDetails]
+      
       expansesDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
-      if(expansesDetails[e.target.dataset.id]["costV"] !== ''){
-        expansesDetails[e.target.dataset.id]["costPLN"] = expansesDetails[e.target.dataset.id][e.target.className] * this.state.kurs
-      }
+      expansesDetails[e.target.dataset.id]['costVCurrency'] = this.getCountryCurrencyExpanse(expansesDetails[e.target.dataset.id]['remarkCountry'],e.target.dataset.id)
+
+      // if(expansesDetails[e.target.dataset.id]['costVCurrency'] !== ''){
+      //   expansesDetails[e.target.dataset.id]['costVCurrencyRate'] = this.getCountryCurrencyExpanseRate("a",e.target.dataset.id,this.state.tabelaNBPData)
+      // }
+
+      // if(expansesDetails[e.target.dataset.id]["costV"] !== ''){
+      //   expansesDetails[e.target.dataset.id]["costPLN"] = expansesDetails[e.target.dataset.id][e.target.className] * (parseFloat(expansesDetails[e.target.dataset.id]['costVCurrencyRate']) || 1)
+      // }
+     
+
       this.setState({expansesDetails}, () => console.log(this.state.expansesDetails))
     }else if (["userNameForm data", "userNameForm nrDow", "userNameForm waluta", "userNameForm kwota", "userNameForm slownie"].includes(e.target.className)) {
       zaliczka[e.target.dataset.id][e.target.className.substr(13)] = e.target.value.toUpperCase()
@@ -262,32 +366,8 @@ handleChange = (e) => {
     })
     .then(out => {
       let kursNBP, tabelaNBP, tabelaNBPData
-       var date = new Date()
-      // // var startDate = new Date()
-      // // startDate.setDate(startDate.getDate() - 10)
-      // // var endDate = new Date()
-      // // endDate.setDate(endDate.getDate() - 1)
-      // // var startDateDay
-      // // var endDateDay
-    
-      
-
-      // // if (startDate.getDate() < 10) {
-      // //   startDateDay = '0' + startDate.getDate()
-      // // } else {
-      // //   startDateDay = startDate.getDate()
-      // // }
-      // // startDate = startDate.getFullYear() + "-" + (startDate.getMonth() + 1) + "-" + startDateDay
-
-      // // if (endDate.getDate() < 10) {
-      // //   endDateDay = '0' + endDate.getDate()
-      // // } else {
-      // //   endDateDay = endDate.getDate()
-      // // }
-      // // endDate = endDate.getFullYear() + "-" + (endDate.getMonth() + 1) + "-" + endDateDay
-
-      // console.log("StartDate: " + startDate)
-      // console.log("EndDate: " + endDate)
+      var date = new Date()
+   
 
 
       if(out.res.rates[1].effectiveDate !== date)
@@ -321,7 +401,7 @@ handleChange = (e) => {
       this.setState({
           kurs: kursNBP,
           tabelaNBP: tabelaNBP,
-          tabelaNBPData: tabelaNBPData
+          tabelaNBPData: tabelaNBPData 
       })
     })
 
@@ -354,7 +434,7 @@ handleChange = (e) => {
   } 
 addTrip = (e) => {
     this.setState((prevState) => ({
-      tripDetails: [...prevState.tripDetails, {country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType:this.state.transportTypeAll, breakfast:0, lunch:0, dinner:0}],
+      tripDetails: [...prevState.tripDetails, {country:"", destinationC:"", startTime:"", endTime:"", borderTime:"", transportType:this.state.transportTypeAll, breakfast:0, lunch:0, dinner:0, currency:""}],
     }));
   }
 addExpanses = (e) => {
@@ -369,6 +449,24 @@ addZaliczka = (e) => {
   }));
   }
 
+getExpansesRates = () => {
+  for (var i = 0; i < this.state.expansesDetails.length; i++) {
+    
+ 
+    this.state.expansesDetails[i].costVCurrencyRate = (this.getCountryCurrencyExpanseRate(this.state.expansesDetails[i].costVCurrency,i,this.state.tabelaNBPData) || 1)
+
+    
+  }
+}
+
+calculateExpanses = () => {
+   
+  for (var i = 0; i < this.state.expansesDetails.length; i++) {
+    
+    this.state.expansesDetails[i].costPLN = parseFloat(this.state.expansesDetails[i].costV) * parseFloat(this.state.expansesDetails[i].costVCurrencyRate)
+  }
+}
+
 handleSubmit = (e) => { 
     console.log(
         this.state.transportTypeAll,
@@ -382,6 +480,8 @@ handleSubmit = (e) => {
     for (var i = 0; i < this.state.expansesDetails.length; i++) {
       expansesDetailsAll += parseFloat(this.state.expansesDetails[i].costPLN)
     }
+  
+    this.calculateExpanses()
     e.preventDefault()
     let response = {
         transportType: this.state.transportType,
@@ -396,7 +496,8 @@ handleSubmit = (e) => {
         ryczaltDoajzdyBagaze: this.state.ryczaltDoajzdyBagaze,
         ryczaltDojazdyKomunikacja: this.state.ryczaltDojazdyKomunikacja,
         ryczaltNoclegi: this.state.ryczaltNoclegi,
-        exchangeRate: this.state.kurs
+        exchangeRate: this.state.kurs,
+        exchangeDate: this.state.tabelaNBPData
     }
     console.log((JSON.stringify(response)))
 
@@ -579,12 +680,13 @@ render() {
         <table name="formTable" id="formTable" className="table table-bordered table-condensed">
             <thead>
               <tr>
-                <th colSpan="3" className="text-center"><label>Dodatkowe wydatki</label></th>
+                <th colSpan="4" className="text-center"><label>Dodatkowe wydatki</label></th>
               </tr>
               <tr className="table table-bordered table-condensed">
-                <th className="text-center" width="60%"><label>Opis/typ</label></th>
-                <th className="text-center" width="20%"><label>Kwota {this.state.waluta}</label></th>
-                <th className="text-center" width="20%"><label>Kwota PLN</label></th>
+                <th className="text-center" width="25%"><label>Opis/typ</label></th>
+                <th className="text-center" width="25%"><label>Kraj</label></th>
+                <th className="text-center" width="25%"><label>Kwota waluta</label></th>
+                <th className="text-center" width="25%"><label>Kwota PLN</label></th>
               </tr>
             </thead>
        

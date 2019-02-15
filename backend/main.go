@@ -167,8 +167,8 @@ func getTripDetails(rawData string) Trip {
 
 func getExchangeReate(currency string) float64 {
 
-	//url := "http://api.nbp.pl/api/exchangerates/rates/A/" + currency
-	url := "http://localhost:3000/"
+	url := "http://api.nbp.pl/api/exchangerates/rates/A/" + currency
+	// url := "http://localhost:3000/"
 	response, err := http.Get(url)
 
 	if err != nil {
@@ -185,6 +185,35 @@ func getExchangeReate(currency string) float64 {
 	fmt.Printf("%s\n", string(contents))
 	rate := gjson.Get(string(contents), "rates.0.mid").Float()
 	return rate
+
+}
+
+func getCuntryCurrency(w http.ResponseWriter, r *http.Request) {
+
+	country, ok := r.URL.Query()["country"]
+	countrystr := "Polska"
+	if !ok || len(country[0]) < 1 {
+		countrystr = "Polska"
+	} else {
+		countrystr = country[0]
+	}
+
+	jsonFile, _ := os.Open("./CountryTable1.json")
+	defer jsonFile.Close()
+
+	byteValue, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+
+	}
+	bodySTR := string(byteValue)
+
+	countrystr = strings.Title(strings.ToLower(countrystr))
+
+	response := gjson.Get(bodySTR, (countrystr + ".0.waluta")).String()
+
+	json.NewEncoder(w).Encode(response)
+
+	defer r.Body.Close()
 
 }
 
@@ -520,6 +549,7 @@ func main() {
 	router.HandleFunc("/", readBody).Methods("POST")
 	router.HandleFunc("/", readBody).Methods("OPTIONS")
 	router.HandleFunc("/version", showVer).Methods("GET")
+	router.HandleFunc("/countryCurrency", getCuntryCurrency).Methods("GET")
 
 	// corsObj := handlers.AllowedOrigins([]string{"*"})
 	// headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
@@ -533,6 +563,6 @@ func main() {
 
 	handler := c.Handler(router)
 
-	log.Fatal(http.ListenAndServe(":3000", handler))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 
 }
