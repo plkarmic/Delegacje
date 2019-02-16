@@ -117,7 +117,7 @@ calculateFood = () => {
 getCountryCurrency = (country,idx) => {
   let tripDetails = [...this.state.tripDetails]
 
-  fetch('http://localhost:8080/countryCurrency?country=' + country, {
+  fetch('http://wassv076.einstein.local:8080/countryCurrency?country=' + country, {
       method: 'GET',
       headers: {
         // 'Access-Control-Allow-Origin': '*',
@@ -224,22 +224,29 @@ handleChange = (e) => {
       tripDetails[e.target.dataset.id]["currency"] = this.getCountryCurrency(tripDetails[e.target.dataset.id]["country"],e.target.dataset.id)
 
       this.setState({ tripDetails }, () => console.log(this.state.transportType))
-    }else if (["remark", "costV", "costPLN","remarkCountry"].includes(e.target.className)){
+    }else if (["remark", "costV-old", "costPLN","remarkCountry"].includes(e.target.className)){
       let expansesDetails = [...this.state.expansesDetails]
       
       expansesDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
       expansesDetails[e.target.dataset.id]['costVCurrency'] = this.getCountryCurrencyExpanse(expansesDetails[e.target.dataset.id]['remarkCountry'],e.target.dataset.id)
 
-      // if(expansesDetails[e.target.dataset.id]['costVCurrency'] !== ''){
-      //   expansesDetails[e.target.dataset.id]['costVCurrencyRate'] = this.getCountryCurrencyExpanseRate("a",e.target.dataset.id,this.state.tabelaNBPData)
-      // }
-
       // if(expansesDetails[e.target.dataset.id]["costV"] !== ''){
       //   expansesDetails[e.target.dataset.id]["costPLN"] = expansesDetails[e.target.dataset.id][e.target.className] * (parseFloat(expansesDetails[e.target.dataset.id]['costVCurrencyRate']) || 1)
-      // }
-     
+      // } 
 
       this.setState({expansesDetails}, () => console.log(this.state.expansesDetails))
+    }else if(["costV"].includes(e.target.className)){
+        //ZMIANA POLA DLA WYDATKI WALUTA
+       console.log("ZMIANA POLA DLA WYDATKI WALUTA")
+        let expansesDetails = [...this.state.expansesDetails]  
+        expansesDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
+        if(expansesDetails[e.target.dataset.id]['costVCurrency'].length > 0){
+        
+        console.log("RATE EXIST!!")
+        this.getCountryCurrencyExpanseRate(e.target.dataset.id)
+      }
+      this.setState({expansesDetails}, () => console.log(this.state.expansesDetails))
+
     }else if (["userNameForm data", "userNameForm nrDow", "userNameForm waluta", "userNameForm kwota", "userNameForm slownie"].includes(e.target.className)) {
       zaliczka[e.target.dataset.id][e.target.className.substr(13)] = e.target.value.toUpperCase()
       this.setState({ zaliczka}, () => console.log(this.state.zaliczka))
@@ -400,6 +407,9 @@ handleChange = (e) => {
         tabelaNBPData = out.res.rates[(out.res.rates.length - 2)].effectiveDate
       }
 
+      // this.calculateExpanses()
+
+
       console.log(kursNBP)
       console.log(tabelaNBP)
       this.setState({
@@ -463,24 +473,44 @@ addZaliczka = (e) => {
 //   }
 // }
 
+
+
 calculateExpanses = () => {
    
-  for (var i = 0; i < this.state.expansesDetails.length; i++) {
-    
-    this.getCountryCurrencyExpanseRate(i);
+  let expansesDetails = [...this.state.expansesDetails]
 
-    this.state.expansesDetails[i].costPLN = parseFloat(this.state.expansesDetails[i].costV) * parseFloat(this.state.expansesDetails[i].costVCurrencyRate)
+  for (var i = 0; i < expansesDetails.length; i++) {
+    
+    // this.getCountryCurrencyExpanseRate(i);
+
   }
+  for (var i = 0; i < expansesDetails.length; i++) {
+    if((parseFloat(expansesDetails[i].costV) || 0) > 0)
+    {
+      expansesDetails[i]['costPLN'] = parseFloat(expansesDetails[i].costV) * parseFloat(expansesDetails[i].costVCurrencyRate)
+    
+    }
+    console.log("COSTPLN: " + expansesDetails[i].costPLN)
+  
+  }
+
+  this.setState(expansesDetails)
+  
 }
 
+
 handleSubmit = (e) => { 
+    e.preventDefault()
+  
     console.log(
         this.state.transportTypeAll,
         this.state.tripDetails,
         this.state.zaliczka)
     let zaliczkaTotal = 0
-     
-
+    
+    this.calculateExpanses() 
+    console.log("EXPANESS CALCUALATED??")
+    console.log(this.state.expansesDetails)
     for (var i =0; i < this.state.zaliczka.length; i++) {
       zaliczkaTotal += parseFloat(this.state.zaliczka[i].kwota)
     }
@@ -489,8 +519,7 @@ handleSubmit = (e) => {
       expansesDetailsAll += parseFloat(this.state.expansesDetails[i].costPLN)
     }
   
-    this.calculateExpanses()
-    e.preventDefault()
+    
     let response = {
         transportType: this.state.transportType,
         roundTrip: this.state.tripDetails,
@@ -507,6 +536,8 @@ handleSubmit = (e) => {
         exchangeRate: this.state.kurs,
         exchangeDate: this.state.tabelaNBPData
     }
+
+
     console.log((JSON.stringify(response)))
 
     //send POST request to backend server
