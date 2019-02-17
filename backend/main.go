@@ -69,6 +69,7 @@ type Trip struct {
 	durtion                   float64
 	totalCost                 float64
 	exchangeRate              float64
+	exchangeRateDate          string
 	totalCostexchRate         float64
 }
 
@@ -157,6 +158,7 @@ func getTripDetails(rawData string) Trip {
 	})
 
 	trip.exchangeRate = gjson.Get(rawData, "exchangeRate").Float()
+	trip.exchangeRateDate = gjson.Get(rawData, "exchangeDate").String()
 
 	trip.totalCost, trip.durtion, trip.totalCostexchRate = calculate(trip)
 	trip.totalCost = calculateTotalCost(trip)
@@ -165,9 +167,9 @@ func getTripDetails(rawData string) Trip {
 
 }
 
-func getExchangeReate(currency string) float64 {
+func getExchangeReate(currency string, currencyDate string) float64 {
 
-	url := "http://api.nbp.pl/api/exchangerates/rates/A/" + currency
+	url := "http://api.nbp.pl/api/exchangerates/rates/A/" + currency + "/" + currencyDate
 	// url := "http://localhost:3000/"
 	response, err := http.Get(url)
 
@@ -217,7 +219,7 @@ func getCuntryCurrency(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func cena(time float64, country string, exchangeRate float64) (float64, float64, float64) {
+func cena(time float64, country string, exchangeRate float64, exchangeRateDate string) (float64, float64, float64) {
 
 	var result float64
 	var resultCurrency float64
@@ -237,7 +239,7 @@ func cena(time float64, country string, exchangeRate float64) (float64, float64,
 	countryPrice := gjson.Get(bodySTR, Countrypricequerry).Float()
 	CountryShortCurrency := gjson.Get(bodySTR, Countrypricequerry2).String()
 	fmt.Println(exchangeRate)
-	exchangeRate = getExchangeReate(CountryShortCurrency)
+	exchangeRate = getExchangeReate(CountryShortCurrency, exchangeRateDate)
 	fmt.Println(countryPrice)
 	modulo = math.Mod(time, 24)
 
@@ -383,7 +385,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 				}
 				czas = trip.details[j].BorderTime.Sub(trip.details[i].StartTime)
 				TripDuration += czas
-				price, priceCurrency, CountryPrice = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+				price, priceCurrency, CountryPrice = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate, trip.exchangeRateDate)
 				dieta = price
 				dietaCurrency = priceCurrency
 				TripDays = (int64(czas.Hours()) / 24)
@@ -412,7 +414,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 			} else {
 				czas = trip.details[j].BorderTime.Sub(trip.details[i].StartTime)
 				TripDuration += czas
-				price, priceCurrency, CountryPrice = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate)
+				price, priceCurrency, CountryPrice = cena(czas.Hours(), trip.details[i].CountryFrom, trip.exchangeRate, trip.exchangeRateDate)
 				dieta = price
 				dietaCurrency = priceCurrency
 				TripDays = (int64(czas.Hours()) / 24)
@@ -462,7 +464,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 				trip.details[j].BorderTime = trip.details[j].ArrivalTime
 				czas = trip.details[j].BorderTime.Sub(trip.details[i].BorderTime)
 				TripDuration += czas
-				price, priceCurrency, CountryPrice = cena(czas.Hours(), trip.details[i].CountryTo, trip.exchangeRate)
+				price, priceCurrency, CountryPrice = cena(czas.Hours(), trip.details[i].CountryTo, trip.exchangeRate, trip.exchangeRateDate)
 				dieta = price
 				dietaCurrency = priceCurrency
 				TripDays = (int64(czas.Hours()) / 24)
@@ -490,7 +492,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 			} else {
 				czas = trip.details[j].BorderTime.Sub(trip.details[i].BorderTime)
 				TripDuration += czas
-				price, priceCurrency, CountryPrice = cena(czas.Hours(), trip.details[j].CountryFrom, trip.exchangeRate)
+				price, priceCurrency, CountryPrice = cena(czas.Hours(), trip.details[j].CountryFrom, trip.exchangeRate, trip.exchangeRateDate)
 				dieta = price
 				dietaCurrency = priceCurrency
 				TripDays = (int64(czas.Hours()) / 24)
@@ -536,7 +538,7 @@ func calculateTotalCost(trip Trip) float64 { //calculte total cost -> dieta + ot
 
 func showVer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("version: 1.6@2019-02-06")
+	json.NewEncoder(w).Encode("version: 1.7@2019-02-17")
 
 	defer r.Body.Close()
 }
