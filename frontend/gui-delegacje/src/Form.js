@@ -117,7 +117,7 @@ calculateFood = () => {
 getCountryCurrency = (country,idx) => {
   let tripDetails = [...this.state.tripDetails]
 
-  fetch('http://wassv076.einstein.local:8080/countryCurrency?country=' + country, {
+  fetch('http://localhost:8080/countryCurrency?country=' + country, {
       method: 'GET',
       headers: {
         // 'Access-Control-Allow-Origin': '*',

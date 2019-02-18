@@ -8,19 +8,24 @@ const AdditionalExpansesRowInput = (props) => {
     
     props.expansesDetails.map((val, idx)=> {
 
-      let remarkId = `remark-${idx}`, costVId = `costV-${idx}`, costPLNId = `costPLN-${idx}`, remarkCountryId = `remarkCountry-${idx}`
-      if (props.expansesDetails[idx].costV !=="" ) {
-        document.getElementById(costPLNId).readOnly = true;
-      }
-      else if (props.expansesDetails[idx].costPLN !=="" && props.expansesDetails[idx].costV ==="")
-      {
+      let remarkId = `remark-${idx}`, costVId = `costV-${idx}`, costPLNId = `costPLN-${idx}`, remarkCountryId = `remarkCountry-${idx}`, costVCurId = `costVCur-${idx}`
+      if (props.expansesDetails[idx].costVCurrency ==="PLN" ) {
         document.getElementById(costVId).readOnly = true;
-        document.getElementById(costPLNId).readOnly = false;
-      } else if (props.expansesDetails[idx].costPLN === "" && props.expansesDetails[idx].costV === "" && document.getElementById(costVId))
-      {
-        document.getElementById(costVId).readOnly = false;
+        document.getElementById(costVId).type = 'hidden';
+        // document.getElementById('#costVCurId').type = 'hidden';
+        document.getElementsByName('costVCurId').type = 'hidden';
+        // document.getElementsById('costVCurId').style.display = 'none';
 
       }
+      // else if (props.expansesDetails[idx].costPLN !=="" && props.expansesDetails[idx].costV ==="")
+      // {
+      //   document.getElementById(costVId).readOnly = true;
+      //   document.getElementById(costPLNId).readOnly = false;
+      // } else if (props.expansesDetails[idx].costPLN === "" && props.expansesDetails[idx].costV === "" && document.getElementById(costVId))
+      // {
+      //   document.getElementById(costVId).readOnly = false;
+
+      // }
       
 
       return (
@@ -63,7 +68,7 @@ const AdditionalExpansesRowInput = (props) => {
                   className="costV"
                 />
               </div>
-              <div className="col-xs-4 col-md-4 expCurrency"> {props.expansesDetails[idx].costVCurrency} </div>
+              <div className="col-xs-4 col-md-4 expCurrency" id="costVCurId"> {props.expansesDetails[idx].costVCurrency} </div>
             <label className="costV-print-only">
               {props.expansesDetails[idx].costV} {props.expansesDetails[idx].costVCurrency}
             </label>
