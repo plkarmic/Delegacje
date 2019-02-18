@@ -40,7 +40,9 @@
                padding: 0px;
                margin: 0px
        }
-     
+
+ 
+           
       @media print {
             .remark, .costV, .costPLN, .remarkCountry, .expCurrency {
                     display: none !important;

@@ -669,25 +669,26 @@ render() {
           </tr> */}
           <thead>
             <tr>
-              <td colSpan='3' className="col-xs-4 col-md-4 text-center"><h5><label>Wyjazd</label></h5></td>
-              <td colSpan='3' className="col-xs-4 col-md-4 text-center"><h5><label>Przyjazd</label></h5></td>
-              <td className="col-xs-2 col-md-2 text-center"><h5><label>Przekroczenie granicy</label></h5></td>
-              <td rowSpan='2' className="col-xs-2 col-md-2 text-center hidden-print"><h5><label>Śr. lokomocji</label></h5></td>
+              <td colSpan='2' className="col-xs-4 col-md-4 text-center"><h5><label>Wyjazd</label></h5></td>
+              <td colSpan='2' className="col-xs-4 col-md-4 text-center"><h5><label>Przyjazd</label></h5></td>
+              <td colSpan='2' className="col-xs-4 col-md-4 text-center"><h5><label>Przekroczenie granicy</label></h5></td>
+              {/* <td rowSpan='2' className="col-xs-2 col-md-2 text-center hidden-print"><h5><label>Śr. lokomocji</label></h5></td> */}
             </tr>
             <tr>
               <td className="text-center min-width"><label className="print-width-th">Kraj</label></td>
               <td className="text-center max-width"><label>Miejscowość</label></td>
-              <td className="text-center max-width"><label>Data i godzina</label></td>
+              {/* <td className="text-center max-width"><label>Data i godzina</label></td> */}
               <td className="text-center min-width"><label className="print-width-th">Kraj</label></td>
               <td className="text-center max-width"><label className="print-width-th">Miejscowość</label></td>
-              <td className="text-center max-width"><label className="print-width-th2">Data i godz.</label></td>
-              <td className="text-center max-width"><label className="print-width-th2">Data i godz.</label></td>
+              {/* <td className="text-center max-width"><label className="print-width-th2">Data i godz.</label></td> */}
+              <td className="text-center max-width"><label className="print-width-th">Miejscowość</label></td>
+              <td className="text-center max-width"><label className="print-width-th2">Środek transportu</label></td>
               {/* <td className="text-center hidden-print"><label className="print-width-th2"></label></td> */}
             </tr>
           </thead>
-          <tbody>
+          
             <TripRowInput tripDetails={tripDetails} />
-          </tbody>
+          {/* </tbody> */}
         </table>
         <div className="row">
           <div className="col-lg-2">

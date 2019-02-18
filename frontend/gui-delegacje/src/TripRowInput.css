@@ -1,5 +1,5 @@
 
-.startTime, .country, .destinationC, .endTime, .borderTime, .city, .cityD {
+.startTime, .country, .destinationC, .endTime, .borderTime, .city, .cityD, .cityB {
     display: block;
     width: 100%;
     height: 34px;
@@ -17,28 +17,50 @@
          -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
             transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   }
-.country:focus, .startTime:focus, destinationC:focus, endTime:focus, borderTime:focus, city:focus, cityD:focus {
+.country:focus, .startTime:focus, .destinationC:focus, .endTime:focus, .borderTime:focus, .city:focus, .cityD:focus, .cityB:focus {
     border-color: #66afe9;
     outline: 0;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
             box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
   }
 
-.startTime-printOnly, .country-printOnly, .destinationC-printOnly, .endTime-printOnly, .borderTime-printOnly, .city-printOnly, .cityD-printOnly {
+.startTime-printOnly, .country-printOnly, .destinationC-printOnly, .endTime-printOnly, .borderTime-printOnly, .city-printOnly, .cityD-printOnly, .cityB-printOnly, .transportType-printOnly {
         display: none
   }
 
+  .no-padding-left {
+        padding-left: 0px
+  }
+
+  .no-padding-margin{
+          padding: 0px;
+          margin: 0px
+  }
+  .vertical-align-middle {
+        vertical-align: middle;
+        height: 100%;
+}
+.custom-padding{
+        padding-top: 5px;
+}
+
+.spanalign{
+        
+        vertical-align:middle;
+        padding: 5px;
+}
+
 @media print {
-        .startTime, .country, .destinationC, .endTime, .borderTime, .city, .cityD, .transportType {
+        .startTime, .country, .destinationC, .endTime, .borderTime, .city, .cityD, .transportType, .cityB {
                 display: none;
         }
-        .country:focus, .startTime:focus, destinationC:focus, endTime:focus, borderTime:focus, city:focus, cityD:focus {
+        .country:focus, .startTime:focus, .destinationC:focus, .endTime:focus, .borderTime:focus, .city:focus, .cityD:focus, .cityB:focus {
                 border-color: #66afe9;
                 outline: 0;
                 -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
                         box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
         }
-        .startTime-printOnly, .country-printOnly, .destinationC-printOnly, .endTime-printOnly, .borderTime-printOnly, .city-printOnly, .cityD-printOnly {
+        .startTime-printOnly, .country-printOnly, .destinationC-printOnly, .endTime-printOnly, .borderTime-printOnly, .city-printOnly, .cityD-printOnly, .cityB-printOnly, .transportType-printOnly {
                 display: block;
                 font-size: 10px;
                 text-align: center;
