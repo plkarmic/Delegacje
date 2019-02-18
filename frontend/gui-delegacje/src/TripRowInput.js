@@ -98,8 +98,20 @@ const TripRowInput = (props) => {
           </td>
         </tr>
         <tr>
-       
-          <td colspan="2" htmlFor={startTimeID}>  
+          <td>
+            <input
+              type="text"
+              value="Data i czas wyjazdu"
+              className="TimeDate"
+              readOnly
+            />
+
+            <label className="TimeDate-printOnly">
+                Data i czas wyjazdu
+              </label>
+
+          </td>
+          <td colspan="1" htmlFor={startTimeID}>  
               <input
                 type="datetime-local"
                 name={startTimeID}
@@ -112,8 +124,20 @@ const TripRowInput = (props) => {
                 {timeTstart} 
               </label>
             </td>
-         
-          <td colSpan='2' htmlFor={endTimeID}>
+          
+            <td>
+            <input
+              type="text"
+              value="Data i czas przyjazdu"
+              className="TimeDate"
+              readOnly
+            />
+            <label className="TimeDate-printOnly">
+                Data i czas przyjazdu
+              </label>
+          </td>
+
+          <td colSpan='1' htmlFor={endTimeID}>
             <input
               type="datetime-local"
               name={endTimeID}

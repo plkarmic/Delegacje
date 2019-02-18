@@ -633,7 +633,9 @@ render() {
         </div>
         <div className="row"></div>
         <div className="row"></div>
-        <table class="table-no-border">
+        
+        
+        {/* <table class="table-no-border">
           <tbody>
             <tr>
               <div className="row">
@@ -660,7 +662,7 @@ render() {
             </tr>
           </tbody>
         </table>  
-       
+        */}
          
        <table name="formTable" id="formTable" className="table table-bordered table-condensed">
           {/* <tr>
@@ -855,7 +857,7 @@ render() {
             </div>
             <div className="row">
               <div className="col-md-12">
-                <span className="version hidden-print">v1.7@2018-01-25</span>
+                <span className="version hidden-print">v1.9@2019-02-18</span>
               </div>
             </div>
       </form>
