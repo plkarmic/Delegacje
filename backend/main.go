@@ -503,7 +503,7 @@ func calculate(trip Trip) (float64, float64, float64) { //MAGIC :)
 				if !stringinarray(trip.details[i].CountryTo, countryarray) {
 					breakfast, lunch, dinner := getFoodDetails(trip, trip.details[j].CountryFrom)
 					if breakfast != 0 || lunch != 0 || dinner != 0 {
-						if trip.details[i].CountryFrom != "Polska" {
+						if trip.details[i].CountryTo != "Polska" {
 							dietatemp := (CountryPrice * float64(TripDays) * exchangeRateCountry)
 							countryarray = append(countryarray, trip.details[j].CountryFrom)
 							calculatedieta += dieta - ((dietatemp * float64(0.15) * (breakfast / float64(TripDays))) + (dietatemp * float64(0.30) * (lunch / float64(TripDays))) + (dietatemp * float64(0.30) * (dinner / float64(TripDays))))
