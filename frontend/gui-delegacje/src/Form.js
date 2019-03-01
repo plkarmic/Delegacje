@@ -1,7 +1,7 @@
 import React from "react"
 import TripRowInput from "./TripRowInput"
 import AdditionalExpansesRowInput from "./AdditionalExpansesRowInput"
-import DisplayExchangeRateInfo from "./DisplayExchangeRateInfo"
+import { DisplayExchangeRateInfo } from "./DisplayExchangeRateInfo"
 import FirstPage from "./firstPage.js"
 import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
 import './Form.css'
@@ -819,13 +819,14 @@ render() {
             
              
             </div>
+              <DisplayExchangeRateInfo expansesDetails={expansesDetails} onChange={this.getCountryCurrencyExpanseRate} NBPtableNR={this.state.tabelaNBP} NBPtableDate={this.state.tabelaNBPData}/>
               <div className="row"> 
-                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP} z dnia {this.state.tabelaNBPData}: {this.state.kurs}</label></span></div>
+                  {/* <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP} z dnia {this.state.tabelaNBPData}: {this.state.kurs}</label></span></div> */}
                   <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {this.state.totalV} {this.state.waluta} </label></span></div>
                   <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {totalPLN} PLN </label></span></div>
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.kurs} onChange={"aaa"}></input></h3></label></div> */}
               </div>
-              {/* <DisplayExchangeRateInfo expansesDetails={expansesDetails} /> */}
+              
             </div>
           </div>
           

@@ -1,21 +1,47 @@
 import React from "react"
 import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
 
-const DisplayExchangeRateInfo = (props) => {
+export class DisplayExchangeRateInfo extends React.Component {
 
-    return (
-        props.expansesDetails.map((val, idx)=> {
+    constructor(props)
+    {
+        super(props);
+        this.getCurrency = this.getCurrency.bind(this);
+    };  
 
-            return (
-                <div className="row"> 
-                    <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {props.expansesDetails[idx].costVCurrency} według Tablea nr 'NUMER-TABELI' z dnia 'DATA---': {props.expansesDetails[idx].costVCurrencyRate}</label></span></div>
-                </div>
-            )
+    // make currency list unique
+    getCurrency() { 
+        let uniqCurrency = [];
+        let uniqCurrencyRate = [];
+        for(var i = 0;i < this.props.expansesDetails.length; i++){
+            if(this.props.expansesDetails[i].costVCurrency !== 'PLN' & this.props.expansesDetails[i].costVCurrency !== '')
+            {
+                if(!uniqCurrency.includes(this.props.expansesDetails[i].costVCurrency)){
+                    uniqCurrency.push(this.props.expansesDetails[i].costVCurrency);
+                    uniqCurrencyRate.push(this.props.expansesDetails[i].costVCurrencyRate);
+                }
             }
+        }
+        return {
+            uCurrency: uniqCurrency,
+            uCurrencyRate: uniqCurrencyRate
+        }
+    }
 
+    render () {
+        let uniqCurrency = this.getCurrency()
+        return (
+            uniqCurrency.uCurrency.map((val, idx)=> {
+
+                return (
+                    <div className="row"> 
+                        <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {uniqCurrency.uCurrency[idx]} według Tablea nr {this.props.NBPtableNR} z dnia {this.props.NBPtableDate}: {uniqCurrency.uCurrencyRate[idx]}</label></span></div>
+                    </div>
+                )
+                }
+
+            )
         )
-    )
 
 }
-
-export default DisplayExchangeRateInfo
+}
