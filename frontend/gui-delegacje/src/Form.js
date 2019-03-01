@@ -1,6 +1,7 @@
 import React from "react"
 import TripRowInput from "./TripRowInput"
 import AdditionalExpansesRowInput from "./AdditionalExpansesRowInput"
+import DisplayExchangeRateInfo from "./DisplayExchangeRateInfo"
 import FirstPage from "./firstPage.js"
 import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
 import './Form.css'
@@ -117,7 +118,7 @@ calculateFood = () => {
 getCountryCurrency = (country,idx) => {
   let tripDetails = [...this.state.tripDetails]
 
-  fetch('http://localhost:8080/countryCurrency?country=' + country, {
+  fetch('http://wassv076.einstein.local:8080/countryCurrency?country=' + country, {
       method: 'GET',
       headers: {
         // 'Access-Control-Allow-Origin': '*',
@@ -147,7 +148,7 @@ getCountryCurrency = (country,idx) => {
 getCountryCurrencyExpanse = (country,idx) => {
   let expansesDetails = [...this.state.expansesDetails]
 
-  fetch('http://localhost:8080/countryCurrency?country=' + country, {
+  fetch('http://wassv076.einstein.local:8080/countryCurrency?country=' + country, {
       method: 'GET',
       headers: {
         // 'Access-Control-Allow-Origin': '*',
@@ -240,11 +241,15 @@ handleChange = (e) => {
        console.log("ZMIANA POLA DLA WYDATKI WALUTA")
         let expansesDetails = [...this.state.expansesDetails]  
         expansesDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
-        if(expansesDetails[e.target.dataset.id]['costVCurrency'].length > 0){
+        if(expansesDetails[e.target.dataset.id]['costVCurrency'] !== undefined)
+        {
+          if(expansesDetails[e.target.dataset.id]['costVCurrency'].length  > 0){
         
-        console.log("RATE EXIST!!")
-        this.getCountryCurrencyExpanseRate(e.target.dataset.id)
-      }
+            console.log("RATE EXIST!!")
+            this.getCountryCurrencyExpanseRate(e.target.dataset.id)
+          }
+        }
+      
       this.setState({expansesDetails}, () => console.log(this.state.expansesDetails))
 
     }else if (["userNameForm data", "userNameForm nrDow", "userNameForm waluta", "userNameForm kwota", "userNameForm slownie"].includes(e.target.className)) {
@@ -820,6 +825,7 @@ render() {
                   <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {totalPLN} PLN </label></span></div>
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.kurs} onChange={"aaa"}></input></h3></label></div> */}
               </div>
+              {/* <DisplayExchangeRateInfo expansesDetails={expansesDetails} /> */}
             </div>
           </div>
           
@@ -857,7 +863,7 @@ render() {
             </div>
             <div className="row">
               <div className="col-md-12">
-                <span className="version hidden-print">v1.9@2019-02-18</span>
+                <span className="version hidden-print">v1.91@2019-03-01</span>
               </div>
             </div>
       </form>
