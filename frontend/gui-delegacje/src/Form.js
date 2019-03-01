@@ -640,9 +640,9 @@ render() {
         <div className="row"></div>
         
         
-        {/* <table class="table-no-border">
+        <table class="table-no-border">
           <tbody>
-            <tr>
+            {/* <tr>
               <div className="row">
                 <div className="col-xs-2 col-md-2 hidden-print">
                   <td><h4><label htmlFor="transportType" className="hidden-print">Środek lokomocji</label></h4> </td>
@@ -654,20 +654,20 @@ render() {
                   <label>Środek lokomocji: {this.state.transportTypeAll}</label>
                 </div>
               </div>
-            </tr>
+            </tr> */}
             <tr>
               <div className="row hidden-print">
                 <div className="col-xs-2 col-md-2 hidden-print">
                   <td><h4><label htmlFor="waluta" className="hidden-print">Waluta</label></h4> </td>
                 </div>
                 <div className="col-xs-4 col-md-4 hidden-print">
-                  <td> <input type="text" className="waluta" name="waluta" id="waluta" value={waluta}/></td>
+                  <td> <input type="text" className="waluta" name="waluta" id="waluta" value={waluta} /></td>
                 </div>
               </div>
             </tr>
           </tbody>
         </table>  
-        */}
+       
          
        <table name="formTable" id="formTable" className="table table-bordered table-condensed">
           {/* <tr>
@@ -819,11 +819,11 @@ render() {
             
              
             </div>
-              <DisplayExchangeRateInfo expansesDetails={expansesDetails} onChange={this.getCountryCurrencyExpanseRate} NBPtableNR={this.state.tabelaNBP} NBPtableDate={this.state.tabelaNBPData}/>
+              <DisplayExchangeRateInfo expansesDetails={expansesDetails} onChange={this.getCountryCurrencyExpanseRate} NBPtableNR={this.state.tabelaNBP} NBPtableDate={this.state.tabelaNBPData} NBPCurrency = {this.state.waluta} NBPCurrencyRate= {this.state.kurs}/>
               <div className="row"> 
                   {/* <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP} z dnia {this.state.tabelaNBPData}: {this.state.kurs}</label></span></div> */}
-                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {this.state.totalV} {this.state.waluta} </label></span></div>
-                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {totalPLN} PLN </label></span></div>
+                  {/* <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {this.state.totalV} {this.state.waluta} </label></span></div> */}
+                  {/* <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {totalPLN} PLN </label></span></div> */}
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.kurs} onChange={"aaa"}></input></h3></label></div> */}
               </div>
               
@@ -864,7 +864,7 @@ render() {
             </div>
             <div className="row">
               <div className="col-md-12">
-                <span className="version hidden-print">v1.91@2019-03-01</span>
+                <span className="version hidden-print">v1.92 @2019-03-01</span>
               </div>
             </div>
       </form>
