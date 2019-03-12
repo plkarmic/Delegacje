@@ -6,11 +6,12 @@ import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
 const TripRowInput = (props) => {
   return (
     props.tripDetails.map((val, idx)=> {
-      let countryId = `country-${idx}`, destinationCId = `destinationC-${idx}`, startTimeID = `startTime-${idx}`, endTimeID = `endTime-${idx}`, borderTimeID = `borderTime-${idx}`, cityId = `city-${idx}`, cityDId = `cityD-${idx}`, transportTypeID=`transportType-${idx}`
+      let countryId = `country-${idx}`, destinationCId = `destinationC-${idx}`, startTimeID = `startTime-${idx}`, endTimeID = `endTime-${idx}`, borderTimeID = `borderTime-${idx}`, cityId = `city-${idx}`, cityDId = `cityD-${idx}`, cityBId = `cityB-${idx}`, transportTypeID=`transportType-${idx}`
       let timeTstart = (props.tripDetails[idx].startTime).replace("T", " ")
       let timeTend = (props.tripDetails[idx].endTime).replace("T", " ")
       let timeTborder = (props.tripDetails[idx].borderTime).replace("T", " ")
       return (
+        <tbody>
         <tr key={idx}>
           <td htmlFor={countryId}>
             <input
@@ -38,19 +39,7 @@ const TripRowInput = (props) => {
               {props.tripDetails[idx].city} 
             </label>
           </td>
-          <td htmlFor={startTimeID}>
-            <input
-              type="datetime-local"
-              name={startTimeID}
-              data-id={idx}
-              id={startTimeID}
-              value={props.tripDetails[idx].startTime} 
-              className="startTime"
-            />
-            <label className="startTime-printOnly">
-              {timeTstart} 
-            </label>
-          </td>
+       
           <td htmlFor={destinationCId}>
             <input
               type="text"
@@ -77,7 +66,78 @@ const TripRowInput = (props) => {
               {props.tripDetails[idx].cityD} 
             </label>
           </td>
-          <td htmlFor={endTimeID}>
+        
+
+          <td htmlFor={cityDId}>
+            <input
+              type="text"
+              name={cityBId}
+              data-id={idx}
+              id={cityBId}
+              value={props.tripDetails[idx].cityB} 
+              className="cityB"
+            />
+             <label className="cityB-printOnly">
+              {props.tripDetails[idx].cityB} 
+            </label>
+          </td>
+
+         
+           <td htmlFor={transportTypeID}>
+            <input
+              type="text"
+              name={transportTypeID}
+              data-id={idx}
+              id={transportTypeID}
+              value={props.tripDetails[idx].transportType} 
+              className="transportType"
+            />
+            <label className="transportType-printOnly">
+              {props.tripDetails[idx].transportType}
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input
+              type="text"
+              value="Data i czas wyjazdu"
+              className="TimeDate"
+              readOnly
+            />
+
+            <label className="TimeDate-printOnly">
+                Data i czas wyjazdu
+              </label>
+
+          </td>
+          <td colspan="1" htmlFor={startTimeID}>  
+              <input
+                type="datetime-local"
+                name={startTimeID}
+                data-id={idx}
+                id={startTimeID}
+                value={props.tripDetails[idx].startTime} 
+                className="startTime"
+              />
+              <label className="startTime-printOnly">
+                {timeTstart} 
+              </label>
+            </td>
+          
+            <td>
+            <input
+              type="text"
+              value="Data i czas przyjazdu"
+              className="TimeDate"
+              readOnly
+            />
+            <label className="TimeDate-printOnly">
+                Data i czas przyjazdu
+              </label>
+          </td>
+
+          <td colSpan='1' htmlFor={endTimeID}>
             <input
               type="datetime-local"
               name={endTimeID}
@@ -90,33 +150,31 @@ const TripRowInput = (props) => {
               {timeTend}
             </label>
           </td>
-          <td htmlFor={borderTimeID}>
-            <input
-              type="datetime-local"
-              name={borderTimeID}
-              data-id={idx}
-              id={borderTimeID}
-              value={props.tripDetails[idx].borderTime} 
-              className="borderTime"
-            />
-            <label className="borderTime-printOnly">
-              {timeTborder} 
-            </label>
+
+            <td colSpan='2' htmlFor={borderTimeID}>
+              <input
+                type="datetime-local"
+                name={borderTimeID}
+                data-id={idx}
+                id={borderTimeID}
+                value={props.tripDetails[idx].borderTime} 
+                className="borderTime"
+              />
+              <label className="borderTime-printOnly">
+                {timeTborder} 
+              </label>
           </td>
-          <td htmlFor={transportTypeID} className="hidden-print">
-            <input
-              type="text"
-              name={transportTypeID}
-              data-id={idx}
-              id={transportTypeID}
-              value={props.tripDetails[idx].transportType} 
-              className="transportType"
-            />
-            {/* <label className="borderTime-printOnly">
-              {props.tripDetails[idx].borderTime} 
-            </label> */}
-          </td>
+
         </tr>
+        </tbody>
+
+        /* <tr>
+          
+
+         
+            
+          
+          </tr> */
       )
     })
   )

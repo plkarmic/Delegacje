@@ -9,23 +9,23 @@ const AdditionalExpansesRowInput = (props) => {
     props.expansesDetails.map((val, idx)=> {
 
       let remarkId = `remark-${idx}`, costVId = `costV-${idx}`, costPLNId = `costPLN-${idx}`, remarkCountryId = `remarkCountry-${idx}`, costVCurId = `costVCur-${idx}`
-      if (props.expansesDetails[idx].costVCurrency ==="PLN" ) {
-        document.getElementById(costVId).readOnly = true;
+      if (props.expansesDetails[idx].remarkCountry === "POLSKA" ) {
+        // document.getElementById(costVId).readOnly = true;
         document.getElementById(costVId).type = 'hidden';
         // document.getElementById('#costVCurId').type = 'hidden';
         document.getElementsByName('costVCurId').type = 'hidden';
         // document.getElementsById('costVCurId').style.display = 'none';
 
-      }
-      // else if (props.expansesDetails[idx].costPLN !=="" && props.expansesDetails[idx].costV ==="")
-      // {
-      //   document.getElementById(costVId).readOnly = true;
-      //   document.getElementById(costPLNId).readOnly = false;
-      // } else if (props.expansesDetails[idx].costPLN === "" && props.expansesDetails[idx].costV === "" && document.getElementById(costVId))
-      // {
-      //   document.getElementById(costVId).readOnly = false;
+      }else if (props.expansesDetails[idx].remarkCountry !== "POLSKA") {
+        // document.getElementById(costVId).readOnly = true;
+        if (document.getElementById(costVId) !== null) {
+          document.getElementById(costVId).type = 'visible';
+        }
+        // document.getElementById('#costVCurId').type = 'hidden';
+        document.getElementsByName('costVCurId').type = 'visible';
+        // document.getElementsById('costVCurId').style.display = 'none';
 
-      // }
+      }
       
 
       return (
