@@ -182,7 +182,6 @@ getCountryCurrencyExpanse = (country,idx) => {
 getCountryCurrencyExpanseRate = (idx) => {
   let expansesDetails = [...this.state.expansesDetails]
 
-  
     let NBPQuery = 'http://api.nbp.pl/api/exchangerates/rates/A/' + expansesDetails[idx].costVCurrency + '/' + this.state.tabelaNBPData
 
     console.log(NBPQuery)
@@ -219,7 +218,7 @@ handleChange = (e) => {
     let ryczaltNoclegi = this.state.ryczaltNoclegi
     let tripDetails = [...this.state.tripDetails]
     let zaliczka = [...this.state.zaliczka]
-    if (["country", "city", "destinationC", "cityD", "startTime", "endTime", "borderTime", "transportType"].includes(e.target.className) ) {
+    if (["country", "city", "destinationC", "cityD", "cityB", "startTime", "endTime", "borderTime", "transportType"].includes(e.target.className) ) {
       // let tripDetails = [...this.state.tripDetails]
       tripDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
       tripDetails[e.target.dataset.id]["currency"] = this.getCountryCurrency(tripDetails[e.target.dataset.id]["country"],e.target.dataset.id)
@@ -864,7 +863,7 @@ render() {
             </div>
             <div className="row">
               <div className="col-md-12">
-                <span className="version hidden-print">v1.92 @2019-03-01</span>
+                <span className="version hidden-print">v2.0 @2019-03-12</span>
               </div>
             </div>
       </form>

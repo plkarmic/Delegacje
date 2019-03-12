@@ -13,6 +13,9 @@ export class DisplayExchangeRateInfo extends React.Component {
     getCurrency() { 
         let uniqCurrency = [];
         let uniqCurrencyRate = [];
+        uniqCurrency.push(this.props.NBPCurrency);
+        uniqCurrencyRate.push(this.props.NBPCurrencyRate);
+        
         for(var i = 0;i < this.props.expansesDetails.length; i++){
             if(this.props.expansesDetails[i].costVCurrency !== 'PLN' & this.props.expansesDetails[i].costVCurrency !== '')
             {
@@ -30,11 +33,12 @@ export class DisplayExchangeRateInfo extends React.Component {
 
     render () {
         let uniqCurrency = this.getCurrency()
+
         if (uniqCurrency.uCurrency.length != 0)
         {
             return (
                 uniqCurrency.uCurrency.map((val, idx)=> {
-    
+
                     return (
                         <div className="row"> 
                             <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {uniqCurrency.uCurrency[idx]} według Tablea nr {this.props.NBPtableNR} z dnia {this.props.NBPtableDate}: {uniqCurrency.uCurrencyRate[idx]}</label></span></div>
