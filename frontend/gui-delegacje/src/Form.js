@@ -1,6 +1,7 @@
 import React from "react"
 import TripRowInput from "./TripRowInput"
 import AdditionalExpansesRowInput from "./AdditionalExpansesRowInput"
+import { DisplayExchangeRateInfo } from "./DisplayExchangeRateInfo"
 import FirstPage from "./firstPage.js"
 import './css/bootstrap-3.3.7-dist/css/bootstrap.css'
 import './Form.css'
@@ -117,7 +118,7 @@ calculateFood = () => {
 getCountryCurrency = (country,idx) => {
   let tripDetails = [...this.state.tripDetails]
 
-  fetch('http://localhost:8080/countryCurrency?country=' + country, {
+  fetch('http://wassv076.einstein.local:8080/countryCurrency?country=' + country, {
       method: 'GET',
       headers: {
         // 'Access-Control-Allow-Origin': '*',
@@ -147,7 +148,7 @@ getCountryCurrency = (country,idx) => {
 getCountryCurrencyExpanse = (country,idx) => {
   let expansesDetails = [...this.state.expansesDetails]
 
-  fetch('http://localhost:8080/countryCurrency?country=' + country, {
+  fetch('http://wassv076.einstein.local:8080/countryCurrency?country=' + country, {
       method: 'GET',
       headers: {
         // 'Access-Control-Allow-Origin': '*',
@@ -181,7 +182,6 @@ getCountryCurrencyExpanse = (country,idx) => {
 getCountryCurrencyExpanseRate = (idx) => {
   let expansesDetails = [...this.state.expansesDetails]
 
-  
     let NBPQuery = 'http://api.nbp.pl/api/exchangerates/rates/A/' + expansesDetails[idx].costVCurrency + '/' + this.state.tabelaNBPData
 
     console.log(NBPQuery)
@@ -218,7 +218,7 @@ handleChange = (e) => {
     let ryczaltNoclegi = this.state.ryczaltNoclegi
     let tripDetails = [...this.state.tripDetails]
     let zaliczka = [...this.state.zaliczka]
-    if (["country", "city", "destinationC", "cityD", "startTime", "endTime", "borderTime", "transportType"].includes(e.target.className) ) {
+    if (["country", "city", "destinationC", "cityD", "cityB", "startTime", "endTime", "borderTime", "transportType"].includes(e.target.className) ) {
       // let tripDetails = [...this.state.tripDetails]
       tripDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
       tripDetails[e.target.dataset.id]["currency"] = this.getCountryCurrency(tripDetails[e.target.dataset.id]["country"],e.target.dataset.id)
@@ -240,11 +240,15 @@ handleChange = (e) => {
        console.log("ZMIANA POLA DLA WYDATKI WALUTA")
         let expansesDetails = [...this.state.expansesDetails]  
         expansesDetails[e.target.dataset.id][e.target.className] = e.target.value.toUpperCase()
-        if(expansesDetails[e.target.dataset.id]['costVCurrency'].length > 0){
+        if(expansesDetails[e.target.dataset.id]['costVCurrency'] !== undefined)
+        {
+          if(expansesDetails[e.target.dataset.id]['costVCurrency'].length  > 0){
         
-        console.log("RATE EXIST!!")
-        this.getCountryCurrencyExpanseRate(e.target.dataset.id)
-      }
+            console.log("RATE EXIST!!")
+            this.getCountryCurrencyExpanseRate(e.target.dataset.id)
+          }
+        }
+      
       this.setState({expansesDetails}, () => console.log(this.state.expansesDetails))
 
     }else if (["userNameForm data", "userNameForm nrDow", "userNameForm waluta", "userNameForm kwota", "userNameForm slownie"].includes(e.target.className)) {
@@ -633,9 +637,11 @@ render() {
         </div>
         <div className="row"></div>
         <div className="row"></div>
+        
+        
         <table class="table-no-border">
           <tbody>
-            <tr>
+            {/* <tr>
               <div className="row">
                 <div className="col-xs-2 col-md-2 hidden-print">
                   <td><h4><label htmlFor="transportType" className="hidden-print">Środek lokomocji</label></h4> </td>
@@ -647,14 +653,14 @@ render() {
                   <label>Środek lokomocji: {this.state.transportTypeAll}</label>
                 </div>
               </div>
-            </tr>
+            </tr> */}
             <tr>
               <div className="row hidden-print">
                 <div className="col-xs-2 col-md-2 hidden-print">
                   <td><h4><label htmlFor="waluta" className="hidden-print">Waluta</label></h4> </td>
                 </div>
                 <div className="col-xs-4 col-md-4 hidden-print">
-                  <td> <input type="text" className="waluta" name="waluta" id="waluta" value={waluta}/></td>
+                  <td> <input type="text" className="waluta" name="waluta" id="waluta" value={waluta} /></td>
                 </div>
               </div>
             </tr>
@@ -669,25 +675,26 @@ render() {
           </tr> */}
           <thead>
             <tr>
-              <td colSpan='3' className="col-xs-4 col-md-4 text-center"><h5><label>Wyjazd</label></h5></td>
-              <td colSpan='3' className="col-xs-4 col-md-4 text-center"><h5><label>Przyjazd</label></h5></td>
-              <td className="col-xs-2 col-md-2 text-center"><h5><label>Przekroczenie granicy</label></h5></td>
-              <td rowSpan='2' className="col-xs-2 col-md-2 text-center hidden-print"><h5><label>Śr. lokomocji</label></h5></td>
+              <td colSpan='2' className="col-xs-4 col-md-4 text-center"><h5><label>Wyjazd</label></h5></td>
+              <td colSpan='2' className="col-xs-4 col-md-4 text-center"><h5><label>Przyjazd</label></h5></td>
+              <td colSpan='2' className="col-xs-4 col-md-4 text-center"><h5><label>Przekroczenie granicy</label></h5></td>
+              {/* <td rowSpan='2' className="col-xs-2 col-md-2 text-center hidden-print"><h5><label>Śr. lokomocji</label></h5></td> */}
             </tr>
             <tr>
               <td className="text-center min-width"><label className="print-width-th">Kraj</label></td>
               <td className="text-center max-width"><label>Miejscowość</label></td>
-              <td className="text-center max-width"><label>Data i godzina</label></td>
+              {/* <td className="text-center max-width"><label>Data i godzina</label></td> */}
               <td className="text-center min-width"><label className="print-width-th">Kraj</label></td>
               <td className="text-center max-width"><label className="print-width-th">Miejscowość</label></td>
-              <td className="text-center max-width"><label className="print-width-th2">Data i godz.</label></td>
-              <td className="text-center max-width"><label className="print-width-th2">Data i godz.</label></td>
+              {/* <td className="text-center max-width"><label className="print-width-th2">Data i godz.</label></td> */}
+              <td className="text-center max-width"><label className="print-width-th">Miejscowość</label></td>
+              <td className="text-center max-width"><label className="print-width-th2">Środek transportu</label></td>
               {/* <td className="text-center hidden-print"><label className="print-width-th2"></label></td> */}
             </tr>
           </thead>
-          <tbody>
+          
             <TripRowInput tripDetails={tripDetails} />
-          </tbody>
+          {/* </tbody> */}
         </table>
         <div className="row">
           <div className="col-lg-2">
@@ -811,12 +818,14 @@ render() {
             
              
             </div>
+              <DisplayExchangeRateInfo expansesDetails={expansesDetails} onChange={this.getCountryCurrencyExpanseRate} NBPtableNR={this.state.tabelaNBP} NBPtableDate={this.state.tabelaNBPData} NBPCurrency = {this.state.waluta} NBPCurrencyRate= {this.state.kurs}/>
               <div className="row"> 
-                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP} z dnia {this.state.tabelaNBPData}: {this.state.kurs}</label></span></div>
-                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {this.state.totalV} {this.state.waluta} </label></span></div>
-                  <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {totalPLN} PLN </label></span></div>
+                  {/* <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Kurs {this.state.waluta} według Tablea nr {this.state.tabelaNBP} z dnia {this.state.tabelaNBPData}: {this.state.kurs}</label></span></div> */}
+                  {/* <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {this.state.totalV} {this.state.waluta} </label></span></div> */}
+                  {/* <div className="col-xs-12 col-md-12"><span className="pull-right"><label>Razem: {totalPLN} PLN </label></span></div> */}
                   {/* <div className="col-lg-4"><label><h3><input className="result" value={this.state.kurs} onChange={"aaa"}></input></h3></label></div> */}
               </div>
+              
             </div>
           </div>
           
@@ -854,7 +863,7 @@ render() {
             </div>
             <div className="row">
               <div className="col-md-12">
-                <span className="version hidden-print">v1.7@2018-01-25</span>
+                <span className="version hidden-print">v2.0 @2019-03-12</span>
               </div>
             </div>
       </form>
