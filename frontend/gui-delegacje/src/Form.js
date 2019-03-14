@@ -118,7 +118,7 @@ calculateFood = () => {
 getCountryCurrency = (country,idx) => {
   let tripDetails = [...this.state.tripDetails]
 
-  fetch('http://wassv076.einstein.local:8080/countryCurrency?country=' + country, {
+  fetch('http://wbpldelegacje.westeurope.azurecontainer.io:8080/countryCurrency?country=' + country, {
       method: 'GET',
       headers: {
         // 'Access-Control-Allow-Origin': '*',
@@ -148,7 +148,7 @@ getCountryCurrency = (country,idx) => {
 getCountryCurrencyExpanse = (country,idx) => {
   let expansesDetails = [...this.state.expansesDetails]
 
-  fetch('http://wassv076.einstein.local:8080/countryCurrency?country=' + country, {
+  fetch('http://wbpldelegacje.westeurope.azurecontainer.io:8080/countryCurrency?country=' + country, {
       method: 'GET',
       headers: {
         // 'Access-Control-Allow-Origin': '*',
@@ -545,7 +545,7 @@ handleSubmit = (e) => {
     console.log((JSON.stringify(response)))
 
     //send POST request to backend server
-    let out = fetch('http://wassv076.einstein.local:8080/', {
+    let out = fetch('http://wbpldelegacje.westeurope.azurecontainer.io:8080/', {
       method: 'POST',
       // mode: 'no-cors',
       headers: {
